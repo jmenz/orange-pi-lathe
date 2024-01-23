@@ -1,0 +1,81 @@
+# load RT components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+loadrt arisc pwm="p,p,f" out="PA12,PC0" encoders=3
+#loadrt near count=1 # NOT sure if I would need it.
+loadrt ilowpass names=lowpass-x,lowpass-z
+
+# add RT functions to the servo thread
+addf arisc.gpio.read         servo-thread
+addf arisc.pwm.read          servo-thread
+addf motion-command-handler  servo-thread
+addf motion-controller       servo-thread
+addf arisc.gpio.write        servo-thread
+addf arisc.pwm.write         servo-thread
+addf arisc.encoder.read      servo-thread
+#addf near.0                  servo-thread
+addf lowpass-x               servo-thread
+addf lowpass-z               servo-thread
+
+
+# axis 0 setup
+# PA12:EN, PA11:DIR, PA6:STEP
+setp arisc.pwm.0.pos-scale  [JOINT_0]SCALE
+setp arisc.pwm.0.dc-cmd     0.5 # 50%
+setp arisc.pwm.0.dc-max-t   5000
+setp arisc.pwm.0.dir-hold   50000
+setp arisc.pwm.0.dir-setup  50000
+setp arisc.pwm.0.pwm-port   0 # PA
+setp arisc.pwm.0.pwm-pin    6
+setp arisc.pwm.0.dir-port   0 # PA
+setp arisc.pwm.0.dir-pin    11
+net x-pos-cmd  joint.0.motor-pos-cmd   arisc.pwm.0.pos-cmd
+net x-pos-fb   joint.0.motor-pos-fb    arisc.pwm.0.pos-fb
+net x-en       joint.0.amp-enable-out  arisc.pwm.0.enable  arisc.gpio.PA12-out-not
+
+# axis 1 setup
+# PA12:EN, PA1:DIR, PA0:STEP,
+setp arisc.pwm.1.pos-scale  [JOINT_1]SCALE
+setp arisc.pwm.1.dc-cmd     0.5 # 50%
+setp arisc.pwm.1.dc-max-t   5000
+setp arisc.pwm.1.dir-hold   50000
+setp arisc.pwm.1.dir-setup  50000
+setp arisc.pwm.1.pwm-port   0 # PA
+setp arisc.pwm.1.pwm-pin    0
+setp arisc.pwm.1.dir-port   0 # PA
+setp arisc.pwm.1.dir-pin    1
+net z-pos-cmd  joint.1.motor-pos-cmd   arisc.pwm.1.pos-cmd
+net z-pos-fb   joint.1.motor-pos-fb    arisc.pwm.1.pos-fb
+net z-en       joint.1.amp-enable-out  arisc.pwm.1.enable
+
+# spindle setup
+# PC2:PWM,  PC1:DIR,  PC0:EN
+setp arisc.pwm.2.freq-cmd    300.0 # Hz
+setp arisc.pwm.2.dc-scale    2500.0 # max RPM
+setp arisc.pwm.2.pwm-port    2 # PC
+setp arisc.pwm.2.pwm-pin     2
+setp arisc.pwm.2.pwm-invert  0
+setp arisc.pwm.2.dir-port    2 # PC
+setp arisc.pwm.2.dir-pin     1
+setp arisc.pwm.2.dir-invert  1
+net s-rpm  spindle.0.speed-out  arisc.pwm.2.dc-cmd
+net s-en   spindle.0.on         arisc.pwm.2.enable  arisc.gpio.PC0-out
+
+#Spindle Encoder
+# PA19:A, PA7:B, PA8:Z(index)
+setp arisc.encoder.0.pos-scale  1440 # 360p per phaze, * 2 phaze * 2 front
+setp arisc.encoder.0.A-port     0   # 0=PA
+setp arisc.encoder.0.A-pin      7   # in front of spindle
+setp arisc.encoder.0.B-port     0   # 0=PA
+setp arisc.encoder.0.B-pin      19  # in front of spindle.
+setp arisc.encoder.0.Z-port     0   # 0=PA
+setp arisc.encoder.0.Z-pin      8   #
+
+net s-position     arisc.encoder.0.pos           => spindle.0.revs
+net s-velocity     arisc.encoder.0.vel           => spindle.0.speed-in     #near.0.in2
+net s-index-enable arisc.encoder.0.index-enable <=> spindle.0.index-enable
+
+
+
+# other IO setup
+net estop  iocontrol.0.user-enable-out  iocontrol.0.emc-enable-in

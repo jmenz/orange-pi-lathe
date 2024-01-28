@@ -1,17 +1,17 @@
 #Manual Encoders:
 
 #MPG X
-# PA10:A, PA20:B
-setp arisc.encoder.1.A-port     0   # 0=PA
-setp arisc.encoder.1.A-pin      10   # 
-setp arisc.encoder.1.B-port     0   # 0=PA
-setp arisc.encoder.1.B-pin      20  # 
+# PE5:A, PE6:B
+setp arisc.encoder.1.A-port     4   # 4=PE
+setp arisc.encoder.1.A-pin      5   # 
+setp arisc.encoder.1.B-port     4   # 4=PE
+setp arisc.encoder.1.B-pin      6  # 
 setp arisc.encoder.1.x4-mode    1   # The config is inversed 1 means disabled
 setp arisc.encoder.1.enable     1
 
 setp lowpass-x.scale 1000
 setp lowpass-x.gain 0.01
-setp axis.x.jog-scale 0.1 # This will be needed to be set from some buttons
+setp axis.x.jog-scale 0.01 # This will be needed to be set from some buttons
 
 net jog-wheel-counts-x lowpass-x.in <= arisc.encoder.1.counts
 net jog-wheel-counts-x => joint.0.jog-counts => axis.x.jog-counts
@@ -21,10 +21,10 @@ net jog-wheel-scale-x <= axis.x.jog-scale
 net jog-wheel-scale-x => joint.0.jog-scale
 
 #MPG Z
-# PG6:A, PG7:B
-setp arisc.encoder.2.A-port     6   # 6=PG
-setp arisc.encoder.2.A-pin      6   # 
-setp arisc.encoder.2.B-port     6   # 6=PG
+# PE:4, PE7:B
+setp arisc.encoder.2.A-port     4   # 4=PE
+setp arisc.encoder.2.A-pin      4   # 
+setp arisc.encoder.2.B-port     4   # 4=PE
 setp arisc.encoder.2.B-pin      7   # 
 setp arisc.encoder.2.x4-mode    1   # The config is inversed 1 means disabled
 setp arisc.encoder.2.enable     1

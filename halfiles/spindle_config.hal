@@ -1,0 +1,27 @@
+# spindle setup
+# PC2:PWM,  PC1:DIR,  PC0:EN
+setp arisc.pwm.2.freq-cmd    300.0 # Hz
+setp arisc.pwm.2.dc-scale    2500.0 # max RPM
+setp arisc.pwm.2.pwm-port    2 # PC
+setp arisc.pwm.2.pwm-pin     2
+setp arisc.pwm.2.pwm-invert  0
+setp arisc.pwm.2.dir-port    2 # PC
+setp arisc.pwm.2.dir-pin     1
+setp arisc.pwm.2.dir-invert  1
+net s-rpm  spindle.0.speed-out  arisc.pwm.2.dc-cmd
+net s-en   spindle.0.on         arisc.pwm.2.enable  arisc.gpio.PC0-out
+
+#Spindle Encoder
+# PA19:A, PA7:B, PA8:Z(index)
+setp arisc.encoder.0.pos-scale  1440 # 360p per phaze, * 2 phaze * 2 front
+setp arisc.encoder.0.A-port     0   # 0=PA
+setp arisc.encoder.0.A-pin      7   # in front of spindle
+setp arisc.encoder.0.B-port     0   # 0=PA
+setp arisc.encoder.0.B-pin      19  # in front of spindle.
+setp arisc.encoder.0.Z-port     0   # 0=PA
+setp arisc.encoder.0.Z-pin      8   #
+setp arisc.encoder.0.enable     1
+
+net s-position     arisc.encoder.0.pos           => spindle.0.revs
+net s-velocity     arisc.encoder.0.vel           => spindle.0.speed-in     #near.0.in2
+net s-index-enable arisc.encoder.0.index-enable <=> spindle.0.index-enable

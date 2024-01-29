@@ -18,8 +18,5 @@ addf lowpass-x               servo-thread
 addf lowpass-z               servo-thread
 
 
-
-
-
 # other IO setup
 net estop  iocontrol.0.user-enable-out  iocontrol.0.emc-enable-in

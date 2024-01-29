@@ -1,41 +1,8 @@
-(ngcgui: FEATURE 240118:20.06.42)
-(ngcgui: files: </home/jmenz/linuxcnc/configs/lathe/ngcgui/lathe/start.ngc ngcgui/lathe/face.ngc >)
+(ngcgui: FEATURE 240129:19.30.05)
+(ngcgui: files: </home/jmenz/linuxcnc/configs/lathe/ngcgui/lathe/lathe_std.ngc ngcgui/lathe/od.ngc >)
 (ngcgui: feature line added) #<_feature:> = 0
 (ngcgui: remaining_features line added) #<_remaining_features:> = 0
-(ngcgui: preamble file: /home/jmenz/linuxcnc/configs/lathe/ngcgui/lathe/start.ngc)
-;; (c)ArcEye 2011
-;; Licence GPL
-(info: Metric Lathe Initial settings to be used in subsequent operations - run this first)
-o<start> sub
-;; Make all params global so they can be accessed in intermediate subs if necessary
-;; My syntax is #<_lower_case> = global ....  #<UpperCaseFirstLetter> = local
-;; to make it easier to see what the param scope is
-;; the parameters #<_startX> #<_startZ> #<_endZ> #<_endX> MUST be the ones used in subsequent module
-;; if they are not the program will not run correctly
-;; No initial move is made by this module - so it must be programmed as first move in <path1> or separate <move> module inserted
-#<_diameter> = #1       (=33.0 Billet Diameter)
-#<_cut_depth> = #2      (=0.25 Cut Depth)              
-#<_X_finish_cut> = #3   (=0.1 X Finish Cut)           ; if this is set will leave finishing allowance in roughing
-#<_Z_finish_cut> = #4   (=0.1 Z Finish Cut)         
-#<_startX> = #5         (=33 Start X)
-#<_startZ> = #6         (=0.1 Start Z)
-#<_endX> = #7           (=33 End X)
-#<_endZ> = #8           (=-55 End Z)
-#<_clearance> = #9      (=2 Retract Clearance)
-#<_css> = #10           (=0 Mode G97=0 G96=1)
-#<_max_rpm> = #11       (=1000 Max Rpm -G96)
-#<_sfm> = #12           (=0.075 Surface m/Min -G96)
-#<_speed> = #13         (=600 Spindle rpm -G97)
-#<_feed_rate> = #14     (=500 Feed mm/Min -G97)
-#<_finish_speed> = #15  (=800 Finishing rpm)
-#<_finish_feed> = #16   (=75 Finishing feed)
-#<_coolant>= #17        (=7 Coolant Yes=7 No=9)   ;; I have mist not flood
-#<_rotation> = #18      (=4 Rotation M3=3 M4=4)
-#<_spindle_delay> = #19 (=5 Spindle Delay in secs)
-#<_toolpost> = #20      (= Toolpost Front=0  Rear=1)  ;; Need to know what orientation on 'Y' axis X is, because this governs whether
-                                                      ;; G2 or G3 arcs could overcut into billet on early iterations of g71 and g72
-;; set the basics here because lathe_std.ngc does it before every sub which may cancel a setting you want
-g7  (radius mode)
+(ngcgui: preamble file: /home/jmenz/linuxcnc/configs/lathe/ngcgui/lathe/lathe_std.ngc)
 g18 (xz plane)
 g21 (mm)
 g40 (cancel cutter radius compensation)
@@ -43,21 +10,18 @@ g49 (cancel tool lengthoffset)
 g90 (absolute distance mode)
 g94 (units/min feedrate)
 g54 (Coordinate system 1 default)
-o120 if[#<_css> EQ 1]
-    G96 D#<_max_rpm> S#<_sfm>
-o120 else
-    G97 
-    S#<_speed>
-o120 endif
-F#<_feed_rate>
-M#<_rotation>
-o130 if[#<_spindle_delay> GT 0]
-    G4 P#<_spindle_delay>
-o130 endif
-M#<_coolant>
-o<start>endsub
-(ngcgui: call subroutine file: ngcgui/lathe/face.ngc)
+#<tol>  = 0.001
+g64 p#<tol> (path control stop)
+(ngcgui: call subroutine file: ngcgui/lathe/od.ngc)
 (ngcgui: positional parameters:)
-(         #1 =        zeroz =            0)
-o<face> call [0]
+(         #1 = material_dia =         20.0)
+(         #2 =    final_dia =         10.0)
+(         #3 =    depth_cut =         0.10)
+(         #4 = back_travel_offset =         0.10)
+(         #5 = surfacespeed =          100)
+(         #6 =     feedrate =           20)
+(         #7 =      max_rpm =         1500)
+(         #8 =   z_endofcut =            7)
+(         #9 = z_startofcut =         10.0)
+o<od> call [20.0][10.0][0.10][0.10][100][20][1500][7][10.0]
 (ngcgui: m2 line added) m2 (g54 activated)

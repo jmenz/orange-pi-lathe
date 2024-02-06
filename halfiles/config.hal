@@ -5,7 +5,7 @@ loadrt arisc pwm="p,p,f" out="PA12,PC0" encoders=3
 #loadrt near count=1 # NOT sure if I would need it.
 loadrt ilowpass names=lowpass-x,lowpass-z
 
-#loadusr hal_manualtoolchange # NOT sure if I would need it.
+loadusr hal_manualtoolchange # NOT sure if I would need it.
 
 # add RT functions to the servo thread
 addf arisc.gpio.read         servo-thread

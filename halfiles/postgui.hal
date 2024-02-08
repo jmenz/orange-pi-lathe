@@ -1,0 +1,12 @@
+
+
+
+#buttons
+setp arisc.gpio.PE13-pull 1
+setp arisc.gpio.PE12-pull 1
+setp arisc.gpio.PE3-pull 1
+
+
+net cycle_start arisc.gpio.PE13-in => touchy.cycle-start
+net abort arisc.gpio.PE3-in => touchy.abort
+net single_block arisc.gpio.PE12-in => touchy.single-block

@@ -1,7 +1,7 @@
 # spindle setup
 # PC2:PWM,  PC1:DIR,  PC0:EN
 setp arisc.pwm.2.freq-cmd    1000.0 # Hz
-setp arisc.pwm.2.dc-scale    1500.0 # max RPM
+setp arisc.pwm.2.dc-scale    5000.0 # max RPM
 setp arisc.pwm.2.pwm-port    2 # PC
 setp arisc.pwm.2.pwm-pin     2
 setp arisc.pwm.2.pwm-invert  0

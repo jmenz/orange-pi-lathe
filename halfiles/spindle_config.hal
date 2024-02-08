@@ -7,9 +7,10 @@ setp arisc.pwm.2.pwm-pin     2
 setp arisc.pwm.2.pwm-invert  0
 setp arisc.pwm.2.dir-port    2 # PC
 setp arisc.pwm.2.dir-pin     1
-setp arisc.pwm.2.dir-invert  1
+setp arisc.pwm.2.dir-invert  0
 net s-rpm  spindle.0.speed-out  arisc.pwm.2.dc-cmd
-net s-en   spindle.0.on         arisc.pwm.2.enable  arisc.gpio.PC0-out
+net s-en        spindle.0.on         arisc.pwm.2.enable
+net s-reverse   spindle.0.reverse    arisc.gpio.PC0-out-not
 
 #Spindle Encoder
 # PA19:A, PA7:B, PA8:Z(index)

@@ -14,7 +14,7 @@ net s-reverse   spindle.0.reverse    arisc.gpio.PC0-out-not
 
 #Spindle Encoder
 # PA19:A, PA7:B, PA8:Z(index)
-setp arisc.encoder.0.pos-scale  1440 # 360p per phaze, * 2 phaze * 2 front
+setp arisc.encoder.0.pos-scale  3000 #
 setp arisc.encoder.0.A-port     0   # 0=PA
 setp arisc.encoder.0.A-pin      7   # in front of spindle
 setp arisc.encoder.0.B-port     0   # 0=PA
@@ -22,6 +22,7 @@ setp arisc.encoder.0.B-pin      19  # in front of spindle.
 setp arisc.encoder.0.Z-port     0   # 0=PA
 setp arisc.encoder.0.Z-pin      8   #
 setp arisc.encoder.0.enable     1
+setp arisc.encoder.0.simulate-index	1
 
 net s-position     arisc.encoder.0.pos           => spindle.0.revs
 net s-velocity     arisc.encoder.0.vel           => spindle.0.speed-in     #near.0.in2

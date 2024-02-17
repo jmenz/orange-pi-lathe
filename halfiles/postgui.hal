@@ -18,12 +18,12 @@ addf lowpass-t servo-thread
 setp lowpass-t.scale 1000
 setp lowpass-t.gain 0.01
 
-setp arisc.gpio.PE4-pull -1
-setp arisc.gpio.PE7-pull -1
+setp arisc.gpio.PE0-pull -1
+setp arisc.gpio.PE8-pull -1
 setp encoder.0.x4-mode 1
 
-# PE4:A, PE7:B
-net mpg-a encoder.0.phase-A <= arisc.gpio.PE4-in
-net mpg-b encoder.0.phase-B <= arisc.gpio.PE7-in
+# PE0:A, PE8:B
+net mpg-a encoder.0.phase-A <= arisc.gpio.PE0-in
+net mpg-b encoder.0.phase-B <= arisc.gpio.PE8-in
 
 net touchy-wheel-counts encoder.0.counts => lowpass-t.in touchy.wheel-counts

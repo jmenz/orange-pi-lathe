@@ -1,19 +1,23 @@
 # load RT components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt arisc pwm="p,p,f" out="PA12,PC0,PC1" in=PE13,PE12,PE3 encoders=3
+loadrt arisc pwm="p,p,f" out="PA12,PC0,PC1,PE15" in="PE13,PE12,PE3,PE4,PE7" encoders=3
+loadrt ilowpass names=lowpass-x,lowpass-z,lowpass-t
+loadrt encoder num_chan=1
 #loadrt near count=1 # NOT sure if I would need it.
 
 loadusr hal_manualtoolchange # NOT sure if I would need it.
 
 # add RT functions to the servo thread
-addf arisc.gpio.read         servo-thread
-addf arisc.pwm.read          servo-thread
-addf motion-command-handler  servo-thread
-addf motion-controller       servo-thread
-addf arisc.gpio.write        servo-thread
-addf arisc.pwm.write         servo-thread
-addf arisc.encoder.read      servo-thread
+addf arisc.gpio.read          servo-thread
+addf arisc.pwm.read           servo-thread
+addf motion-command-handler   servo-thread
+addf motion-controller        servo-thread
+addf arisc.gpio.write         servo-thread
+addf arisc.pwm.write          servo-thread
+addf arisc.encoder.read       servo-thread
+addf encoder.capture-position servo-thread
+addf encoder.update-counters  base-thread
 #addf near.0                  servo-thread
 
 

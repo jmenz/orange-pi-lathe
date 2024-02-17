@@ -1,6 +1,5 @@
 
-
-#buttons
+######## BUTTONS
 setp arisc.gpio.PE13-pull 1
 setp arisc.gpio.PE12-pull 1
 setp arisc.gpio.PE3-pull 1
@@ -9,3 +8,22 @@ setp arisc.gpio.PE3-pull 1
 net cycle_start arisc.gpio.PE13-in => touchy.cycle-start
 net abort arisc.gpio.PE3-in => touchy.abort
 net single_block arisc.gpio.PE12-in => touchy.single-block
+
+######### INDICATOR
+net program-status-indicator touchy.status-indicator arisc.gpio.PE15-out
+
+
+########## WHEEL
+addf lowpass-t servo-thread
+setp lowpass-t.scale 1000
+setp lowpass-t.gain 0.01
+
+setp arisc.gpio.PE4-pull -1
+setp arisc.gpio.PE7-pull -1
+setp encoder.0.x4-mode 1
+
+# PE4:A, PE7:B
+net mpg-a encoder.0.phase-A <= arisc.gpio.PE4-in
+net mpg-b encoder.0.phase-B <= arisc.gpio.PE7-in
+
+net touchy-wheel-counts encoder.0.counts => lowpass-t.in touchy.wheel-counts

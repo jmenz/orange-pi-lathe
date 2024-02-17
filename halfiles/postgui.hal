@@ -1,6 +1,5 @@
 
 
-
 #buttons
 setp arisc.gpio.PE13-pull 1
 setp arisc.gpio.PE12-pull 1

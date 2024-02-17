@@ -1,3 +1,8 @@
+loadrt ilowpass names=lowpass-x,lowpass-z
+
+addf lowpass-x               servo-thread
+addf lowpass-z               servo-thread
+
 #Manual Encoders:
 
 #MPG X

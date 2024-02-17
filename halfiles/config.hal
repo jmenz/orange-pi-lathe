@@ -3,7 +3,6 @@ loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
 loadrt arisc pwm="p,p,f" out="PA12,PC0,PC1" in=PE13,PE12,PE3 encoders=3
 #loadrt near count=1 # NOT sure if I would need it.
-loadrt ilowpass names=lowpass-x,lowpass-z
 
 loadusr hal_manualtoolchange # NOT sure if I would need it.
 
@@ -16,8 +15,6 @@ addf arisc.gpio.write        servo-thread
 addf arisc.pwm.write         servo-thread
 addf arisc.encoder.read      servo-thread
 #addf near.0                  servo-thread
-addf lowpass-x               servo-thread
-addf lowpass-z               servo-thread
 
 
 # other IO setup

@@ -82,7 +82,7 @@ invisible = gtk.gdk.Cursor(pix, pix, color, color, 0, 0)
 class touchy:
         def __init__(self, inifile):
 		# System default Glade file:
-                self.gladefile = "touchy_jmenz.glade"
+                self.gladefile = os.path.join(datadir, "touchy.glade")
                 if inifile:
                         self.ini = linuxcnc.ini(inifile)
                         alternate_gladefile = self.ini.find("DISPLAY", "GLADEFILE")

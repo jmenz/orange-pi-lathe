@@ -1,6 +1,8 @@
 
 addf lowpass-x               servo-thread
 addf lowpass-z               servo-thread
+addf mux8.0                  servo-thread
+addf mux8.1                  servo-thread
 
 #Manual Encoders:
 
@@ -15,14 +17,28 @@ setp arisc.encoder.1.enable     1
 
 setp lowpass-x.scale 1000
 setp lowpass-x.gain 0.01
-setp axis.x.jog-scale 0.01 # This will be needed to be set from some buttons
 
 net jog-wheel-counts-x lowpass-x.in <= arisc.encoder.1.counts
 net jog-wheel-counts-x => joint.0.jog-counts => axis.x.jog-counts
 net jog-enable-x <= arisc.encoder.1.enable
 net jog-enable-x => joint.0.jog-enable => axis.x.jog-enable
-net jog-wheel-scale-x <= axis.x.jog-scale
-net jog-wheel-scale-x => joint.0.jog-scale
+
+#Switch X
+setp arisc.gpio.PE9-pull 1
+setp arisc.gpio.PE10-pull 1
+setp arisc.gpio.PE11-pull 1
+
+setp mux8.0.in0 1
+setp mux8.0.in1 0.1
+setp mux8.0.in2 0.01
+setp mux8.0.in4 0.001
+
+net jog-wheel-x-scale1 mux8.0.sel0 <= arisc.gpio.PE11-in-not
+net jog-wheel-x-scale2 mux8.0.sel1 <= arisc.gpio.PE10-in-not
+net jog-wheel-x-scale3 mux8.0.sel2 <= arisc.gpio.PE9-in-not
+
+net jog-wheel-scale-x <= axis.x.jog-scale => joint.0.jog-scale <= mux8.0.out
+
 
 #MPG Z
 # PE:4, PE7:B

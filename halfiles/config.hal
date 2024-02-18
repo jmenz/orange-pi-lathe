@@ -1,8 +1,9 @@
 # load RT components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt arisc pwm="p,p,f" out="PA12,PC0,PC1,PE15" in="PE13,PE12,PE3,PE0,PE8" encoders=3
+loadrt arisc pwm="p,p,f" out="PA12,PC0,PC1,PE15" in="PE0,PE3,PE8,PE9,PE10,PE11,PE12,PE13" encoders=3
 loadrt ilowpass names=lowpass-x,lowpass-z,lowpass-t
+loadrt mux8 count=2
 loadrt encoder num_chan=1
 #loadrt near count=1 # NOT sure if I would need it.
 

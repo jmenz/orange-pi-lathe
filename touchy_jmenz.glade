@@ -3642,61 +3642,6 @@ F1 S1</property>
                           <widget class="GtkHBox" id="wheel_hbox">
                             <property name="visible">True</property>
                             <child>
-                              <widget class="GtkTable" id="table24">
-                                <property name="visible">True</property>
-                                <property name="border_width">5</property>
-                                <property name="n_rows">3</property>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelinc1">
-                                    <property name="label" translatable="yes">.01</property>
-                                    <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="active">True</property>
-                                    <signal name="clicked" handler="on_wheelinc1_clicked"/>
-                                  </widget>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelinc2">
-                                    <property name="label" translatable="yes">.001</property>
-                                    <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <signal name="clicked" handler="on_wheelinc2_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelinc3">
-                                    <property name="label" translatable="yes">.0001</property>
-                                    <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <signal name="clicked" handler="on_wheelinc3_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="top_attach">2</property>
-                                    <property name="bottom_attach">3</property>
-                                  </packing>
-                                </child>
-                              </widget>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkTable" id="axis_table">
                                 <property name="visible">True</property>
                                 <property name="border_width">5</property>
@@ -3705,7 +3650,7 @@ F1 S1</property>
                                 <property name="homogeneous">True</property>
                                 <child>
                                   <widget class="GtkToggleButton" id="wheelx">
-                                    <property name="label" translatable="yes">  X1  </property>
+                                    <property name="label" translatable="yes">  X  </property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>

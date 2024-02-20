@@ -18,6 +18,10 @@ libdir = os.path.join(BASE, "lib", "python")
 datadir = os.path.join(BASE, "share", "linuxcnc")
 sys.path.insert(0, libdir)
 themedir = "/usr/share/themes"
+
+custom_lib_path = './touchy/'
+sys.path.append(os.path.dirname(custom_lib_path))
+
 try:
         import pygtk
   	pygtk.require("2.0")
@@ -61,12 +65,12 @@ def set_text(w, t):
 	if ot != t: w.set_label(t)
 
 import linuxcnc
-from touchy import emc_interface
-from touchy import mdi
-from touchy import hal_interface
-from touchy import filechooser
-from touchy import listing
-from touchy import preferences
+from t_lib import emc_interface
+from t_lib import mdi
+from t_lib import hal_interface
+from t_lib import filechooser
+from t_lib import listing
+from t_lib import preferences
 
 pix_data = '''/* XPM */
 static char * invisible_xpm[] = {
@@ -657,7 +661,7 @@ class touchy:
                 self.mdi_control.o(b)
 
         def fileselect(self, eb, e):
-                if self.wheel == "jogging": self.wheel = "mv"
+                if self.wheel == "jogging": self.wheel = "scrolling"
                 self.jogsettings_activate(1)
                 self.current_file = self.filechooser.select(eb, e)
                 self.listing.clear_startline()

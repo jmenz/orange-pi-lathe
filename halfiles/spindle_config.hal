@@ -1,26 +1,27 @@
 # spindle setup
-# PC2:PWM,  PC1:FORWARD,  PC0:REWERSE
+# PA3:PWM,  PA0:FORWARD,  PA1:REWERSE
 setp arisc.pwm.2.freq-cmd    1000.0 # Hz
 setp arisc.pwm.2.dc-scale    5000.0 # max RPM
-setp arisc.pwm.2.pwm-port    2 # PC
-setp arisc.pwm.2.pwm-pin     2
+setp arisc.pwm.2.pwm-port    0  # 0=PA
+setp arisc.pwm.2.pwm-pin     3
 setp arisc.pwm.2.pwm-invert  0
-setp arisc.pwm.2.dir-port    2 # PC
-setp arisc.pwm.2.dir-pin     1
+setp arisc.pwm.2.dir-port    0  # 0=PA
+setp arisc.pwm.2.dir-pin     4
 setp arisc.pwm.2.dir-invert  0
 net s-rpm  spindle.0.speed-out  arisc.pwm.2.dc-cmd
 net s-en        spindle.0.on         arisc.pwm.2.enable
-net s-reverse   spindle.0.reverse    arisc.gpio.PC0-out-not
+net s-forward   spindle.0.forward    arisc.gpio.PA0-out
+net s-reverse   spindle.0.reverse    arisc.gpio.PA1-out
 
 #Spindle Encoder
-# PA19:B, PA7:A, PA8:Z(index)
-setp arisc.encoder.0.pos-scale  3000 #
-setp arisc.encoder.0.A-port     0   # 0=PA
-setp arisc.encoder.0.A-pin      7   # in front of spindle
-setp arisc.encoder.0.B-port     0   # 0=PA
-setp arisc.encoder.0.B-pin      19  # in front of spindle.
-setp arisc.encoder.0.Z-port     0   # 0=PA
-setp arisc.encoder.0.Z-pin      8   #
+# PC0:B, PC1:A, PC2:Z(index)
+setp arisc.encoder.0.pos-scale  4000 #
+setp arisc.encoder.0.A-port     2   # 2=PC
+setp arisc.encoder.0.A-pin      1   # in front of spindle
+setp arisc.encoder.0.B-port     2   # 2=PC
+setp arisc.encoder.0.B-pin      0  # in front of spindle.
+setp arisc.encoder.0.Z-port     2   # 2=PC
+setp arisc.encoder.0.Z-pin      2   #
 setp arisc.encoder.0.enable     1
 setp arisc.encoder.0.simulate-index	1
 

@@ -27,3 +27,17 @@ net mpg-a encoder.0.phase-A <= arisc.gpio.PA10-in
 net mpg-b encoder.0.phase-B <= arisc.gpio.PA20-in
 
 net touchy-wheel-counts encoder.0.counts => lowpass-t.in touchy.wheel-counts
+
+######### WHEELRESET
+setp arisc.gpio.PA9-pull 1
+net wheelreset arisc.gpio.PA9-in-not touchy.wheel-reset
+
+
+#JOISTICK
+
+#Axic Z
+setp arisc.gpio.PE2-pull 1
+setp arisc.gpio.PE3-pull 1
+
+net z-jog-continious-plus arisc.gpio.PE2-in touchy.jog.continuous.z.positive
+net z-jog-continious-minus arisc.gpio.PE3-in touchy.jog.continuous.z.negative

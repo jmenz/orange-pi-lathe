@@ -689,7 +689,7 @@ class touchy:
                 # Show effect of external override inputs
                 self.fo_val = s.feedrate * 100
                 self.so_val = s.spindle[0]['override'] * 100
-                self.mv_val = s.max_velocity * 60
+                self.mv_val = s.max_velocity
                 am = s.axis_mask
                 if not self.resized_wheelbuttons:
                         at = self.wTree.get_widget("axis_table")
@@ -734,31 +734,50 @@ class touchy:
 
                 d = self.hal.wheel()
                 if self.wheel == "fo":
+                    if self.hal.wheelreset:
+                        self.fo_val = 100
+                        self.linuxcnc.feed_override(self.fo_val)
+                    else:
                         self.fo_val += d
                         if self.fo_val < 0: self.fo_val = 0
+
+                        max_feed_override = float(self.ini.find("DISPLAY", "MAX_FEED_OVERRIDE")) * 100
+                        if self.fo_val > max_feed_override: self.fo_val = max_feed_override
                         if d != 0: self.linuxcnc.feed_override(self.fo_val)
 
                 if self.wheel == "so":
+                    if self.hal.wheelreset:
+                        self.so_val = 100
+                        self.linuxcnc.spindle_override(self.so_val)
+                    else:
                         self.so_val += d
                         if self.so_val < 0: self.so_val = 0
+
+                        max_spindle_override = float(self.ini.find("DISPLAY", "MAX_SPINDLE_OVERRIDE")) * 100
+                        if self.so_val > max_spindle_override: self.so_val = max_spindle_override
                         if d != 0: self.linuxcnc.spindle_override(self.so_val)
 
                 if self.wheel == "mv":
-                        if self.machine_units_mm:
-                                self.mv_val += 20 * d
-                        else:
-                                self.mv_val += d
+                    if self.hal.wheelreset:
+                        self.mv_val = float(self.ini.find("DISPLAY", "DEFAULT_LINEAR_VELOCITY"))
+                        self.linuxcnc.max_velocity(self.mv_val)#need to split here
+                        self.linuxcnc.continuous_jog_velocity(self.mv_val)
+                    else:
+                        increment = float(d) / 4
+                        self.mv_val += increment
+                        VELOCITY_LIMIT = float(self.ini.find("DISPLAY", "MAX_LINEAR_VELOCITY"))
                         if self.mv_val < 0: self.mv_val = 0
+                        if self.mv_val > VELOCITY_LIMIT: self.mv_val = VELOCITY_LIMIT
                         if d != 0:
-                                self.linuxcnc.max_velocity(self.mv_val)
-                                self.linuxcnc.continuous_jog_velocity(self.mv_val)
+                            self.linuxcnc.max_velocity(self.mv_val)#need to split here
+                            self.linuxcnc.continuous_jog_velocity(self.mv_val)
                         
 		if self.wheel == "scrolling":
 			d0 = d * 10 ** (2-self.wheelinc)
 			if d != 0: self.listing.next(None, d0)
                 set_label(self.wTree.get_widget("fo").child, "FO: %d%%" % self.fo_val)
                 set_label(self.wTree.get_widget("so").child, "SO: %d%%" % self.so_val)
-                set_label(self.wTree.get_widget("mv").child, "MV: %d" % self.mv_val)
+                set_label(self.wTree.get_widget("mv").child, "MV: %.2f" % self.mv_val)
 
                         
                 return True

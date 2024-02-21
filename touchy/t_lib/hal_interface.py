@@ -82,6 +82,8 @@ class hal_interface:
         self.abort = 0
         self.c.newpin("single-block", hal.HAL_BIT, hal.HAL_IN)
         self.singleblock = 0
+        self.c.newpin("wheel-reset", hal.HAL_BIT, hal.HAL_IN)
+        self.wheelreset = 0
         self.c.newpin("wheel-counts", hal.HAL_S32, hal.HAL_IN)
         self.counts = 0
         self.jog_velocity = 1
@@ -208,6 +210,8 @@ class hal_interface:
         abort = self.c["abort"]
         if abort and not self.abort: self.emc_control.abort()
         self.abort = abort
+
+        self.wheelreset = self.c["wheel-reset"]
 
         self.emc_stat.poll()
         self.c["jog.active"] = self.emc_stat.task_mode == self.emc.MODE_MANUAL

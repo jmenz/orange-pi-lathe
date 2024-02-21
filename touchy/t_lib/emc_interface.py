@@ -21,7 +21,7 @@ class emc_control:
                 self.emccommand = emc.command()
                 self.masked = 0;
                 self.sb = 0;
-                self.jog_velocity = 100.0/60.0
+                self.jog_velocity = 10
                 self.mdi = 0
                 self.listing = listing
                 self.error = error
@@ -147,13 +147,14 @@ class emc_control:
 
         def continuous_jog_velocity(self, velocity):
                 self.set_motion_mode()
-                self.jog_velocity = velocity / 60.0
+                self.jog_velocity = velocity
                 for i in range(9):
                         if self.isjogging[i]:
                                 self.emccommand.jog(self.emc.JOG_CONTINUOUS
                                 ,0 ,i ,self.isjogging[i] * self.jog_velocity)
         
         def continuous_jog(self, axis, direction):
+                print(axis)
                 if self.masked: return
                 self.set_motion_mode()
                 if direction == 0:
@@ -181,7 +182,7 @@ class emc_control:
 
         def max_velocity(self, m):
                 if self.masked: return
-                self.emccommand.maxvel(m/60.0)
+                self.emccommand.maxvel(m)
 
         def reload_tooltable(self, b):
                 if self.masked: return

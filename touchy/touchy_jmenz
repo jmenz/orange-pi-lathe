@@ -713,7 +713,7 @@ class touchy:
                 set_active(self.wTree.get_widget("fo"), self.wheel == "fo")
                 set_active(self.wTree.get_widget("so"), self.wheel == "so")
                 set_active(self.wTree.get_widget("mv"), self.wheel == "mv")
-                set_active(self.wTree.get_widget("manual_mode"), self.wheel == "")#activate when manual
+                set_active(self.wTree.get_widget("manual_mode"), self.status.is_manual_mode == 1)#activate when manual
                 set_active(self.wTree.get_widget("scrolling"), self.wheel == "scrolling")
                 set_active(self.wTree.get_widget("pointer_show"), not self.invisible_cursor)
                 set_active(self.wTree.get_widget("pointer_hide"), self.invisible_cursor)
@@ -749,8 +749,8 @@ class touchy:
                 if self.wheel == "mv":
                     if self.hal.wheelreset:
                         self.mv_val = float(self.ini.find("DISPLAY", "DEFAULT_LINEAR_VELOCITY"))
-                        self.linuxcnc.max_velocity(self.mv_val)#need to split here
-                        self.linuxcnc.continuous_jog_velocity(self.mv_val)
+                        self.linuxcnc.max_velocity(self.mv_val)
+                        self.linuxcnc.continuous_jog_velocity(self.mv_val)#todo move to jog velosity function
                     else:
                         increment = float(d) / 4
                         self.mv_val += increment
@@ -758,7 +758,7 @@ class touchy:
                         if self.mv_val < 0: self.mv_val = 0
                         if self.mv_val > VELOCITY_LIMIT: self.mv_val = VELOCITY_LIMIT
                         if d != 0:
-                            self.linuxcnc.max_velocity(self.mv_val)#need to split here
+                            self.linuxcnc.max_velocity(self.mv_val)#todo move to jog velosity function
                             self.linuxcnc.continuous_jog_velocity(self.mv_val)
                         
 		if self.wheel == "scrolling":

@@ -272,6 +272,8 @@ class emc_status:
                 self.actual = 0
                 self.emcstat = emc.stat()
                 self.emcerror = emc.error_channel()
+                
+                self.is_manual_mode = 0
 
         def dro_inch(self, b):
                 self.mm = 0
@@ -311,6 +313,7 @@ class emc_status:
                 am = self.emcstat.axis_mask
                 lathe = not (self.emcstat.axis_mask & 2)
                 dtg = self.emcstat.dtg
+                self.is_manual_mode = self.emcstat.task_mode == self.emc.MODE_MANUAL
 
                 if not self.resized_dro:
                         height = 9

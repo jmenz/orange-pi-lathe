@@ -5,7 +5,7 @@
   <widget class="GtkWindow" id="MainWindow">
     <property name="visible">True</property>
     <property name="title" translatable="yes">LinuxCNC/Touchy</property>
-    <property name="default_width">800</property>
+    <property name="default_width">1024</property>
     <property name="default_height">600</property>
     <accessibility>
       <atkproperty name="AtkObject::accessible-name" translatable="yes" comments=" # Touchy is Copyright (c) 2009-2015  Chris Radek &lt;chris@timeguy.com&gt; # # Touchy is free software: you can redistribute it and/or modify # it under the terms of the GNU General Public License as published by # the Free Software Foundation, either version 2 of the License, or # (at your option) any later version. # # Touchy is distributed in the hope that it will be useful, # but WITHOUT ANY WARRANTY; without even the implied warranty of # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the # GNU General Public License for more details. ">window1</atkproperty>
@@ -554,7 +554,7 @@
                                     <property name="visible">True</property>
                                     <property name="border_width">5</property>
                                     <property name="n_rows">2</property>
-                                    <property name="n_columns">2</property>
+                                    <property name="n_columns">3</property>
                                     <property name="column_spacing">15</property>
                                     <property name="homogeneous">True</property>
                                     <child>
@@ -611,6 +611,40 @@
                                       <packing>
                                         <property name="left_attach">1</property>
                                         <property name="right_attach">2</property>
+                                        <property name="top_attach">1</property>
+                                        <property name="bottom_attach">2</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkToggleButton" id="wheelx">
+                                        <property name="label" translatable="yes">  X  </property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <property name="active">True</property>
+                                        <signal name="clicked" handler="on_wheelx_clicked"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="left_attach">2</property>
+                                        <property name="right_attach">3</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkToggleButton" id="wheelz">
+                                        <property name="label" translatable="yes">  Z  </property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <property name="active">True</property>
+                                        <signal name="clicked" handler="on_wheelz_clicked"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="left_attach">2</property>
+                                        <property name="right_attach">3</property>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                       </packing>
@@ -1417,48 +1451,6 @@
                                     <property name="n_columns">2</property>
                                     <property name="column_spacing">15</property>
                                     <property name="homogeneous">True</property>
-                                    <child>
-                                      <widget class="GtkToggleButton" id="spindle_forward">
-                                        <property name="label" translatable="yes">Spindle Forward</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <signal name="clicked" handler="on_spindle_forward_clicked"/>
-                                      </widget>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkToggleButton" id="spindle_reverse">
-                                        <property name="label" translatable="yes">Spindle Reverse</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <signal name="clicked" handler="on_spindle_reverse_clicked"/>
-                                      </widget>
-                                      <packing>
-                                        <property name="top_attach">2</property>
-                                        <property name="bottom_attach">3</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkToggleButton" id="spindle_off">
-                                        <property name="label" translatable="yes">Spindle Off</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <property name="active">True</property>
-                                        <signal name="clicked" handler="on_spindle_off_clicked"/>
-                                      </widget>
-                                      <packing>
-                                        <property name="top_attach">1</property>
-                                        <property name="bottom_attach">2</property>
-                                      </packing>
-                                    </child>
                                     <child>
                                       <widget class="GtkButton" id="spindle_faster">
                                         <property name="label" translatable="yes">Spindle Faster</property>
@@ -3547,7 +3539,7 @@ F1 S1</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkFrame" id="wheel">
+              <widget class="GtkFrame" id="controls">
                 <property name="visible">True</property>
                 <property name="border_width">5</property>
                 <property name="label_xalign">0</property>
@@ -3642,161 +3634,55 @@ F1 S1</property>
                           <widget class="GtkHBox" id="wheel_hbox">
                             <property name="visible">True</property>
                             <child>
-                              <widget class="GtkTable" id="axis_table">
+                              <widget class="GtkTable" id="spindle_control">
                                 <property name="visible">True</property>
                                 <property name="border_width">5</property>
                                 <property name="n_rows">3</property>
-                                <property name="n_columns">3</property>
-                                <property name="homogeneous">True</property>
                                 <child>
-                                  <widget class="GtkToggleButton" id="wheelx">
-                                    <property name="label" translatable="yes">  X  </property>
+                                  <widget class="GtkToggleButton" id="spindle_forward">
+                                    <property name="label" translatable="yes">Spindle Forward</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="use_underline">True</property>
                                     <property name="focus_on_click">False</property>
-                                    <property name="active">True</property>
-                                    <signal name="clicked" handler="on_wheelx_clicked"/>
-                                  </widget>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheely">
-                                    <property name="label" translatable="yes">  Y  </property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <signal name="clicked" handler="on_wheely_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelz">
-                                    <property name="label" translatable="yes">  Z  </property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <signal name="clicked" handler="on_wheelz_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="top_attach">2</property>
-                                    <property name="bottom_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheela">
-                                    <property name="label" translatable="yes">  A  </property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="active">True</property>
-                                    <signal name="clicked" handler="on_wheela_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelb">
-                                    <property name="label" translatable="yes">  B  </property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="active">True</property>
-                                    <signal name="clicked" handler="on_wheelb_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelc">
-                                    <property name="label" translatable="yes">  C  </property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="active">True</property>
-                                    <signal name="clicked" handler="on_wheelc_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="right_attach">2</property>
-                                    <property name="top_attach">2</property>
-                                    <property name="bottom_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelu">
-                                    <property name="label" translatable="yes">  U  </property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="active">True</property>
-                                    <signal name="clicked" handler="on_wheelu_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="right_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelv">
-                                    <property name="label" translatable="yes">  V  </property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="active">True</property>
-                                    <signal name="clicked" handler="on_wheelv_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="right_attach">3</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkToggleButton" id="wheelw">
-                                    <property name="label" translatable="yes">  W  </property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="focus_on_click">False</property>
-                                    <property name="active">True</property>
-                                    <signal name="clicked" handler="on_wheelw_clicked"/>
-                                  </widget>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="right_attach">3</property>
-                                    <property name="top_attach">2</property>
-                                    <property name="bottom_attach">3</property>
-                                  </packing>
-                                </child>
+                                    <signal name="clicked" handler="on_spindle_forward_clicked"/>
+                                    </widget>
+                                  </child>
+                                  <child>
+                                    <widget class="GtkToggleButton" id="spindle_reverse">
+                                      <property name="label" translatable="yes">Spindle Reverse</property>
+                                      <property name="visible">True</property>
+                                      <property name="can_focus">True</property>
+                                      <property name="receives_default">False</property>
+                                      <property name="use_underline">True</property>
+                                      <property name="focus_on_click">False</property>
+                                      <signal name="clicked" handler="on_spindle_reverse_clicked"/>
+                                    </widget>
+                                    <packing>
+                                      <property name="top_attach">2</property>
+                                      <property name="bottom_attach">3</property>
+                                    </packing>
+                                  </child>
+                                  <child>
+                                    <widget class="GtkToggleButton" id="spindle_off">
+                                      <property name="label" translatable="yes">Spindle Off</property>
+                                      <property name="visible">True</property>
+                                      <property name="can_focus">True</property>
+                                      <property name="receives_default">False</property>
+                                      <property name="use_underline">True</property>
+                                      <property name="focus_on_click">False</property>
+                                      <property name="active">True</property>
+                                      <signal name="clicked" handler="on_spindle_off_clicked"/>
+                                    </widget>
+                                    <packing>
+                                      <property name="top_attach">1</property>
+                                      <property name="bottom_attach">2</property>
+                                    </packing>
+                                  </child>
                               </widget>
                               <packing>
-                                <property name="position">1</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                           </widget>
@@ -3811,7 +3697,7 @@ F1 S1</property>
                 <child>
                   <widget class="GtkLabel" id="label1">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Handwheel&lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Controls&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </widget>
                   <packing>

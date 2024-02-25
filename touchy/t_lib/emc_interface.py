@@ -314,6 +314,7 @@ class emc_status:
                 lathe = not (self.emcstat.axis_mask & 2)
                 dtg = self.emcstat.dtg
                 self.is_manual_mode = self.emcstat.task_mode == self.emc.MODE_MANUAL
+                self.is_program_executing = self.emcstat.state == self.emc.RCS_EXEC
 
                 if not self.resized_dro:
                         height = 9

@@ -3606,14 +3606,14 @@ F1 S1</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkToggleButton" id="jogging">
-                                <property name="label" translatable="yes">Jogging</property>
+                              <widget class="GtkToggleButton" id="manual_mode">
+                                <property name="label" translatable="yes">Manual</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="focus_on_click">False</property>
-                                <signal name="clicked" handler="on_jogging_clicked"/>
+                                <signal name="clicked" handler="on_manual_clicked"/>
                               </widget>
                               <packing>
                                 <property name="position">3</property>

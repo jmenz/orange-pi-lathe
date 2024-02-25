@@ -1,10 +1,11 @@
 # load RT components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt arisc pwm="p,p,f" out="PA0,PA1,PA12,PC1,PG8" in="PA9,PA10,PA20,PE2,PE3,PE9,PE10,PE11,PG6,PG7,PG9" encoders=3
+loadrt arisc pwm="p,p,f" out="PA0,PA1,PA12,PC1,PG8" in="PA9,PA8,PA10,PA20,PE2,PE3,PE9,PE10,PE11,PG6,PG7,PG9" encoders=3
 loadrt ilowpass names=lowpass-x,lowpass-z,lowpass-t
 loadrt mux8 count=2
 loadrt encoder num_chan=1
+loadrt estop_latch
 #loadrt near count=1 # NOT sure if I would need it.
 
 loadusr hal_manualtoolchange # NOT sure if I would need it.
@@ -23,4 +24,5 @@ addf encoder.update-counters  base-thread
 
 
 # other IO setup
-net estop  iocontrol.0.user-enable-out  iocontrol.0.emc-enable-in
+setp arisc.gpio.PA8-pull 1
+net estop arisc.gpio.PA8-in => iocontrol.0.emc-enable-in

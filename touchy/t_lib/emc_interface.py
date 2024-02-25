@@ -42,6 +42,10 @@ class emc_control:
         def unmask(self):
                 self.masked = 0
 
+        def is_mode_manual(self):
+                self.emcstat.poll()
+                return self.emcstat.task_state == self.emc.MODE_MANUAL
+
         def mist_on(self, b):
                 if self.masked: return
                 self.emccommand.mist(1)
@@ -105,7 +109,7 @@ class emc_control:
                 joint = coordinates.index("XYZABCUVW"[axis])
                 self.emccommand.unhome(joint)
 
-        def jogging(self, b):
+        def set_manual_mode(self, b):
                 if self.masked: return
                 self.emccommand.mode(self.emc.MODE_MANUAL)
 
@@ -155,6 +159,7 @@ class emc_control:
         
         def continuous_jog(self, axis, direction):
                 if self.masked: return
+                self.emccommand.mode(self.emc.MODE_MANUAL)
                 self.set_motion_mode()
                 if direction == 0:
                         self.isjogging[axis] = 0

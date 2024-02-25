@@ -200,7 +200,6 @@ class hal_interface:
         cyclestart = self.c["cycle-start"]
         if cyclestart and not self.cyclestart:
             if self.gui.wheel == "jogging": self.gui.wheel = "mv"
-            self.gui.jogsettings_activate(0)
             if mdi_mode:
                 if not self.singleblock: self.mdi_control.ok(0)
             else:

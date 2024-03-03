@@ -9,6 +9,9 @@ net cycle_start arisc.gpio.PG7-in => touchy.cycle-start
 net abort arisc.gpio.PG6-in => touchy.abort
 net single_block arisc.gpio.PG9-in => touchy.single-block
 
+net s-position => touchy.spindle-pos
+net s-velocity => touchy.spindle-velocity
+
 ######### INDICATOR
 net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out
 

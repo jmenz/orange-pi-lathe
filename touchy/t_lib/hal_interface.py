@@ -86,11 +86,16 @@ class hal_interface:
         self.wheelreset = 0
         self.c.newpin("wheel-counts", hal.HAL_S32, hal.HAL_IN)
         self.counts = 0
+        self.c.newpin("spindle-pos", hal.HAL_FLOAT, hal.HAL_IN)
+        self.spindle_pos = 0
+        self.c.newpin("spindle-velocity", hal.HAL_FLOAT, hal.HAL_IN)
+        self.spindle_velocity = 0
+
         self.jog_velocity = 1
         self.c.ready()
         self.active = 0
         self.jogaxis(0)
-
+        
     def wheel(self):
         counts = self.c["wheel-counts"]/4
         ret = counts - self.counts
@@ -211,6 +216,11 @@ class hal_interface:
         self.abort = abort
 
         self.wheelreset = self.c["wheel-reset"]
+        self.spindle_velocity = self.c["spindle-velocity"] * 60
+        if self.spindle_velocity < 100:
+            self.spindle_pos = 360 * (self.c["spindle-pos"] % 1)
+        else:
+            self.spindle_pos = 0
 
         self.emc_stat.poll()
         self.c["jog.active"] = self.emc_stat.task_mode == self.emc.MODE_MANUAL

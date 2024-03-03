@@ -24,7 +24,7 @@
                   <widget class="GtkTable" id="dro_table">
                     <property name="visible">True</property>
                     <property name="n_rows">10</property>
-                    <property name="n_columns">3</property>
+                    <property name="n_columns">4</property>
                     <child>
                       <widget class="GtkLabel" id="xa">
                         <property name="visible">True</property>
@@ -156,6 +156,57 @@
                         <property name="justify">right</property>
                       </widget>
                       <packing>
+                        <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="spindle_stat">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Spindle</property>
+                        <property name="justify">right</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
+                        <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="sp_commanded">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Set</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                        <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="sp_current">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Current</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
+                        <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="sp_angle">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Angle</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">3</property>
+                        <property name="right_attach">4</property>
+                        <property name="top_attach">3</property>
+                        <property name="bottom_attach">4</property>
                         <property name="y_options"></property>
                       </packing>
                     </child>
@@ -3598,20 +3649,6 @@ F1 S1</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkToggleButton" id="manual_mode">
-                                <property name="label" translatable="yes">Manual</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="focus_on_click">False</property>
-                                <signal name="clicked" handler="on_manual_clicked"/>
-                              </widget>
-                              <packing>
-                                <property name="position">3</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkToggleButton" id="scrolling">
                                 <property name="label" translatable="yes">Start Point</property>
                                 <property name="visible">True</property>
@@ -3620,6 +3657,20 @@ F1 S1</property>
                                 <property name="use_underline">True</property>
                                 <property name="focus_on_click">False</property>
                                 <signal name="clicked" handler="on_scrolling_clicked"/>
+                              </widget>
+                              <packing>
+                                <property name="position">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkToggleButton" id="manual_mode">
+                                <property name="label" translatable="yes">Manual</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="focus_on_click">False</property>
+                                <signal name="clicked" handler="on_manual_clicked"/>
                               </widget>
                               <packing>
                                 <property name="position">4</property>
@@ -3631,55 +3682,62 @@ F1 S1</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkHBox" id="wheel_hbox">
+                          <widget class="GtkHBox" id="spindle_hbox">
                             <property name="visible">True</property>
                             <child>
                               <widget class="GtkTable" id="spindle_control">
                                 <property name="visible">True</property>
                                 <property name="border_width">5</property>
-                                <property name="n_rows">3</property>
+                                <property name="n_rows">2</property>
                                 <child>
-                                  <widget class="GtkToggleButton" id="spindle_forward">
-                                    <property name="label" translatable="yes">Spindle Forward</property>
+                                  <widget class="GtkToggleButton" id="spindle_off">
+                                    <property name="label" translatable="yes">Spindle Off</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="use_underline">True</property>
                                     <property name="focus_on_click">False</property>
-                                    <signal name="clicked" handler="on_spindle_forward_clicked"/>
-                                    </widget>
-                                  </child>
-                                  <child>
-                                    <widget class="GtkToggleButton" id="spindle_reverse">
-                                      <property name="label" translatable="yes">Spindle Reverse</property>
-                                      <property name="visible">True</property>
-                                      <property name="can_focus">True</property>
-                                      <property name="receives_default">False</property>
-                                      <property name="use_underline">True</property>
-                                      <property name="focus_on_click">False</property>
-                                      <signal name="clicked" handler="on_spindle_reverse_clicked"/>
-                                    </widget>
-                                    <packing>
-                                      <property name="top_attach">2</property>
-                                      <property name="bottom_attach">3</property>
-                                    </packing>
-                                  </child>
-                                  <child>
-                                    <widget class="GtkToggleButton" id="spindle_off">
-                                      <property name="label" translatable="yes">Spindle Off</property>
-                                      <property name="visible">True</property>
-                                      <property name="can_focus">True</property>
-                                      <property name="receives_default">False</property>
-                                      <property name="use_underline">True</property>
-                                      <property name="focus_on_click">False</property>
-                                      <property name="active">True</property>
-                                      <signal name="clicked" handler="on_spindle_off_clicked"/>
-                                    </widget>
-                                    <packing>
-                                      <property name="top_attach">1</property>
-                                      <property name="bottom_attach">2</property>
-                                    </packing>
-                                  </child>
+                                    <property name="active">True</property>
+                                    <signal name="clicked" handler="on_spindle_off_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkTable" id="spindle_dir">
+                                    <property name="visible">True</property>
+                                    <property name="border_width">0</property>
+                                    <property name="n_rows">1</property>
+                                    <child>
+                                      <widget class="GtkToggleButton" id="spindle_forward">
+                                        <property name="label" translatable="yes">SP Forw</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <signal name="clicked" handler="on_spindle_forward_clicked"/>
+                                      </widget>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkToggleButton" id="spindle_reverse">
+                                        <property name="label" translatable="yes">SP Rev</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <signal name="clicked" handler="on_spindle_reverse_clicked"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="right_attach">2</property>
+                                        <property name="left_attach">1</property>
+                                      </packing>
+                                    </child>
+                                  </widget>
+                                </child>
                               </widget>
                               <packing>
                                 <property name="position">0</property>

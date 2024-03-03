@@ -241,14 +241,15 @@ class emc_control:
                                 self.listing.clear_startline()
 
 class emc_status:
-        def __init__(self, gtk, emc, listing, relative, absolute, distance,
+        def __init__(self, gtk, emc, listing, hal, relative, absolute, distance,
                      dro_table,
                      error,
                      estops, machines, override_limit, status,
-                     floods, mists, spindles, prefs, opstop, blockdel):
+                     floods, mists, spindles, prefs, opstop, blockdel, spindle_values):
                 self.gtk = gtk
                 self.emc = emc
                 self.listing = listing
+                self.hal = hal
                 self.relative = relative
                 self.absolute = absolute
                 self.distance = distance
@@ -264,6 +265,8 @@ class emc_status:
                 self.prefs = prefs
                 self.opstop = opstop
                 self.blockdel = blockdel
+                self.spindle_values = spindle_values
+
                 self.resized_dro = 0
                 
                 self.mm = 0
@@ -510,7 +513,10 @@ class emc_status:
                 
                 set_active(self.blockdel['on'], self.emcstat.block_delete)
                 set_active(self.blockdel['off'], not self.emcstat.block_delete)
-                
+
+                set_text(self.spindle_values['sp_commanded'], "Set: %d" % self.emcstat.spindle[0]['speed'])
+                set_text(self.spindle_values['sp_current'], "Current: %d" % self.hal.spindle_velocity)
+                set_text(self.spindle_values['sp_angle'], "Angle: %#06.2f" % self.hal.spindle_pos)
 
                 if self.emcstat.id == 0 and (self.emcstat.interp_state == self.emc.INTERP_PAUSED or self.emcstat.exec_state == self.emc.EXEC_WAITING_FOR_DELAY):
                         self.listing.highlight_line(self.emcstat.current_line)

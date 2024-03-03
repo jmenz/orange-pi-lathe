@@ -5,8 +5,8 @@ setp arisc.pwm.2.dc-scale    5000.0 # max RPM
 setp arisc.pwm.2.pwm-port    0  # 0=PA
 setp arisc.pwm.2.pwm-pin     3
 setp arisc.pwm.2.pwm-invert  0
-setp arisc.pwm.2.dir-port    0  # 0=PA
-setp arisc.pwm.2.dir-pin     4
+setp arisc.pwm.2.dir-port    3  # 3=PD
+setp arisc.pwm.2.dir-pin     11
 setp arisc.pwm.2.dir-invert  0
 net s-rpm  spindle.0.speed-out  arisc.pwm.2.dc-cmd
 net s-en        spindle.0.on         arisc.pwm.2.enable

@@ -23,6 +23,7 @@ class hal_interface:
         self.mdi_control = mdi_control
         self.c = hal.component("touchy")
         self.c.newpin("status-indicator", hal.HAL_BIT, hal.HAL_OUT)
+        self.c.newpin("reset-spindel-index", hal.HAL_BIT, hal.HAL_OUT)
         self.c.newpin("jog.active", hal.HAL_BIT, hal.HAL_OUT)
         self.c.newpin("jog.wheel.x", hal.HAL_BIT, hal.HAL_OUT)
         self.c.newpin("jog.wheel.y", hal.HAL_BIT, hal.HAL_OUT)
@@ -115,6 +116,9 @@ class hal_interface:
 
     def jogincrement(self, inc, incs):
         self.c["jog.wheel.increment"] = incs[inc]
+
+    def resetSpindel(self, val):
+        self.c["reset-spindel-index"] = val
 
     def jogactive(self, active):
         self.active = active

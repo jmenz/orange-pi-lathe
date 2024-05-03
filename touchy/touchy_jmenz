@@ -369,6 +369,7 @@ class touchy:
                         "on_wheelx_clicked" : self.wheelx,
                         "on_wheelz_clicked" : self.wheelz,
                         "on_override_limits_clicked" : self.linuxcnc.override_limits,
+                        "on_reset_spinde_index_clicked" : self.reset_spindle_index,
                         "on_spindle_forward_clicked" : self.linuxcnc.spindle_forward,
                         "on_spindle_off_clicked" : self.linuxcnc.spindle_off,
                         "on_spindle_reverse_clicked" : self.linuxcnc.spindle_reverse,
@@ -485,6 +486,9 @@ class touchy:
 
         def unhome_selected(self, b):
                 self.linuxcnc.unhome_selected(self.wheelxyz)
+
+        def reset_spindle_index(self, b):
+            self.hal.resetSpindel(1)
 
         def fo(self, b):
                 if self.radiobutton_mask: return
@@ -719,7 +723,8 @@ class touchy:
                 self.fo_val = s.feedrate * 100
                 self.so_val = s.spindle[0]['override'] * 100
                 self.mv_val = s.max_velocity
-                #self.jog_vel_val = s.max_velocity
+
+                self.hal.resetSpindel(0)
                 
                 self.wTree.get_widget("scrolling").set_sensitive(self.tab == 3)
 

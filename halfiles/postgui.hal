@@ -15,7 +15,6 @@ net s-velocity => touchy.spindle-velocity
 ######### INDICATOR
 net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out-not
 
-
 ########## WHEEL
 addf lowpass-t servo-thread
 setp lowpass-t.scale 1000
@@ -35,6 +34,8 @@ net touchy-wheel-counts encoder.0.counts => lowpass-t.in touchy.wheel-counts
 setp arisc.gpio.PA20-pull 1
 net wheelreset arisc.gpio.PA20-in-not touchy.wheel-reset
 
+######### Spindle RESET
+net reset-spindle-index touchy.reset-spindel-index arisc.encoder.0.reset
 
 #JOISTICK
 

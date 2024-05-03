@@ -27,6 +27,15 @@ addf encoder.update-counters  base-thread
 setp arisc.gpio.PA10-pull 1
 net estop arisc.gpio.PA10-in => iocontrol.0.emc-enable-in
 
+#Limit Switches
+setp arisc.gpio.PA19-pull 1 # not optical isolated
+setp arisc.gpio.PA7-pull 1
+setp arisc.gpio.PC1-pull 1
+setp arisc.gpio.PC2-pull 1
+
+net end-x arisc.gpio.PC1-in-not     => joint.0.pos-lim-sw-in
+net end-z arisc.gpio.PC2-in-not     => joint.1.pos-lim-sw-in
+
 
 #Linear scales
 #X Axis:
@@ -47,10 +56,4 @@ setp arisc.encoder.4.x4-mode    1   # The config is inversed 1 means disabled
 setp arisc.encoder.4.enable     1
 #TODO: assign to Joint/Axis
 
-
-#Limit Switches
-setp arisc.gpio.PA19-pull 1
-setp arisc.gpio.PA7-pull 1
-setp arisc.gpio.PC1-pull 1
-setp arisc.gpio.PC2-pull 1
 

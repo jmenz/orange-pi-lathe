@@ -124,6 +124,7 @@ class touchy:
 
                 self.prefs = preferences.preferences()
                 self.mv_val = self.prefs.getpref('maxvel', 100, int)
+                self.jog_vel_val = self.prefs.getpref('maxvel', 100, int)
                 self.control_font_name = self.prefs.getpref('control_font', 'Sans 18', str)
                 self.dro_font_name = self.prefs.getpref('dro_font', 'Courier 10 Pitch Bold 16', str)
                 self.error_font_name = self.prefs.getpref('error_font', 'Sans Bold 10', str)
@@ -206,7 +207,7 @@ class touchy:
 
                 # emc interface
                 self.linuxcnc = emc_interface.emc_control(linuxcnc, self.listing, self.wTree.get_widget("error"))
-                self.linuxcnc.continuous_jog_velocity(self.mv_val)
+                self.linuxcnc.continuous_jog_velocity(self.jog_vel_val)
                 self.hal = hal_interface.hal_interface(self, self.linuxcnc, self.mdi_control, linuxcnc)
 
                 # silly file chooser
@@ -652,6 +653,64 @@ class touchy:
                 self.hal.periodic(self.tab == 1) # MDI tab?
                 return True
 
+        def wheelFoUpdate(self, d):
+                if self.hal.wheelreset:
+                    self.fo_val = 100
+                    self.linuxcnc.feed_override(self.fo_val)
+                else:
+                    self.fo_val += d
+                    if self.fo_val < 0: self.fo_val = 0
+
+                    max_feed_override = float(self.ini.find("DISPLAY", "MAX_FEED_OVERRIDE")) * 100
+                    if self.fo_val > max_feed_override: self.fo_val = max_feed_override
+                    if d != 0: self.linuxcnc.feed_override(self.fo_val)
+
+        def wheelSoUpdate(self, d):
+                if self.hal.wheelreset:
+                    self.so_val = 100
+                    self.linuxcnc.spindle_override(self.so_val)
+                else:
+                    self.so_val += d
+                    if self.so_val < 0: self.so_val = 0
+                    max_spindle_override = float(self.ini.find("DISPLAY", "MAX_SPINDLE_OVERRIDE")) * 100
+                    if self.so_val > max_spindle_override: self.so_val = max_spindle_override
+                    if d != 0: self.linuxcnc.spindle_override(self.so_val)
+
+        def wheelRPMUpdate(self, d):
+                if self.hal.wheelreset:
+                   self.linuxcnc.spindle_off(0)
+                else:
+                   if d > 0:
+                       self.linuxcnc.spindle_faster(0)
+                   if d < 0:
+                       self.linuxcnc.spindle_slower(0)
+
+        def wheelMvUpdate(self, d):
+                if self.hal.wheelreset:
+                    self.mv_val = self.default_velocity
+                    self.linuxcnc.max_velocity(self.mv_val)
+                else:
+                    increment = float(d) / 4
+                    self.mv_val += increment
+                        
+                    if self.mv_val < 0: self.mv_val = 0
+                    if self.mv_val > self.velocity_limit: self.mv_val = self.velocity_limit
+                    if d != 0:
+                        self.linuxcnc.max_velocity(self.mv_val)
+
+        def wheelJogUpdate(self, d):
+                if self.hal.wheelreset:
+                    self.jog_vel_val = self.default_velocity
+                    self.linuxcnc.continuous_jog_velocity(self.jog_vel_val)
+                else:
+                    increment = float(d) / 4
+                    self.jog_vel_val += increment
+                        
+                    if self.jog_vel_val < 0: self.jog_vel_val = 0
+                    if self.jog_vel_val > self.velocity_limit: self.jog_vel_val = self.velocity_limit
+                    if d != 0:
+                        self.linuxcnc.continuous_jog_velocity(self.jog_vel_val)
+
         def periodic_radiobuttons(self):
                 self.radiobutton_mask = 1
                 s = linuxcnc.stat()
@@ -660,10 +719,10 @@ class touchy:
                 self.fo_val = s.feedrate * 100
                 self.so_val = s.spindle[0]['override'] * 100
                 self.mv_val = s.max_velocity
+                #self.jog_vel_val = s.max_velocity
                 
                 self.wTree.get_widget("scrolling").set_sensitive(self.tab == 3)
 
-                #todo: make normal state machine for wheel mode
                 if self.tab != 3 and self.wheel == "scrolling":
                         self.wheel = "fo"
 
@@ -698,53 +757,19 @@ class touchy:
 
                 d = self.hal.wheel()
                 if self.wheel == "fo":
-                    if self.hal.wheelreset:
-                        self.fo_val = 100
-                        self.linuxcnc.feed_override(self.fo_val)
-                    else:
-                        self.fo_val += d
-                        if self.fo_val < 0: self.fo_val = 0
-
-                        max_feed_override = float(self.ini.find("DISPLAY", "MAX_FEED_OVERRIDE")) * 100
-                        if self.fo_val > max_feed_override: self.fo_val = max_feed_override
-                        if d != 0: self.linuxcnc.feed_override(self.fo_val)
+                    self.wheelFoUpdate(d)
 
                 if self.wheel == "so":
-                    if self.hal.wheelreset:
-                        self.so_val = 100
-                        self.linuxcnc.spindle_override(self.so_val)
-                    else:
-                        self.so_val += d
-                        if self.so_val < 0: self.so_val = 0
-
-                        max_spindle_override = float(self.ini.find("DISPLAY", "MAX_SPINDLE_OVERRIDE")) * 100
-                        if self.so_val > max_spindle_override: self.so_val = max_spindle_override
-                        if d != 0: self.linuxcnc.spindle_override(self.so_val)
+                    self.wheelSoUpdate(d)
 
                 if self.wheel == "rpm":
-                   if self.hal.wheelreset:
-                       self.linuxcnc.spindle_off(0)
-                   else:
-                       if d > 0:
-                           self.linuxcnc.spindle_faster(0)
-                       if d < 0:
-                           self.linuxcnc.spindle_slower(0)
-                       
+                    self.wheelRPMUpdate(d)
 
                 if self.wheel == "mv":
-                    if self.hal.wheelreset:
-                        self.mv_val = self.default_velocity
-                        self.linuxcnc.max_velocity(self.mv_val)
-                        self.linuxcnc.continuous_jog_velocity(self.mv_val)#todo move to jog velosity function
+                    if (self.status.is_manual_mode == 1):
+                        self.wheelJogUpdate(d)
                     else:
-                        increment = float(d) / 4
-                        self.mv_val += increment
-                        
-                        if self.mv_val < 0: self.mv_val = 0
-                        if self.mv_val > self.velocity_limit: self.mv_val = self.velocity_limit
-                        if d != 0:
-                            self.linuxcnc.max_velocity(self.mv_val)
-                            self.linuxcnc.continuous_jog_velocity(self.mv_val)#todo move to jog velosity function
+                        self.wheelMvUpdate(d)
                         
 		if self.wheel == "scrolling":
 			d0 = d * 10 ** (2-self.wheelinc)
@@ -752,7 +777,12 @@ class touchy:
 
                 set_label(self.wTree.get_widget("fo").child, "FO: %d%%" % self.fo_val)
                 set_label(self.wTree.get_widget("so").child, "SO: %d%%" % self.so_val)
-                set_label(self.wTree.get_widget("mv").child, "MV: %.2f" % self.mv_val)
+
+		if (self.status.is_manual_mode == 1):
+		    set_label(self.wTree.get_widget("mv").child, "MV: %.2f" % self.jog_vel_val)
+		else:
+		    set_label(self.wTree.get_widget("mv").child, "MV: %.2f" % self.mv_val)
+
                         
                 return True
 

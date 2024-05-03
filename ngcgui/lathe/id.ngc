@@ -1,0 +1,51 @@
+
+(info: inside diameter -- lathe boring)
+o<id> sub
+          #<Hole_Dia> =  #1 (=10 Starting Hole Diameter)
+         #<Final_Dia> =  #2 (=20 Final Hole Diameter)
+      #<Z_StartOfCut> =  #3 (=0 Z Start of Cut)
+        #<Z_EndOfCut> =  #4 (=-10 Z End of Cut)
+         #<Depth_Cut> =  #5 (=0.1 Depth of Cut)
+          #<FeedRate> =  #6 (=20 Feed Rate)
+      #<SurfaceSpeed> =  #7 (=100 Surface Speed)
+    #<MaxSpindle_RPM> =  #8 (=1500 MAX RPM)
+#<Back_Travel_Offset> =  #9 (=0.5 Back Travel Offset)
+       #<Spring_Cuts> =  #10 (=0 Spring Cuts)
+
+; G43: toollength offset
+; G7:  diameter mode
+; G96: constant surface speed
+G43 G7 G96 D#<MaxSpindle_RPM> S#<SurfaceSpeed>
+
+G0 X#<Hole_Dia> Z#<Z_StartOfCut>
+#<Current-Diameter> = #<Hole_Dia>
+
+o100 while [#<Current-Diameter> lt #<Final_Dia>]
+
+O101   if [#<Current-Diameter> + #<Depth_Cut> lt #<Final_Dia>]
+         #<Current-Diameter> = [#<Current-Diameter> + #<Depth_Cut>]
+O101   else
+         #<Current-Diameter> = #<Final_Dia>
+O101   endif
+
+       X#<Current-Diameter>
+       G1 Z#<Z_EndOfCut> F#<FeedRate>
+       G0 X[#<Current-Diameter>-#<Back_Travel_Offset>]
+       Z#<Z_StartOfCut>
+o100 endwhile
+
+o102 while [#<Spring_Cuts> gt 0]
+       G1 X#<Final_Dia>
+       Z#<Z_EndOfCut>
+       X[#<Final_Dia>-0.010]
+       G0 Z#<Z_StartOfCut>
+       #<Spring_Cuts> = [#<Spring_Cuts> -1]
+o102 endwhile
+
+G0 X[#<Current-Diameter>-0.010]
+M5           ; stop spindle
+Z#<Z_StartOfCut>
+G49               ; cancel tool length offset
+G53 G0 X0 Z0      ; move in machine coordinates
+
+o<id>endsub

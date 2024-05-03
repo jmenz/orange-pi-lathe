@@ -5,15 +5,15 @@ setp arisc.gpio.PG7-pull 1
 setp arisc.gpio.PG9-pull 1
 
 # 
-net cycle_start arisc.gpio.PG7-in => touchy.cycle-start
-net abort arisc.gpio.PG6-in => touchy.abort
-net single_block arisc.gpio.PG9-in => touchy.single-block
+net cycle_start arisc.gpio.PG7-in-not => touchy.cycle-start
+net abort arisc.gpio.PG6-in-not => touchy.abort
+net single_block arisc.gpio.PG9-in-not => touchy.single-block
 
 net s-position => touchy.spindle-pos
 net s-velocity => touchy.spindle-velocity
 
 ######### INDICATOR
-net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out
+net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out-not
 
 
 ########## WHEEL
@@ -21,26 +21,33 @@ addf lowpass-t servo-thread
 setp lowpass-t.scale 1000
 setp lowpass-t.gain 0.01
 
-setp arisc.gpio.PA10-pull -1
-setp arisc.gpio.PA20-pull -1
+setp arisc.gpio.PA8-pull -1
+setp arisc.gpio.PA9-pull -1
 setp encoder.0.x4-mode 1
 
-# PA10:A, PA20:B
-net mpg-a encoder.0.phase-A <= arisc.gpio.PA10-in
-net mpg-b encoder.0.phase-B <= arisc.gpio.PA20-in
+# PA8:A, PA9:B
+net mpg-a encoder.0.phase-A <= arisc.gpio.PA8-in
+net mpg-b encoder.0.phase-B <= arisc.gpio.PA9-in
 
 net touchy-wheel-counts encoder.0.counts => lowpass-t.in touchy.wheel-counts
 
 ######### WHEELRESET
-setp arisc.gpio.PA9-pull 1
-net wheelreset arisc.gpio.PA9-in-not touchy.wheel-reset
+setp arisc.gpio.PA20-pull 1
+net wheelreset arisc.gpio.PA20-in-not touchy.wheel-reset
 
 
 #JOISTICK
 
-#Axic Z
-setp arisc.gpio.PE2-pull 1
+#Axic X
+setp arisc.gpio.PE12-pull 1
 setp arisc.gpio.PE3-pull 1
 
-net z-jog-continious-plus arisc.gpio.PE2-in touchy.jog.continuous.z.positive
-net z-jog-continious-minus arisc.gpio.PE3-in touchy.jog.continuous.z.negative
+net x-jog-continious-plus arisc.gpio.PE12-in-not touchy.jog.continuous.x.positive
+net x-jog-continious-minus arisc.gpio.PE3-in-not touchy.jog.continuous.x.negative
+
+#Axic Z
+setp arisc.gpio.PE11-pull 1
+setp arisc.gpio.PE15-pull 1
+
+net z-jog-continious-plus arisc.gpio.PE11-in-not touchy.jog.continuous.z.positive
+net z-jog-continious-minus arisc.gpio.PE15-in-not touchy.jog.continuous.z.negative

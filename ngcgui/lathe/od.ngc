@@ -7,7 +7,7 @@ o<od> sub
          #<Depth_Cut> =  #3 (=0.10 Depth of Cut)
 #<Back_Travel_Offset> =  #4 (=0.10 Back Travel Offset)
       #<SurfaceSpeed> =  #5 (=100 Surface Speed)
-          #<FeedRate> =  #6 (=2 Feed Rate)
+          #<FeedRate> =  #6 (=20 Feed Rate)
            #<Max_RPM> =  #7 (=1500 Max Spindle RPM)
         #<Z_EndOfCut> =  #8 (=0 End of Cut)
       #<Z_StartOfCut> =  #9 (=100.0 Start of Cut)

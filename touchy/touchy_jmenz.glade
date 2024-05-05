@@ -3607,13 +3607,16 @@ F1 S1</property>
               <widget class="GtkFrame" id="controls">
                 <property name="visible">True</property>
                 <property name="border_width">5</property>
-                <property name="label_xalign">0</property>
-                
+                <child>
+                  <widget class="GtkVBox" id="vbox-controls">
+                    <property name="visible">True</property>
                     <child>
-                      <widget class="GtkVBox" id="vbox4">
+                      <widget class="GtkFrame" id="frame-wheel-controls">
                         <property name="visible">True</property>
+                        <property name="border_width">5</property>
+                        <property name="label_xalign">0</property>
                         <child>
-                          <widget class="GtkVBox" id="vbox3">
+                          <widget class="GtkVBox" id="vbox-wheel-controls">
                             <property name="visible">True</property>
                             <property name="border_width">5</property>
                             <child>
@@ -3706,10 +3709,21 @@ F1 S1</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
-
-
-
-
+                        <child>
+                          <widget class="GtkLabel" id="label1">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">&lt;b&gt;Controls&lt;/b&gt;</property>
+                            <property name="use_markup">True</property>
+                          </widget>
+                          <packing>
+                            <property name="type">label_item</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
                     <child>
                       <widget class="GtkFrame" id="spindle_frame">
                         <property name="visible">True</property>
@@ -3782,16 +3796,6 @@ F1 S1</property>
                       </widget>
                     </child>
                   </widget>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label1">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Controls&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
-                  </widget>
-                  <packing>
-                    <property name="type">label_item</property>
-                  </packing>
                 </child>
               </widget>
               <packing>

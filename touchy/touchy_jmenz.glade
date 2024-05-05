@@ -3604,20 +3604,16 @@ F1 S1</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkFrame" id="controls">
+              <widget class="GtkVBox" id="vbox-controls">
                 <property name="visible">True</property>
-                <property name="border_width">5</property>
                 <child>
-                  <widget class="GtkVBox" id="vbox-controls">
+                  <widget class="GtkFrame" id="frame-wheel-controls">
                     <property name="visible">True</property>
+                    <property name="border_width">5</property>
+                    <property name="label_xalign">0</property>
                     <child>
-                      <widget class="GtkFrame" id="frame-wheel-controls">
+                      <widget class="GtkVBox" id="vbox-wheel-controls">
                         <property name="visible">True</property>
-                        <property name="border_width">5</property>
-                        <property name="label_xalign">0</property>
-                        <child>
-                          <widget class="GtkVBox" id="vbox-wheel-controls">
-                            <property name="visible">True</property>
                             <property name="border_width">5</property>
                             <child>
                               <widget class="GtkToggleButton" id="fo">
@@ -3712,7 +3708,7 @@ F1 S1</property>
                         <child>
                           <widget class="GtkLabel" id="label1">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">&lt;b&gt;Controls&lt;/b&gt;</property>
+                            <property name="label" translatable="yes">&lt;b&gt;Wheel&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </widget>
                           <packing>
@@ -3796,12 +3792,10 @@ F1 S1</property>
                       </widget>
                     </child>
                   </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="position">1</property>
-              </packing>
-            </child>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+             </child>
           </widget>
           <packing>
             <property name="position">0</property>

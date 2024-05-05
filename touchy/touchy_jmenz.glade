@@ -3710,16 +3710,47 @@ F1 S1</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkHBox" id="spindle_hbox">
+                          <widget class="GtkFrame" id="spindle_frame">
                             <property name="visible">True</property>
+                            <property name="border_width">5</property>
+                            <property name="label_xalign">0</property>
                             <child>
-                              <widget class="GtkTable" id="spindle_control">
+                              <widget class="GtkVBox" id="spindle_hbox">
                                 <property name="visible">True</property>
                                 <property name="border_width">5</property>
-                                <property name="n_rows">2</property>
+                                <child>
+                                  <widget class="GtkToggleButton" id="spindle_reverse">
+                                    <property name="label" translatable="yes">Reverce</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="focus_on_click">False</property>
+                                    <property name="active">True</property>
+                                    <signal name="clicked" handler="on_spindle_reverse_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkToggleButton" id="spindle_forward">
+                                    <property name="label" translatable="yes">Forward</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="focus_on_click">False</property>
+                                    <property name="active">True</property>
+                                    <signal name="clicked" handler="on_spindle_forward_clicked"/>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
                                 <child>
                                   <widget class="GtkToggleButton" id="spindle_off">
-                                    <property name="label" translatable="yes">Spindle Off</property>
+                                    <property name="label" translatable="yes">Stop</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -3729,52 +3760,25 @@ F1 S1</property>
                                     <signal name="clicked" handler="on_spindle_off_clicked"/>
                                   </widget>
                                   <packing>
-                                    <property name="top_attach">1</property>
-                                    <property name="bottom_attach">2</property>
+                                    <property name="position">2</property>
                                   </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkTable" id="spindle_dir">
-                                    <property name="visible">True</property>
-                                    <property name="border_width">0</property>
-                                    <property name="n_rows">1</property>
-                                    <child>
-                                      <widget class="GtkToggleButton" id="spindle_forward">
-                                        <property name="label" translatable="yes">SP Forw</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <signal name="clicked" handler="on_spindle_forward_clicked"/>
-                                      </widget>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkToggleButton" id="spindle_reverse">
-                                        <property name="label" translatable="yes">SP Rev</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="focus_on_click">False</property>
-                                        <signal name="clicked" handler="on_spindle_reverse_clicked"/>
-                                      </widget>
-                                      <packing>
-                                        <property name="right_attach">2</property>
-                                        <property name="left_attach">1</property>
-                                      </packing>
-                                    </child>
-                                  </widget>
                                 </child>
                               </widget>
                               <packing>
-                                <property name="position">0</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="spindle_label">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">&lt;b&gt;Spindle&lt;/b&gt;</property>
+                                <property name="use_markup">True</property>
+                              </widget>
+                              <packing>
+                                <property name="type">label_item</property>
                               </packing>
                             </child>
                           </widget>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
                       </widget>
                     </child>

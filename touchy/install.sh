@@ -1,3 +1,4 @@
 #!/bin/sh
 
-ln -s "`pwd`"/touchy_jmenz /usr/bin/touchy_jmenz
+rm /usr/bin/touchy_jmenz
+ln "`pwd`"/touchy_jmenz /usr/bin/touchy_jmenz

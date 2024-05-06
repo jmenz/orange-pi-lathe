@@ -12,6 +12,7 @@
 
 	<property name="view">y</property>
 	<property name="show_lathe_radius">True</property>
+	<property name="mouse_btn_mode">6</property>
       </object>
     </child>
   </object>

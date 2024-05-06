@@ -8,30 +8,29 @@
 ;                          for majordiam=0.94,minordiam=0.84,i=+0.03
 
 o<g76base> sub
-       #<toolno> =  #1 (= 1)
-          #<rpm> =  #2 (= 200  Spindle RPM)
+          #<rpm> =  #1 (= 200  Spindle RPM)
 
-           #<xi> =  #3 (=  0 X: Xi driveline)
-           #<zi> =  #4 (= 0 Z: Zi driveline)
+           #<xi> =  #2 (=  0 X: Xi driveline)
+           #<zi> =  #3 (= 0 Z: Zi driveline)
 
 ; G76 required items:
-            #<p> =  #5 (=  1 P: Pitch, NEG for tpi)
-            #<z> =  #6 (= -10.0   Z: Zf final)
-            #<i> =  #7 (= -0.5  I: Thread peak offset)
-            #<k> =  #8 (=  1  K: Full thread depth)
-            #<j> =  #9 (=  0.3 J: Initial cut depth)
+            #<p> =  #4 (=  1 P: Pitch, NEG for tpi)
+            #<z> =  #5 (= -10.0   Z: Zf final)
+            #<i> =  #6 (= -0.5  I: Thread peak offset)
+            #<k> =  #7 (=  1  K: Full thread depth)
+            #<j> =  #8 (=  0.3 J: Initial cut depth)
 
 ; G76 optional items:
-            #<r> = #10 (=  1.0   R: Depth degression)
-            #<q> = #11 (= 29.5   Q: Compound slide angle)
-            #<h> = #12 (=  0     H: No. of spring passes)
-            #<e> = #13 (=  0.050 E: Taper dist =K typ)
-            #<l> = #14 (=  2     L: End Taper 0,1,2,3)
+            #<r> = #9 (=  1.0   R: Depth degression)
+            #<q> = #10 (= 29.5   Q: Compound slide angle)
+            #<h> = #11 (=  0     H: No. of spring passes)
+            #<e> = #12 (=  0.050 E: Taper dist =K typ)
+            #<l> = #13 (=  2     L: End Taper 0,1,2,3)
 
 ; other:
-      #<spindir> = #15 (=3 Dir: Right=3 Left=4)
-         #<mode> = #16 (=8 G7/G8 Radius=8 Diam=7)
-      #<verbose> = #17 (=0 0:silent, 1:verbose)
+      #<spindir> = #14 (=3 Dir: Right=3 Left=4)
+         #<mode> = #15 (=8 G7/G8 Radius=8 Diam=7)
+      #<verbose> = #16 (=0 0:silent, 1:verbose)
 
 o<if00> if [#<p> LT 0]
           #<p> = ABS[1 / #<p>]

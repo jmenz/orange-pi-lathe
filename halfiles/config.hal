@@ -8,8 +8,6 @@ loadrt encoder num_chan=1
 loadrt estop_latch
 #loadrt near count=1 # NOT sure if I would need it.
 
-loadusr hal_manualtoolchange # NOT sure if I would need it.
-
 # add RT functions to the servo thread
 addf arisc.gpio.read          servo-thread
 addf arisc.pwm.read           servo-thread
@@ -55,5 +53,14 @@ setp arisc.encoder.4.B-pin      18  #
 setp arisc.encoder.4.x4-mode    1   # The config is inversed 1 means disabled
 setp arisc.encoder.4.enable     1
 #TODO: assign to Joint/Axis
+
+
+
+loadusr -W hal_manualtoolchange
+net tool-change iocontrol.0.tool-change => hal_manualtoolchange.change
+net tool-changed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
+#net external-tool-changed hal_manualtoolchange.change_button <= parport.0.pin-12-in
+net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
+net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
 
 

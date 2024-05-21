@@ -1,7 +1,8 @@
-#Linuxcnc lathe controller based on OrangePI Plus 2E
+# Linuxcnc lathe controller based on OrangePI Plus 2E
 
+Use only with good active collant system
 
-#Installation
+# Installation
 ```
 git clone git@github.com:jmenz/orange-pi-lathe.git #if not done yet
 git clone https://github.com/allwincnc/installer

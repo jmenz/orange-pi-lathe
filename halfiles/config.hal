@@ -22,8 +22,8 @@ addf encoder.update-counters  base-thread
 
 
 # other IO setup
-setp arisc.gpio.PA10-pull 1
-net estop arisc.gpio.PA10-in => iocontrol.0.emc-enable-in
+setp arisc.gpio.PA20-pull 1
+net estop arisc.gpio.PA20-in => iocontrol.0.emc-enable-in
 
 #Limit Switches
 setp arisc.gpio.PA19-pull 1 # not optical isolated

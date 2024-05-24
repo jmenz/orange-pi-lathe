@@ -18,21 +18,21 @@ net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out-not
 ########## WHEEL
 addf lowpass-t servo-thread
 setp lowpass-t.scale 1000
-setp lowpass-t.gain 0.01
+setp lowpass-t.gain 0.05
 
 setp arisc.gpio.PA8-pull -1
 setp arisc.gpio.PA9-pull -1
 setp encoder.0.x4-mode 1
 
 # PA8:A, PA9:B
-net mpg-a encoder.0.phase-A <= arisc.gpio.PA8-in
-net mpg-b encoder.0.phase-B <= arisc.gpio.PA9-in
+net mpg-a encoder.0.phase-A <= arisc.gpio.PA9-in
+net mpg-b encoder.0.phase-B <= arisc.gpio.PA8-in
 
 net touchy-wheel-counts encoder.0.counts => lowpass-t.in touchy.wheel-counts
 
 ######### WHEELRESET
-setp arisc.gpio.PA20-pull 1
-net wheelreset arisc.gpio.PA20-in-not touchy.wheel-reset
+setp arisc.gpio.PA10-pull 1
+net wheelreset arisc.gpio.PA10-in-not touchy.wheel-reset
 
 ######### Spindle RESET
 net reset-spindle-index touchy.reset-spindel-index arisc.encoder.0.reset

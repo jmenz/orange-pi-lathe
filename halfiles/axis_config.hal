@@ -11,7 +11,7 @@ setp arisc.pwm.0.dir-port   0 # PA
 setp arisc.pwm.0.dir-pin    11
 net x-pos-cmd  joint.0.motor-pos-cmd   arisc.pwm.0.pos-cmd
 net x-pos-fb   joint.0.motor-pos-fb    arisc.pwm.0.pos-fb
-net x-en       joint.0.amp-enable-out  arisc.pwm.0.enable  arisc.gpio.PA12-out-not
+net x-en       joint.0.amp-enable-out  arisc.pwm.0.enable  arisc.gpio.PA12-out
 
 # axis 1 setup
 # PA12:EN, PA13:DIR, PA14:STEP,

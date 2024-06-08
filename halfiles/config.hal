@@ -1,10 +1,9 @@
 # load RT components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt arisc pwm="p,p,f" out="PA0,PA3,PA12,PG8" in="PA7,PA8,PA9,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=5
+loadrt arisc pwm="p,p,f" out="PA0,PA3,PA12,PG8" in="PA7,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=6
 loadrt ilowpass names=lowpass-x,lowpass-z,lowpass-t
 loadrt mux8 count=2
-loadrt encoder num_chan=1
 loadrt estop_latch
 #loadrt near count=1 # NOT sure if I would need it.
 
@@ -16,12 +15,10 @@ addf motion-controller        servo-thread
 addf arisc.gpio.write         servo-thread
 addf arisc.pwm.write          servo-thread
 addf arisc.encoder.read       servo-thread
-addf encoder.capture-position servo-thread
-addf encoder.update-counters  base-thread
 #addf near.0                  servo-thread
 
 
-# other IO setup
+# E-Stop
 setp arisc.gpio.PA20-pull 1
 net estop arisc.gpio.PA20-in => iocontrol.0.emc-enable-in
 
@@ -55,12 +52,24 @@ setp arisc.encoder.4.enable     1
 #TODO: assign to Joint/Axis
 
 
-
+#Manual tool change
 loadusr -W hal_manualtoolchange
 net tool-change iocontrol.0.tool-change => hal_manualtoolchange.change
 net tool-changed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
 #net external-tool-changed hal_manualtoolchange.change_button <= parport.0.pin-12-in
 net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
 net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
+
+
+#Touchy Wheel enc PA8:A, PA9:8
+setp arisc.encoder.5.A-port     0   # 0=PA
+setp arisc.encoder.5.A-pin      8  # 
+setp arisc.encoder.5.B-port     0   # 0=PA
+setp arisc.encoder.5.B-pin      9  # 
+setp arisc.encoder.5.x4-mode    1   # The config is inversed 1 means disabled
+setp arisc.encoder.5.enable     1
+
+
+
 
 

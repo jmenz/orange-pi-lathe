@@ -4,7 +4,6 @@ setp arisc.gpio.PG6-pull 1
 setp arisc.gpio.PG7-pull 1
 setp arisc.gpio.PG9-pull 1
 
-# 
 net cycle_start arisc.gpio.PG7-in-not => touchy.cycle-start
 net abort arisc.gpio.PG6-in-not => touchy.abort
 net single_block arisc.gpio.PG9-in-not => touchy.single-block
@@ -20,15 +19,7 @@ addf lowpass-t servo-thread
 setp lowpass-t.scale 1000
 setp lowpass-t.gain 0.05
 
-setp arisc.gpio.PA8-pull -1
-setp arisc.gpio.PA9-pull -1
-setp encoder.0.x4-mode 1
-
-# PA8:A, PA9:B
-net mpg-a encoder.0.phase-A <= arisc.gpio.PA9-in
-net mpg-b encoder.0.phase-B <= arisc.gpio.PA8-in
-
-net touchy-wheel-counts encoder.0.counts => lowpass-t.in touchy.wheel-counts
+net touchy-wheel-counts arisc.encoder.5.counts => lowpass-t.in touchy.wheel-counts
 
 ######### WHEELRESET
 setp arisc.gpio.PA10-pull 1

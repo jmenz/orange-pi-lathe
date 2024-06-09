@@ -1,6 +1,4 @@
 
-addf lowpass-x               servo-thread
-addf lowpass-z               servo-thread
 addf mux8.0                  servo-thread
 addf mux8.1                  servo-thread
 
@@ -15,10 +13,7 @@ setp arisc.encoder.1.B-pin      4  #
 setp arisc.encoder.1.x4-mode    1   # The config is inversed 1 means disabled
 setp arisc.encoder.1.enable     1
 
-setp lowpass-x.scale 1000
-setp lowpass-x.gain 0.01
-
-net jog-wheel-counts-x lowpass-x.in <= arisc.encoder.1.counts
+net jog-wheel-counts-x <= arisc.encoder.1.counts
 net jog-wheel-counts-x => joint.0.jog-counts => axis.x.jog-counts
 net jog-enable-x <= arisc.encoder.1.enable
 net jog-enable-x => joint.0.jog-enable => axis.x.jog-enable
@@ -49,11 +44,7 @@ setp arisc.encoder.2.B-pin      7   #
 setp arisc.encoder.2.x4-mode    1   # The config is inversed 1 means disabled
 setp arisc.encoder.2.enable     1
 
-setp lowpass-z.scale 1000
-setp lowpass-z.gain 0.01
-setp axis.z.jog-scale 1 # This will be needed to be set from some buttons
-
-net jog-wheel-counts-z lowpass-z.in <= arisc.encoder.2.counts
+net jog-wheel-counts-z <= arisc.encoder.2.counts
 net jog-wheel-counts-z => joint.1.jog-counts => axis.z.jog-counts
 net jog-enable-z <= arisc.encoder.2.enable
 net jog-enable-z => joint.1.jog-enable => axis.z.jog-enable

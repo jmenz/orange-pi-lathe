@@ -6,7 +6,7 @@ setp arisc.gpio.PG9-pull 1
 
 net cycle_start arisc.gpio.PG7-in-not => touchy.cycle-start
 net abort arisc.gpio.PG6-in-not => touchy.abort
-net single_block arisc.gpio.PG9-in-not => touchy.single-block
+net single_block arisc.gpio.PG9-in => touchy.single-block
 
 net s-position => touchy.spindle-pos
 net s-velocity => touchy.spindle-velocity
@@ -15,11 +15,7 @@ net s-velocity => touchy.spindle-velocity
 net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out-not
 
 ########## WHEEL
-addf lowpass-t servo-thread
-setp lowpass-t.scale 1000
-setp lowpass-t.gain 0.05
-
-net touchy-wheel-counts arisc.encoder.5.counts => lowpass-t.in touchy.wheel-counts
+net touchy-wheel-counts arisc.encoder.5.counts => touchy.wheel-counts
 
 ######### WHEELRESET
 setp arisc.gpio.PA10-pull 1

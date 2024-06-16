@@ -157,13 +157,6 @@ class touchy:
                             temp = search+1
                     self.wTree.get_widget("theme_choice").set_active(temp)
 
-                if self.window_geometry == "default":
-		            self.wTree.get_widget("MainWindow").window.maximize()
-                else:
-                    self.wTree.get_widget("MainWindow").parse_geometry(self.window_geometry)
-                    if self.window_max:
-                        self.wTree.get_widget("MainWindow").window.maximize()
-
                 self.invisible_cursor = self.prefs.getpref('invisible_cursor', 0)
                 if self.invisible_cursor:
                         self.wTree.get_widget("MainWindow").window.set_cursor(invisible)
@@ -310,6 +303,9 @@ class touchy:
                 gobject.timeout_add(50, self.periodic_status)
                 gobject.timeout_add(100, self.periodic_radiobuttons)
 
+                self.fullscreen_activated = 0
+                gobject.timeout_add(2000, self.fullscreen)
+
                 # event bindings
                 dic = {
                         "quit" : self.quit,
@@ -395,6 +391,7 @@ class touchy:
                 atexit.register(self.save_maxvel_pref)
 
                 self.setfont()
+
 
         def quit(self, unused):
                 gtk.main_quit()
@@ -793,6 +790,12 @@ class touchy:
 
                         
                 return True
+        
+        def fullscreen(self):
+                if(self.fullscreen_activated == 1): return
+                self.wTree.get_widget('MainWindow').fullscreen()
+                self.fullscreen_activated = 1
+                
 
 	def hack_leave(self,w):
 		if not self.invisible_cursor: return

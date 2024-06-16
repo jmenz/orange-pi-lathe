@@ -38,13 +38,6 @@ NOTE: do this only if you don't have ~/.xsessionrc file yet, Otherwise, copy the
 
 It's a prepared file for 1024x600 display. If You need some other resolution, follow this [instruction](https://askubuntu.com/questions/377937/how-do-i-set-a-custom-resolution)
 
-### Install custom touchy
-```
-cd ~/orange-pi-lathe/touchy
-sh ./install.sh
-```
-
-
 
 
 

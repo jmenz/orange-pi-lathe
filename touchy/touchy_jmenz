@@ -697,7 +697,7 @@ class touchy:
                     self.mv_val = self.default_velocity
                     self.linuxcnc.max_velocity(self.mv_val)
                 else:
-                    increment = float(d) / 4
+                    increment = float(d) / 20
                     self.mv_val += increment
                         
                     if self.mv_val < 0: self.mv_val = 0
@@ -710,7 +710,7 @@ class touchy:
                     self.jog_vel_val = self.default_velocity
                     self.linuxcnc.continuous_jog_velocity(self.jog_vel_val)
                 else:
-                    increment = float(d) / 4
+                    increment = float(d) / 20
                     self.jog_vel_val += increment
                         
                     if self.jog_vel_val < 0: self.jog_vel_val = 0

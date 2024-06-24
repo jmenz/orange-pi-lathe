@@ -17,6 +17,9 @@ o<id> sub
 ; G96: constant surface speed
 G43 G7 G96 D#<MaxSpindle_RPM> S#<SurfaceSpeed>
 
+; Turn the OD
+M3
+
 G0 X#<Hole_Dia> Z#<Z_StartOfCut>
 #<Current-Diameter> = #<Hole_Dia>
 

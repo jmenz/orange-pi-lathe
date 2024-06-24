@@ -37,5 +37,5 @@ net x-jog-continious-minus arisc.gpio.PE3-in-not touchy.jog.continuous.x.negativ
 setp arisc.gpio.PE11-pull 1
 setp arisc.gpio.PE15-pull 1
 
-net z-jog-continious-plus arisc.gpio.PE11-in-not touchy.jog.continuous.z.positive
-net z-jog-continious-minus arisc.gpio.PE15-in-not touchy.jog.continuous.z.negative
+net z-jog-continious-plus arisc.gpio.PE15-in-not touchy.jog.continuous.z.positive
+net z-jog-continious-minus arisc.gpio.PE11-in-not touchy.jog.continuous.z.negative

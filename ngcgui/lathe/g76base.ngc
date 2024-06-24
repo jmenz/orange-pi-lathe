@@ -10,12 +10,12 @@
 o<g76base> sub
           #<rpm> =  #1 (= 200  Spindle RPM)
 
-           #<xi> =  #2 (=  0 X: Xi driveline)
+           #<xi> =  #2 (=  10 X: Xi driveline)
            #<zi> =  #3 (= 0 Z: Zi driveline)
 
 ; G76 required items:
-            #<p> =  #4 (=  1 P: Pitch, NEG for tpi)
-            #<z> =  #5 (= -10.0   Z: Zf final)
+            #<z> =  #4 (= -10.0   Z: Zf final)
+            #<p> =  #5 (=  1 P: Pitch, NEG for tpi)
             #<i> =  #6 (= -0.5  I: Thread peak offset)
             #<k> =  #7 (=  1  K: Full thread depth)
             #<j> =  #8 (=  0.3 J: Initial cut depth)
@@ -29,7 +29,7 @@ o<g76base> sub
 
 ; other:
       #<spindir> = #14 (=3 Dir: Right=3 Left=4)
-         #<mode> = #15 (=8 G7/G8 Radius=8 Diam=7)
+         #<mode> = #15 (=7 G7/G8 Radius=8 Diam=7)
       #<verbose> = #16 (=0 0:silent, 1:verbose)
 
 o<if00> if [#<p> LT 0]

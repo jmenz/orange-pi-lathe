@@ -4,13 +4,13 @@
 o<od> sub
       #<Material_Dia> =  #1 (=20.0 Material Diameter)
          #<Final_Dia> =  #2 (=10.0 Final Diameter)
-         #<Depth_Cut> =  #3 (=0.10 Depth of Cut)
-#<Back_Travel_Offset> =  #4 (=0.10 Back Travel Offset)
-      #<SurfaceSpeed> =  #5 (=100 Surface Speed)
+         #<Depth_Cut> =  #3 (=0.20 Depth of Cut)
+#<Back_Travel_Offset> =  #4 (=0.50 Back Travel Offset)
+      #<SurfaceSpeed> =  #5 (=30 Surface Speed)
           #<FeedRate> =  #6 (=20 Feed Rate)
-           #<Max_RPM> =  #7 (=1500 Max Spindle RPM)
-        #<Z_EndOfCut> =  #8 (=0 End of Cut)
-      #<Z_StartOfCut> =  #9 (=100.0 Start of Cut)
+           #<Max_RPM> =  #7 (=1200 Max Spindle RPM)
+        #<Z_EndOfCut> =  #8 (=-10.0 End of Cut)
+      #<Z_StartOfCut> =  #9 (=0 Start of Cut)
 
 ; G43: toolength offset
 ; G7:  diameter mode
@@ -36,9 +36,9 @@ O101   endif
        Z#<Z_StartOfCut>
 o100 endwhile
 
-G0 X[#<Current_Dia>+0.025]
+G0 X[#<Current_Dia>]
 M5              ; stop spindle
 Z#<Z_StartOfCut>
 G49                 ; cancel tool length offset compensation
-G53 G0 X0 Z0        ; move in machine coordinates
+;G53 G0 X0 Z0        ; move in machine coordinates
 o<od> endsub

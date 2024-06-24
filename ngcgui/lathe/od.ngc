@@ -1,5 +1,4 @@
 
-
 (info: test OD subroutine - lathe turning)
 o<od> sub
       #<Material_Dia> =  #1 (=20.0 Material Diameter)

@@ -570,14 +570,14 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <widget class="GtkToggleButton" id="reset_spinde_index">
-                                        <property name="label" translatable="yes">Reset Spindle Angle</property>
+                                      <widget class="GtkButton" id="shut_down">
+                                        <property name="label" translatable="yes">Shut Down</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="focus_on_click">False</property>
-                                        <signal name="clicked" handler="on_reset_spinde_index_clicked"/>
+                                        <signal name="clicked" handler="on_shut_down_clicked"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">2</property>
@@ -1516,6 +1516,20 @@
                                     <property name="n_columns">2</property>
                                     <property name="column_spacing">15</property>
                                     <property name="homogeneous">True</property>
+                                    <child>
+                                      <widget class="GtkToggleButton" id="reset_spinde_index">
+                                        <property name="label" translatable="yes">Reset Spindle Angle</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="focus_on_click">False</property>
+                                        <signal name="clicked" handler="on_reset_spinde_index_clicked"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="top_attach">1</property>
+                                      </packing>
+                                    </child>
                                     <child>
                                       <widget class="GtkButton" id="spindle_faster">
                                         <property name="label" translatable="yes">Spindle Faster</property>

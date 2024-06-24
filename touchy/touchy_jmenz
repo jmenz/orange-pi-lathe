@@ -377,6 +377,7 @@ class touchy:
                         "on_toolset_fixture_clicked" : self.toolset_fixture,
                         "on_toolset_workpiece_clicked" : self.toolset_workpiece,
                         "on_changetheme_clicked" : self.change_theme,
+                        "on_shut_down_clicked" : self.shut_down,
                         }
                 self.wTree.signal_autoconnect(dic)
 
@@ -394,6 +395,9 @@ class touchy:
 
 
         def quit(self, unused):
+                gtk.main_quit()
+
+        def shut_down(self, unused):
                 gtk.main_quit()
 
         def send_message(self,socket,dest_xid,message):
@@ -572,7 +576,7 @@ class touchy:
                           "dro_commanded", "dro_actual", "dro_inch", "dro_mm",
                           "reload_tooltable", "opstop_on", "opstop_off",
                           "blockdel_on", "blockdel_off", "pointer_hide", "pointer_show",
-                          "toolset_workpiece", "toolset_fixture","change_theme"]:
+                          "toolset_workpiece", "toolset_fixture","change_theme","reset_spinde_index","shut_down"]:
                         w = self.wTree.get_widget(i)
                         if w:
                                 w = w.child

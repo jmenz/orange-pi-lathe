@@ -571,7 +571,7 @@
                                     </child>
                                     <child>
                                       <widget class="GtkButton" id="shut_down">
-                                        <property name="label" translatable="yes">Shut Down</property>
+                                        <property name="label" translatable="yes">Quit</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>

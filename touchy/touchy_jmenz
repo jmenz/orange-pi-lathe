@@ -305,7 +305,7 @@ class touchy:
                 gobject.timeout_add(100, self.periodic_radiobuttons)
 
                 self.fullscreen_activated = 0
-                gobject.timeout_add(2000, self.fullscreen)
+                gobject.timeout_add(1500, self.fullscreen)
 
                 # event bindings
                 dic = {
@@ -409,7 +409,7 @@ class touchy:
             elif (dialogResult == 1):
                 gtk.main_quit()
                 subprocess.Popen('sleep 5 && systemctl reboot &', shell=True)
-            elif (dialogResult == 1):
+            elif (dialogResult == 2):
                 gtk.main_quit()
                 subprocess.Popen('sleep 5 && systemctl poweroff &', shell=True)
 

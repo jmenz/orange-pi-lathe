@@ -13,7 +13,6 @@
 # GNU General Public License for more details.
 
 #modified by jmenz89
-#to use, run install.sh file from the folder. or run the command "ln -s "`pwd`"/touchy_jmenz /usr/bin/touchy_jmenz"
 
 import sys, os
 BASE = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), ".."))
@@ -41,6 +40,7 @@ except:
 import atexit
 import tempfile
 import signal
+import subprocess
 
 empty_program = tempfile.NamedTemporaryFile()
 empty_program.write("%\n%\n")
@@ -399,6 +399,7 @@ class touchy:
 
         def shut_down(self, unused):
                 gtk.main_quit()
+                subprocess.Popen('sleep 6 && systemctl poweroff &', shell=True)
 
         def send_message(self,socket,dest_xid,message):
             event = gtk.gdk.Event(gtk.gdk.CLIENT_EVENT)

@@ -1,6 +1,6 @@
 
 (info: inside diameter -- lathe boring)
-o<id> sub
+o<i-diameter> sub
           #<Hole_Dia> =  #1 (=10 Starting Hole Diameter)
          #<Final_Dia> =  #2 (=20 Final Hole Diameter)
       #<Z_StartOfCut> =  #3 (=0 Z Start of Cut)
@@ -51,4 +51,4 @@ Z#<Z_StartOfCut>
 G49               ; cancel tool length offset
 G53 G0 X0 Z0      ; move in machine coordinates
 
-o<id>endsub
+o<i-diameter>endsub

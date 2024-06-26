@@ -1,6 +1,6 @@
 
 (info: test OD subroutine - lathe turning)
-o<od> sub
+o<o-diameter> sub
       #<Material_Dia> =  #1 (=20.0 Material Diameter)
          #<Final_Dia> =  #2 (=10.0 Final Diameter)
          #<Depth_Cut> =  #3 (=0.20 Depth of Cut)
@@ -39,5 +39,4 @@ G0 X[#<Current_Dia>]
 M5              ; stop spindle
 Z#<Z_StartOfCut>
 G49                 ; cancel tool length offset compensation
-;G53 G0 X0 Z0        ; move in machine coordinates
-o<od> endsub
+o<o-diameter> endsub

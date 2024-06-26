@@ -3,4 +3,4 @@ autosave.halscope
 config.var
 config.var.bak
 position.txt
-tool.tbl
+*.pyc

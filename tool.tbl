@@ -1,0 +1,4 @@
+T0 P0 ;no tool
+T1 P1 X-1 Z0
+T2 P2 X-2 Z1
+T3 P3 X-3 Z1 

@@ -1,4 +1,9 @@
 # spindle setup
+
+setp lowpass.spindle-rpm.gain 0.0100000
+setp scale.s-rpm.gain 0.01666666666666
+
+#PWM
 # PA1:PWM,  PA0:FORWARD,  PA3:REWERSE
 setp arisc.pwm.2.freq-cmd    1000.0 # Hz
 setp arisc.pwm.2.dc-scale    1250.0 # max RPM
@@ -8,7 +13,7 @@ setp arisc.pwm.2.pwm-invert  0
 setp arisc.pwm.2.dir-port    3  # 3=PD
 setp arisc.pwm.2.dir-pin     11
 setp arisc.pwm.2.dir-invert  0
-net s-rpm  spindle.0.speed-out  arisc.pwm.2.dc-cmd
+
 net s-en        spindle.0.on         arisc.pwm.2.enable
 net s-forward   spindle.0.forward    arisc.gpio.PA0-out
 net s-reverse   spindle.0.reverse    arisc.gpio.PA3-out
@@ -18,16 +23,40 @@ net s-reverse   spindle.0.reverse    arisc.gpio.PA3-out
 setp arisc.encoder.0.pos-scale  1600 #
 setp arisc.encoder.0.A-port     2   # 2=PC
 setp arisc.encoder.0.A-pin      4   # in front of spindle
-#setp arisc.encoder.0.A-invert   1
+#setp arisc.encoder.0.A-invert  1
 setp arisc.encoder.0.B-port     2   # 2=PC
-setp arisc.encoder.0.B-pin      7  # in front of spindle.
-#setp arisc.encoder.0.B-invert   1
+setp arisc.encoder.0.B-pin      7   # in front of spindle.
+#setp arisc.encoder.0.B-invert  1
 setp arisc.encoder.0.Z-port     3   # 3=PD
-setp arisc.encoder.0.Z-pin      14   #
+setp arisc.encoder.0.Z-pin      14
 setp arisc.encoder.0.enable     1
 setp arisc.encoder.0.x4-mode    0
 setp arisc.encoder.0.simulate-index	1
 
-net s-position     arisc.encoder.0.pos           => spindle.0.revs
-net s-velocity     arisc.encoder.0.vel           => spindle.0.speed-in     #near.0.in2
+net s-position     arisc.encoder.0.pos => spindle.0.revs
 net s-index-enable arisc.encoder.0.index-enable <=> spindle.0.index-enable
+
+net s-velocity-rpm          arisc.encoder.0.vel-rpm => lowpass.spindle-rpm.in
+net s-velocity-rpm-filtered lowpass.spindle-rpm.out => scale.s-rpm.in 
+net s-velocity-rps          scale.s-rpm.out         => spindle.0.speed-in
+
+
+# PID
+setp pid.s.Pgain     0.5
+setp pid.s.Igain     0
+setp pid.s.Dgain     0
+setp pid.s.bias      0
+setp pid.s.FF0       1
+setp pid.s.deadband  15
+setp pid.s.maxoutput 1250
+
+net s-en              pid.s.enable
+net s-index-enable    pid.s.index-enable
+
+net s-velocity-rpm-filtered => pid.s.feedback
+
+net s-rpm  spindle.0.speed-out => pid.s.command
+net pid-spindle-output  pid.s.output => arisc.pwm.2.dc-cmd 
+
+#net temp spindle.0.speed-out arisc.pwm.2.dc-cmd 
+

@@ -220,7 +220,7 @@ class hal_interface:
         self.abort = abort
 
         self.wheelreset = self.c["wheel-reset"]
-        self.spindle_velocity = self.c["spindle-velocity"] * 60
+        self.spindle_velocity = self.c["spindle-velocity"]
         if self.spindle_velocity < 100:
             self.spindle_pos = 360 * (self.c["spindle-pos"] % 1)
         else:

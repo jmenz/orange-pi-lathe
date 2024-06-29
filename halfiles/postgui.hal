@@ -9,7 +9,7 @@ net abort arisc.gpio.PG6-in-not => touchy.abort
 net single_block arisc.gpio.PG9-in => touchy.single-block
 
 net s-position => touchy.spindle-pos
-net s-velocity => touchy.spindle-velocity
+net s-velocity-rpm-filtered => touchy.spindle-velocity
 
 ######### INDICATOR
 net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out-not

@@ -55,7 +55,7 @@ net s-index-enable    pid.s.index-enable
 
 net s-velocity-rpm-filtered => pid.s.feedback
 
-net s-rpm  spindle.0.speed-out => pid.s.command
+net s-rpm  spindle.0.speed-out-abs => pid.s.command
 net pid-spindle-output  pid.s.output => arisc.pwm.2.dc-cmd 
 
 #net temp spindle.0.speed-out arisc.pwm.2.dc-cmd 

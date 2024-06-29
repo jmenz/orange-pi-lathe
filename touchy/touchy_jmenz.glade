@@ -649,14 +649,14 @@
                                       </widget>
                                     </child>
                                     <child>
-                                      <widget class="GtkButton" id="home_selected">
-                                        <property name="label" translatable="yes">Home Selected</property>
+                                      <widget class="GtkButton" id="home_x">
+                                        <property name="label" translatable="yes">Home X</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="focus_on_click">False</property>
-                                        <signal name="clicked" handler="on_home_selected_clicked"/>
+                                        <signal name="clicked" handler="on_home_x_clicked"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -664,14 +664,14 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <widget class="GtkButton" id="unhome_selected">
-                                        <property name="label" translatable="yes">Unhome Selected</property>
+                                      <widget class="GtkButton" id="unhome_x">
+                                        <property name="label" translatable="yes">Unhome X</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="focus_on_click">False</property>
-                                        <signal name="clicked" handler="on_unhome_selected_clicked"/>
+                                        <signal name="clicked" handler="on_unhome_x_clicked"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -681,15 +681,15 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <widget class="GtkToggleButton" id="wheelx">
-                                        <property name="label" translatable="yes">  X  </property>
+                                      <widget class="GtkButton" id="home_z">
+                                        <property name="label" translatable="yes">Home Z</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="active">True</property>
-                                        <signal name="clicked" handler="on_wheelx_clicked"/>
+                                        <signal name="clicked" handler="on_home_z_clicked"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">2</property>
@@ -697,15 +697,15 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <widget class="GtkToggleButton" id="wheelz">
-                                        <property name="label" translatable="yes">  Z  </property>
+                                      <widget class="GtkButton" id="unhome_z">
+                                        <property name="label" translatable="yes">Unhome Z</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="focus_on_click">False</property>
                                         <property name="active">True</property>
-                                        <signal name="clicked" handler="on_wheelz_clicked"/>
+                                        <signal name="clicked" handler="on_unhome_z_clicked"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">2</property>

@@ -102,9 +102,6 @@ class touchy:
 
 	        self.wTree = gtk.glade.XML(self.gladefile) 
 
-		for w in ['wheelx', 'wheelz']:
-			self.wTree.get_widget(w).get_child().set_property('width-chars', 6)
-
 		for widget in self.wTree.get_widget_prefix(''):
 			widget.unset_flags(gtk.CAN_FOCUS)
 		self.wTree.get_widget('MainWindow').set_flags(gtk.CAN_FOCUS)
@@ -114,7 +111,6 @@ class touchy:
                 self.num_filechooser_labels = 11
                 self.num_listing_labels = 20
 
-                self.wheelxyz = 0
                 self.wheelinc = 0
                 self.wheel = "fo"
                 self.radiobutton_mask = 0
@@ -358,16 +354,16 @@ class touchy:
                         "on_flood_off_clicked" : self.linuxcnc.flood_off,
                         "on_home_all_clicked" : self.linuxcnc.home_all,
                         "on_unhome_all_clicked" : self.linuxcnc.unhome_all,
-                        "on_home_selected_clicked" : self.home_selected,
-                        "on_unhome_selected_clicked" : self.unhome_selected,
+                        "on_home_x_clicked" : self.home_x_axis,
+                        "on_unhome_x_clicked" : self.unhome_x_axis,
+                        "on_home_z_clicked" : self.home_z_axis,
+                        "on_unhome_z_clicked" : self.unhome_z_axis,
                         "on_fo_clicked" : self.fo,
                         "on_so_clicked" : self.so,
                         "on_rpm_clicked" : self.rpm,
                         "on_mv_clicked" : self.mv,
                         "on_manual_clicked" : self.set_manual,
                         "on_scrolling_clicked" : self.scrolling,
-                        "on_wheelx_clicked" : self.wheelx,
-                        "on_wheelz_clicked" : self.wheelz,
                         "on_override_limits_clicked" : self.linuxcnc.override_limits,
                         "on_reset_spinde_index_clicked" : self.reset_spindle_index,
                         "on_spindle_forward_clicked" : self.linuxcnc.spindle_forward,
@@ -490,19 +486,17 @@ class touchy:
                 self.prefs.putpref('blockdel', 0)
                 self.linuxcnc.blockdel_off(b)
 
-        def wheelx(self, b):
-                if self.radiobutton_mask: return
-                self.wheelxyz = 0
+        def home_x_axis(self, b):
+                self.linuxcnc.home_selected(0)
 
-        def wheelz(self, b):
-                if self.radiobutton_mask: return
-                self.wheelxyz = 2
+        def unhome_x_axis(self, b):
+                self.linuxcnc.unhome_selected(0)
 
-        def home_selected(self, b):
-                self.linuxcnc.home_selected(self.wheelxyz)
+        def home_z_axis(self, b):
+                self.linuxcnc.home_selected(2)
 
-        def unhome_selected(self, b):
-                self.linuxcnc.unhome_selected(self.wheelxyz)
+        def unhome_z_axis(self, b):
+                self.linuxcnc.unhome_selected(2)
 
         def reset_spindle_index(self, b):
             self.hal.resetSpindel(1)
@@ -580,9 +574,8 @@ class touchy:
                           "flood_on", "flood_off", "mist_on", "mist_off",
                           "g", "gp", "m", "t", "set_tool", "set_origin", "macro",
                           "estop", "estop_reset", "machine_off", "machine_on",
-                          "home_all", "unhome_all", "home_selected", "unhome_selected",
+                          "home_all", "unhome_all", "home_x", "unhome_x", "home_z", "unhome_z",
                           "fo", "so", "rpm", "mv", "manual_mode", "scrolling",
-                          "wheelx", "wheelz",
                           "override_limits",
                           "spindle_forward", "spindle_off", "spindle_reverse",
                           "spindle_faster", "spindle_slower",
@@ -761,10 +754,7 @@ class touchy:
                     self.wTree.get_widget("rpm").hide();
 
 		    if self.wheel == "rpm": self.wheel = "fo"
-		
-		
-                set_active(self.wTree.get_widget("wheelx"), self.wheelxyz == 0)
-                set_active(self.wTree.get_widget("wheelz"), self.wheelxyz == 2)
+
                 set_active(self.wTree.get_widget("fo"), self.wheel == "fo")
                 set_active(self.wTree.get_widget("so"), self.wheel == "so")
                 set_active(self.wTree.get_widget("rpm"), self.wheel == "rpm")

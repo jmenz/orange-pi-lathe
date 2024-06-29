@@ -1,23 +1,25 @@
 
-(info: test OD subroutine - lathe turning)
+(info: Outer diamenter -- Turning)
 o<o-diameter> sub
       #<Material_Dia> =  #1 (=20.0 Material Diameter)
          #<Final_Dia> =  #2 (=10.0 Final Diameter)
-         #<Depth_Cut> =  #3 (=0.20 Depth of Cut)
-#<Back_Travel_Offset> =  #4 (=0.50 Back Travel Offset)
-      #<SurfaceSpeed> =  #5 (=30 Surface Speed)
-          #<FeedRate> =  #6 (=20 Feed Rate)
-           #<Max_RPM> =  #7 (=1200 Max Spindle RPM)
-        #<Z_EndOfCut> =  #8 (=-10.0 End of Cut)
-      #<Z_StartOfCut> =  #9 (=0 Start of Cut)
+      #<Z_StartOfCut> =  #3 (=0 Start of Cut)
+        #<Z_EndOfCut> =  #4 (=-10.0 End of Cut)
+         #<Depth_Cut> =  #5 (=0.2 Depth of Cut)
+          #<FeedRate> =  #6 (=30 Feed Rate)
+      #<SurfaceSpeed> =  #7 (=40 Surface Speed)
+#<Back_Travel_Offset> =  #8 (=0.5 Back Travel Offset)
+           #<Max_RPM> =  #9 (=1200 Max RPM)
+       #<Spring_Cuts> = #10 (=0 Spring Cuts)
 
-; G43: toolength offset
+; G43: toollength offset
 ; G7:  diameter mode
 ; G96: constant surface speed
 G43 G7 G96 D#<Max_RPM> S#<SurfaceSpeed>
 
 ; Turn the OD
 M3
+
 G0 X#<Material_Dia> Z#<Z_StartOfCut>
 #<Current_Dia>=#<Material_Dia>
 
@@ -35,8 +37,17 @@ O101   endif
        Z#<Z_StartOfCut>
 o100 endwhile
 
-G0 X[#<Current_Dia>]
+o102 repeat [#<Spring_Cuts>]
+       G1 X#<Final_Dia>
+       Z#<Z_EndOfCut>
+       X[#<Final_Dia>]
+       G0 X[#<Final_Dia>+#<Back_Travel_Offset>]
+       Z#<Z_StartOfCut>
+o102 endrepeat
+
+G0 X[#<Final_Dia>]
 M5              ; stop spindle
 Z#<Z_StartOfCut>
 G49                 ; cancel tool length offset compensation
+
 o<o-diameter> endsub

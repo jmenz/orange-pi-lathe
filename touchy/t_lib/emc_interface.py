@@ -23,6 +23,7 @@ class emc_control:
                 self.sb = 0;
                 self.jog_velocity = 10
                 self.mdi = 0
+                self.spindle_dir = self.emc.SPINDLE_OFF
                 self.listing = listing
                 self.error = error
                 self.isjogging = [0,0,0,0,0,0,0,0,0]
@@ -117,20 +118,28 @@ class emc_control:
                 self.emccommand.mode(self.emc.MODE_MANUAL)
                 self.emccommand.override_limits()
 
-        def spindle_forward(self, b):
+        def spindle_forward(self, speed):
                 if self.masked: return
+                self.spindle_dir = self.emc.SPINDLE_FORWARD
                 self.emccommand.mode(self.emc.MODE_MANUAL)
-                self.emccommand.spindle(1, 1, 0);
+                self.emccommand.spindle(self.spindle_dir, speed, 0);
 
         def spindle_off(self, b):
                 if self.masked: return
+                self.spindle_dir = self.emc.SPINDLE_OFF
                 self.emccommand.mode(self.emc.MODE_MANUAL)
-                self.emccommand.spindle(0);
+                self.emccommand.spindle(self.spindle_dir);
 
-        def spindle_reverse(self, b):
+        def spindle_reverse(self, speed):
+                if self.masked: return
+                self.spindle_dir = self.emc.SPINDLE_REVERSE
+                self.emccommand.mode(self.emc.MODE_MANUAL)
+                self.emccommand.spindle(self.spindle_dir, speed, 0);
+
+        def spindle_set_speed(self, speed):
                 if self.masked: return
                 self.emccommand.mode(self.emc.MODE_MANUAL)
-                self.emccommand.spindle(-1, 1, 0);
+                self.emccommand.spindle(self.spindle_dir, speed, 0);
 
         def spindle_faster(self, b):
                 if self.masked: return

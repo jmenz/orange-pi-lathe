@@ -140,6 +140,12 @@ class touchy:
                 self.velocity_limit = float(self.ini.find("DISPLAY", "MAX_LINEAR_VELOCITY"))
                 self.default_velocity = float(self.ini.find("DISPLAY", "DEFAULT_LINEAR_VELOCITY"))
 
+                self.spindle_default_speed = float(self.ini.find("DISPLAY", "SPINDLE_DEFAULT_SPEED"))
+                self.spindle_increment = float(self.ini.find("DISPLAY", "SPINDLE_INCREMENT"))
+                self.spindle_max_speed = float(self.ini.find("DISPLAY", "SPINDLE_MAX_SPEED"))
+
+                self.spindle_speed_val = self.prefs.getpref('spindle_speed', self.spindle_default_speed, float)
+
                 # initial screen setup
                 if os.path.exists(themedir):
                     model = self.wTree.get_widget("theme_choice").get_model()
@@ -293,7 +299,7 @@ class touchy:
                 else:
                         self.linuxcnc.opstop_off(0)                        
 
-		self.linuxcnc.emccommand.program_open(empty_program.name)
+		        self.linuxcnc.emccommand.program_open(empty_program.name)
 
                 self.linuxcnc.max_velocity(self.mv_val)
                                 
@@ -366,11 +372,11 @@ class touchy:
                         "on_scrolling_clicked" : self.scrolling,
                         "on_override_limits_clicked" : self.linuxcnc.override_limits,
                         "on_reset_spinde_index_clicked" : self.reset_spindle_index,
-                        "on_spindle_forward_clicked" : self.linuxcnc.spindle_forward,
+                        "on_spindle_forward_clicked" : self.spindle_forward,
                         "on_spindle_off_clicked" : self.linuxcnc.spindle_off,
-                        "on_spindle_reverse_clicked" : self.linuxcnc.spindle_reverse,
-                        "on_spindle_slower_clicked" : self.linuxcnc.spindle_slower,
-                        "on_spindle_faster_clicked" : self.linuxcnc.spindle_faster,
+                        "on_spindle_reverse_clicked" : self.spindle_reverse,
+                        "on_spindle_slower_clicked" : self.spindle_slower,
+                        "on_spindle_faster_clicked" : self.spindle_faster,
                         "on_toolset_fixture_clicked" : self.toolset_fixture,
                         "on_toolset_workpiece_clicked" : self.toolset_workpiece,
                         "on_changetheme_clicked" : self.change_theme,
@@ -387,6 +393,7 @@ class touchy:
                 self.set_dynamic_tabs()
 
                 atexit.register(self.save_maxvel_pref)
+                atexit.register(self.save_spindle_speed)
 
                 self.setfont()
 
@@ -499,7 +506,23 @@ class touchy:
                 self.linuxcnc.unhome_selected(2)
 
         def reset_spindle_index(self, b):
-            self.hal.resetSpindel(1)
+                self.hal.resetSpindel(1)
+
+        def spindle_forward(self, b):
+                self.linuxcnc.spindle_forward(self.spindle_speed_val)
+
+        def spindle_reverse(self, b):
+                self.linuxcnc.spindle_reverse(self.spindle_speed_val)
+
+        def spindle_faster(self, b):
+            if(self.spindle_speed_val < self.spindle_max_speed):
+                self.spindle_speed_val += self.spindle_increment
+                self.linuxcnc.spindle_set_speed(self.spindle_speed_val)
+
+        def spindle_slower(self, b):
+            if(self.spindle_speed_val > 0):
+                self.spindle_speed_val -= self.spindle_increment
+                self.linuxcnc.spindle_set_speed(self.spindle_speed_val)
 
         def fo(self, b):
                 if self.radiobutton_mask: return
@@ -692,12 +715,13 @@ class touchy:
 
         def wheelRPMUpdate(self, d):
                 if self.hal.wheelreset:
-                   self.linuxcnc.spindle_off(0)
+                   self.spindle_speed_val = self.spindle_default_speed
                 else:
-                   if d > 0:
-                       self.linuxcnc.spindle_faster(0)
-                   if d < 0:
-                       self.linuxcnc.spindle_slower(0)
+                    self.spindle_speed_val += d * self.spindle_increment
+                    if self.spindle_speed_val < 0 : self.spindle_speed_val = 0
+                    if self.spindle_speed_val > self.spindle_max_speed : self.spindle_speed_val = 0
+                    
+                self.linuxcnc.spindle_set_speed(self.spindle_speed_val)
 
         def wheelMvUpdate(self, d):
                 if self.hal.wheelreset:
@@ -845,7 +869,10 @@ class touchy:
 			c.terminate()
 
         def save_maxvel_pref(self):
-                self.prefs.putpref('maxvel', self.mv_val, int)
+            self.prefs.putpref('maxvel', self.mv_val, int)
+
+        def save_spindle_speed(self):
+            self.prefs.putpref('spindle_speed', self.spindle_speed_val, float)
 
 	def postgui(self):
 		postgui_halfile = self.ini.find("HAL", "POSTGUI_HALFILE")

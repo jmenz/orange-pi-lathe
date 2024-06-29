@@ -719,7 +719,8 @@ class touchy:
                 else:
                     self.spindle_speed_val += d * self.spindle_increment
                     if self.spindle_speed_val < 0 : self.spindle_speed_val = 0
-                    if self.spindle_speed_val > self.spindle_max_speed : self.spindle_speed_val = 0
+                    if self.spindle_speed_val > self.spindle_max_speed :
+                        self.spindle_speed_val = self.spindle_max_speed
                     
                 self.linuxcnc.spindle_set_speed(self.spindle_speed_val)
 

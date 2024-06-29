@@ -688,7 +688,6 @@
                                         <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="focus_on_click">False</property>
-                                        <property name="active">True</property>
                                         <signal name="clicked" handler="on_home_z_clicked"/>
                                       </widget>
                                       <packing>
@@ -704,7 +703,6 @@
                                         <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="focus_on_click">False</property>
-                                        <property name="active">True</property>
                                         <signal name="clicked" handler="on_unhome_z_clicked"/>
                                       </widget>
                                       <packing>

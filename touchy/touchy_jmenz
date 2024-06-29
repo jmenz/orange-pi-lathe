@@ -297,9 +297,9 @@ class touchy:
                 if self.prefs.getpref('opstop', 1):
                         self.linuxcnc.opstop_on(0)
                 else:
-                        self.linuxcnc.opstop_off(0)                        
+                        self.linuxcnc.opstop_off(0)
 
-		        self.linuxcnc.emccommand.program_open(empty_program.name)
+                self.linuxcnc.emccommand.program_open(empty_program.name)
 
                 self.linuxcnc.max_velocity(self.mv_val)
                                 
@@ -750,77 +750,76 @@ class touchy:
                         self.linuxcnc.continuous_jog_velocity(self.jog_vel_val)
 
         def periodic_radiobuttons(self):
-                self.radiobutton_mask = 1
-                s = linuxcnc.stat()
-                s.poll()
-                # Show effect of external override inputs
-                self.fo_val = s.feedrate * 100
-                self.so_val = s.spindle[0]['override'] * 100
-                self.mv_val = s.max_velocity
+            self.radiobutton_mask = 1
+            s = linuxcnc.stat()
+            s.poll()
+            # Show effect of external override inputs
+            self.fo_val = s.feedrate * 100
+            self.so_val = s.spindle[0]['override'] * 100
+            self.mv_val = s.max_velocity
 
-                self.hal.resetSpindel(0)
-                
-                self.wTree.get_widget("scrolling").set_sensitive(self.tab == 3)
+            self.hal.resetSpindel(0)
+            
+            self.wTree.get_widget("scrolling").set_sensitive(self.tab == 3)
 
-                if self.tab != 3 and self.wheel == "scrolling":
-                        self.wheel = "fo"
+            if self.tab != 3 and self.wheel == "scrolling":
+                self.wheel = "fo"
 
+            if (self.status.is_manual_mode == 1):
+                self.wTree.get_widget("fo").hide()
+                self.wTree.get_widget("so").hide()
+                self.wTree.get_widget("rpm").show()
 
+                if self.wheel == "fo" or self.wheel == "so": self.wheel = "mv"
+            else:
+                self.wTree.get_widget("fo").show()
+                self.wTree.get_widget("so").show()
+                self.wTree.get_widget("rpm").hide()
+
+                if self.wheel == "rpm": self.wheel = "fo"
+
+            set_active(self.wTree.get_widget("fo"), self.wheel == "fo")
+            set_active(self.wTree.get_widget("so"), self.wheel == "so")
+            set_active(self.wTree.get_widget("rpm"), self.wheel == "rpm")
+            set_active(self.wTree.get_widget("mv"), self.wheel == "mv")
+            set_active(self.wTree.get_widget("manual_mode"), self.status.is_manual_mode == 1)
+            set_active(self.wTree.get_widget("scrolling"), self.wheel == "scrolling")
+            set_active(self.wTree.get_widget("pointer_show"), not self.invisible_cursor)
+            set_active(self.wTree.get_widget("pointer_hide"), self.invisible_cursor)
+            set_active(self.wTree.get_widget("toolset_workpiece"), not self.g10l11)
+            set_active(self.wTree.get_widget("toolset_fixture"), self.g10l11)
+            self.radiobutton_mask = 0
+
+            d = self.hal.wheel()
+            if self.wheel == "fo":
+                self.wheelFoUpdate(d)
+
+            if self.wheel == "so":
+                self.wheelSoUpdate(d)
+
+            if self.wheel == "rpm":
+                self.wheelRPMUpdate(d)
+
+            if self.wheel == "mv":
                 if (self.status.is_manual_mode == 1):
-                    self.wTree.get_widget("fo").hide();
-                    self.wTree.get_widget("so").hide();
-                    self.wTree.get_widget("rpm").show();
-
-		    if self.wheel == "fo" or self.wheel == "so": self.wheel = "mv"
+                    self.wheelJogUpdate(d)
                 else:
-                    self.wTree.get_widget("fo").show();
-                    self.wTree.get_widget("so").show();
-                    self.wTree.get_widget("rpm").hide();
+                    self.wheelMvUpdate(d)
+                    
+            if self.wheel == "scrolling":
+		        d0 = d * 10 ** (2-self.wheelinc)
+		        if d != 0: self.listing.next(None, d0)
 
-		    if self.wheel == "rpm": self.wheel = "fo"
+            set_label(self.wTree.get_widget("fo").child, "FO: %d%%" % self.fo_val)
+            set_label(self.wTree.get_widget("so").child, "SO: %d%%" % self.so_val)
 
-                set_active(self.wTree.get_widget("fo"), self.wheel == "fo")
-                set_active(self.wTree.get_widget("so"), self.wheel == "so")
-                set_active(self.wTree.get_widget("rpm"), self.wheel == "rpm")
-                set_active(self.wTree.get_widget("mv"), self.wheel == "mv")
-                set_active(self.wTree.get_widget("manual_mode"), self.status.is_manual_mode == 1)
-                set_active(self.wTree.get_widget("scrolling"), self.wheel == "scrolling")
-                set_active(self.wTree.get_widget("pointer_show"), not self.invisible_cursor)
-                set_active(self.wTree.get_widget("pointer_hide"), self.invisible_cursor)
-                set_active(self.wTree.get_widget("toolset_workpiece"), not self.g10l11)
-                set_active(self.wTree.get_widget("toolset_fixture"), self.g10l11)
-                self.radiobutton_mask = 0
+            if (self.status.is_manual_mode == 1):
+                set_label(self.wTree.get_widget("rpm").child, "RPM: %d" % self.spindle_speed_val)
+                set_label(self.wTree.get_widget("mv").child, "MV: %.2f" % self.jog_vel_val)
+            else:
+                set_label(self.wTree.get_widget("mv").child, "MV: %.2f" % self.mv_val)
 
-                d = self.hal.wheel()
-                if self.wheel == "fo":
-                    self.wheelFoUpdate(d)
-
-                if self.wheel == "so":
-                    self.wheelSoUpdate(d)
-
-                if self.wheel == "rpm":
-                    self.wheelRPMUpdate(d)
-
-                if self.wheel == "mv":
-                    if (self.status.is_manual_mode == 1):
-                        self.wheelJogUpdate(d)
-                    else:
-                        self.wheelMvUpdate(d)
-                        
-		if self.wheel == "scrolling":
-			d0 = d * 10 ** (2-self.wheelinc)
-			if d != 0: self.listing.next(None, d0)
-
-                set_label(self.wTree.get_widget("fo").child, "FO: %d%%" % self.fo_val)
-                set_label(self.wTree.get_widget("so").child, "SO: %d%%" % self.so_val)
-
-		if (self.status.is_manual_mode == 1):
-		    set_label(self.wTree.get_widget("mv").child, "MV: %.2f" % self.jog_vel_val)
-		else:
-		    set_label(self.wTree.get_widget("mv").child, "MV: %.2f" % self.mv_val)
-
-                        
-                return True
+            return True
         
         def fullscreen(self):
                 if(self.fullscreen_activated == 1): return

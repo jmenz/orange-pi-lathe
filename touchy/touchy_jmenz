@@ -714,15 +714,17 @@ class touchy:
                     if d != 0: self.linuxcnc.spindle_override(self.so_val)
 
         def wheelRPMUpdate(self, d):
+                current_speed = self.spindle_speed_val
                 if self.hal.wheelreset:
                    self.spindle_speed_val = self.spindle_default_speed
                 else:
                     self.spindle_speed_val += d * self.spindle_increment
-                    if self.spindle_speed_val < 0 : self.spindle_speed_val = 0
+                    if self.spindle_speed_val <= 0 : self.spindle_speed_val = 0
                     if self.spindle_speed_val > self.spindle_max_speed :
                         self.spindle_speed_val = self.spindle_max_speed
-                    
-                self.linuxcnc.spindle_set_speed(self.spindle_speed_val)
+
+                if(current_speed != self.spindle_speed_val):
+                    self.linuxcnc.spindle_set_speed(self.spindle_speed_val)
 
         def wheelMvUpdate(self, d):
                 if self.hal.wheelreset:

@@ -138,7 +138,8 @@ class emc_control:
 
         def spindle_set_speed(self, speed):
                 if self.masked: return
-                self.emccommand.mode(self.emc.MODE_MANUAL)
+                if self.spindle_dir == self.emc.SPINDLE_OFF : return
+
                 self.emccommand.spindle(self.spindle_dir, speed, 0);
 
         def spindle_faster(self, b):

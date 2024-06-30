@@ -41,22 +41,29 @@ net s-velocity-rpm-filtered lowpass.spindle-rpm.out => scale.s-rpm.in
 net s-velocity-rps          scale.s-rpm.out         => spindle.0.speed-in
 
 
-# PID
-setp pid.s.Pgain     0.5
-setp pid.s.Igain     0
-setp pid.s.Dgain     0
-setp pid.s.bias      0
-setp pid.s.FF0       1
-setp pid.s.deadband  15
-setp pid.s.maxoutput 1250
+setp lincurve.0.x-val-00 0
+setp lincurve.0.y-val-00 0
 
-net s-en              pid.s.enable
-net s-index-enable    pid.s.index-enable
+setp lincurve.0.x-val-01 25
+setp lincurve.0.y-val-01 100
 
-net s-velocity-rpm-filtered => pid.s.feedback
+setp lincurve.0.x-val-02 400
+setp lincurve.0.y-val-02 400
 
-net s-rpm  spindle.0.speed-out-abs => pid.s.command
-net pid-spindle-output  pid.s.output => arisc.pwm.2.dc-cmd 
+setp lincurve.0.x-val-03 600
+setp lincurve.0.y-val-03 580
 
-#net temp spindle.0.speed-out arisc.pwm.2.dc-cmd 
+setp lincurve.0.x-val-04 1000
+setp lincurve.0.y-val-04 920
+
+setp lincurve.0.x-val-05 1250
+setp lincurve.0.y-val-05 1170
+
+setp lincurve.0.x-val-06 1300
+setp lincurve.0.y-val-06 1250
+
+net s-rpm-commanded  spindle.0.speed-out-abs  lincurve.0.in
+net s-rpm-correced   lincurve.0.out           arisc.pwm.2.dc-cmd
+
+#net spind-direct spindle.0.speed-out-abs arisc.pwm.2.dc-cmd 
 

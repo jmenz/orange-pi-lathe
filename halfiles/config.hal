@@ -6,6 +6,7 @@ loadrt mux8 count=2
 loadrt estop_latch
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm
+loadrt lincurve personality=7
 loadrt pid names=pid.s
 #loadrt near count=1 # NOT sure if I would need it.
 
@@ -19,7 +20,8 @@ addf arisc.pwm.write          servo-thread
 addf arisc.encoder.read       servo-thread
 addf lowpass.spindle-rpm      servo-thread
 addf scale.s-rpm              servo-thread
-addf pid.s.do-pid-calcs       servo-thread
+addf lincurve.0               servo-thread
+#addf pid.s.do-pid-calcs       servo-thread
 #addf near.0                  servo-thread
 
 

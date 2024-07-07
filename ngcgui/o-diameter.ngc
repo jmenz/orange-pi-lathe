@@ -48,6 +48,6 @@ o102 endrepeat
 G0 X[#<Final_Dia>]
 M5              ; stop spindle
 Z#<Z_StartOfCut>
-G49                 ; cancel tool length offset compensation
+;G49                 ; cancel tool length offset compensation
 
 o<o-diameter> endsub

@@ -283,7 +283,7 @@ class mdi_control:
         if g10l11:
             self.set_text("L11", 1)
         else:
-            self.set_text("L10", 1)
+            self.set_text("L1", 1)
         self.next(0)
         self.set_text("P%d" % tool, 2)
         self.next(0) # go to first axis

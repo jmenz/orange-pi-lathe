@@ -93,6 +93,8 @@ o<if25>   if [ [#<_lathe_diameter_mode> EQ 1] AND [ #<_lathe_radius_mode> EQ 1] 
 o<if25>   endif
 o<if20> endif
 
+G43
+
 G#<mode>
 
 o<if60>  if [#<verbose> GT 0]

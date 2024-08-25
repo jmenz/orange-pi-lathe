@@ -20,6 +20,7 @@ setp arisc.pwm.1.dc-cmd     0.5 # 50%
 setp arisc.pwm.1.dc-max-t   5000
 setp arisc.pwm.1.dir-hold   50000
 setp arisc.pwm.1.dir-setup  50000
+setp arisc.pwm.1.dir-invert 1
 setp arisc.pwm.1.pwm-port   0 # PA
 setp arisc.pwm.1.pwm-pin    14
 setp arisc.pwm.1.dir-port   0 # PA

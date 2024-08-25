@@ -168,15 +168,14 @@ class emc_control:
         
         def continuous_jog(self, axis, direction):
                 if self.masked: return
-                self.emccommand.mode(self.emc.MODE_MANUAL)
-                self.set_motion_mode()
                 if direction == 0:
                         self.isjogging[axis] = 0
                         self.emccommand.jog(self.emc.JOG_STOP, 0, axis)
                 else:
+                        self.emccommand.mode(self.emc.MODE_MANUAL)
+                        self.set_motion_mode()
                         self.isjogging[axis] = direction
-                        self.emccommand.jog(self.emc.JOG_CONTINUOUS
-                        ,0 ,axis ,direction * self.jog_velocity)
+                        self.emccommand.jog(self.emc.JOG_CONTINUOUS, 0, axis, direction * self.jog_velocity)
                 
 	def quill_up(self):
                 if self.masked: return

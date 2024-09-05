@@ -2,7 +2,7 @@
 # PA12:EN, PA11:DIR, PA6:STEP
 setp arisc.pwm.0.pos-scale  [JOINT_0]SCALE
 setp arisc.pwm.0.dc-cmd     0.5 # 50%
-setp arisc.pwm.0.dc-max-t   5000
+#setp arisc.pwm.0.dc-max-t   1000
 setp arisc.pwm.0.dir-hold   50000
 setp arisc.pwm.0.dir-setup  50000
 setp arisc.pwm.0.pwm-port   0 # PA
@@ -17,9 +17,9 @@ net x-en       joint.0.amp-enable-out  arisc.pwm.0.enable  arisc.gpio.PA12-out
 # PA12:EN, PA13:DIR, PA14:STEP,
 setp arisc.pwm.1.pos-scale  [JOINT_1]SCALE
 setp arisc.pwm.1.dc-cmd     0.5 # 50%
-setp arisc.pwm.1.dc-max-t   5000
-setp arisc.pwm.1.dir-hold   50000
-setp arisc.pwm.1.dir-setup  50000
+#setp arisc.pwm.1.dc-max-t   5000
+setp arisc.pwm.1.dir-hold   20000
+setp arisc.pwm.1.dir-setup  20000
 setp arisc.pwm.1.dir-invert 1
 setp arisc.pwm.1.pwm-port   0 # PA
 setp arisc.pwm.1.pwm-pin    14

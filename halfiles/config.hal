@@ -1,13 +1,13 @@
 # load RT components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt arisc pwm="p,p,f" out="PA0,PA3,PA12,PG8" in="PA7,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=6
+loadrt arisc pwm="p,p,f" out="PA0,PA3,PA12,PG8" in="PA7,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=4
 loadrt mux8 count=2
 loadrt estop_latch
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm
 loadrt lincurve personality=7
-loadrt pid names=pid.s
+#loadrt pid names=pid.s
 #loadrt near count=1 # NOT sure if I would need it.
 
 # add RT functions to the servo thread
@@ -22,7 +22,7 @@ addf lowpass.spindle-rpm      servo-thread
 addf scale.s-rpm              servo-thread
 addf lincurve.0               servo-thread
 #addf pid.s.do-pid-calcs       servo-thread
-#addf near.0                  servo-thread
+#addf near.0                   servo-thread
 
 
 # E-Stop
@@ -41,21 +41,21 @@ net end-z arisc.gpio.PC2-in-not     => joint.1.pos-lim-sw-in
 
 #Linear scales
 #X Axis:
-setp arisc.encoder.3.A-port     0   # 0=PA
-setp arisc.encoder.3.A-pin      2   # 
-setp arisc.encoder.3.B-port     2   # 2=PC
-setp arisc.encoder.3.B-pin      3   # 
-setp arisc.encoder.3.x4-mode    1   # The config is inversed 1 means disabled
-setp arisc.encoder.3.enable     1
+#setp arisc.encoder.3.A-port     0   # 0=PA
+#setp arisc.encoder.3.A-pin      2   # 
+#setp arisc.encoder.3.B-port     2   # 2=PC
+#setp arisc.encoder.3.B-pin      3   # 
+#setp arisc.encoder.3.x4-mode    1   # The config is inversed 1 means disabled
+#setp arisc.encoder.3.enable     1
 #TODO: assign to Joint/Axis
 
 #Z Axis:
-setp arisc.encoder.4.A-port     0   # 0=PA
-setp arisc.encoder.4.A-pin      21  # 
-setp arisc.encoder.4.B-port     0   # 0=PA
-setp arisc.encoder.4.B-pin      18  # 
-setp arisc.encoder.4.x4-mode    1   # The config is inversed 1 means disabled
-setp arisc.encoder.4.enable     1
+#setp arisc.encoder.4.A-port     0   # 0=PA
+#setp arisc.encoder.4.A-pin      21  # 
+#setp arisc.encoder.4.B-port     0   # 0=PA
+#setp arisc.encoder.4.B-pin      18  # 
+#setp arisc.encoder.4.x4-mode    1   # The config is inversed 1 means disabled
+#setp arisc.encoder.4.enable     1
 #TODO: assign to Joint/Axis
 
 
@@ -69,12 +69,12 @@ net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
 
 
 #Touchy Wheel enc PA8:A, PA9:8
-setp arisc.encoder.5.A-port     0   # 0=PA
-setp arisc.encoder.5.A-pin      8  # 
-setp arisc.encoder.5.B-port     0   # 0=PA
-setp arisc.encoder.5.B-pin      9  # 
-setp arisc.encoder.5.x4-mode    0   # The config is inversed 1 means disabled
-setp arisc.encoder.5.enable     1
+setp arisc.encoder.3.A-port     0  # 0=PA
+setp arisc.encoder.3.A-pin      8  # 
+setp arisc.encoder.3.B-port     0  # 0=PA
+setp arisc.encoder.3.B-pin      9  # 
+setp arisc.encoder.3.x4-mode    0  # The config is inversed 1 means disabled
+setp arisc.encoder.3.enable     1
 
 
 

@@ -15,7 +15,7 @@ net s-velocity-rpm-filtered => touchy.spindle-velocity
 net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out-not
 
 ########## WHEEL
-net touchy-wheel-counts arisc.encoder.5.counts => touchy.wheel-counts
+net touchy-wheel-counts arisc.encoder.3.counts => touchy.wheel-counts
 
 ######### WHEELRESET
 setp arisc.gpio.PA10-pull 1

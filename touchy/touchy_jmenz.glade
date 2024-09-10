@@ -3743,7 +3743,7 @@ F1 S1</property>
                         <property name="border_width">5</property>
                         <child>
                           <widget class="GtkToggleButton" id="spindle_reverse">
-                            <property name="label" translatable="yes">Reverce</property>
+                            <property name="label" translatable="yes">Reverse</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>

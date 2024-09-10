@@ -1515,7 +1515,7 @@
                                     <property name="column_spacing">15</property>
                                     <property name="homogeneous">True</property>
                                     <child>
-                                      <widget class="GtkToggleButton" id="reset_spinde_index">
+                                      <widget class="GtkButton" id="reset_spinde_index">
                                         <property name="label" translatable="yes">Reset Spindle Angle</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>

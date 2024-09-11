@@ -10,13 +10,14 @@ loadrt lincurve personality=7
 #loadrt near count=1 # NOT sure if I would need it.
 
 # add RT functions to the servo thread
-addf arisc.gpio.read          servo-thread
+addf arisc.encoder.read       servo-thread
 addf arisc.pwm.read           servo-thread
+addf arisc.gpio.read          servo-thread
 addf motion-command-handler   servo-thread
 addf motion-controller        servo-thread
-addf arisc.gpio.write         servo-thread
 addf arisc.pwm.write          servo-thread
-addf arisc.encoder.read       servo-thread
+addf arisc.gpio.write         servo-thread
+
 addf lowpass.spindle-rpm      servo-thread
 addf scale.s-rpm              servo-thread
 addf lincurve.0               servo-thread

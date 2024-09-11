@@ -9,13 +9,18 @@ setp arisc.pwm.0.pwm-port   0 # PA
 setp arisc.pwm.0.pwm-pin    6
 setp arisc.pwm.0.dir-port   0 # PA
 setp arisc.pwm.0.dir-pin    11
+
+net x-vel-cmd  joint.0.vel-cmd         arisc.pwm.0.vel-cmd
 net x-pos-cmd  joint.0.motor-pos-cmd   arisc.pwm.0.pos-cmd
 net x-pos-fb   joint.0.motor-pos-fb    arisc.pwm.0.pos-fb
 net x-en       joint.0.amp-enable-out  arisc.pwm.0.enable  arisc.gpio.PA12-out
 
+
+
 # axis 1 setup
 # PA12:EN, PA13:DIR, PA14:STEP,
 setp arisc.pwm.1.pos-scale  [JOINT_1]SCALE
+setp arisc.pwm.1.vel-scale  [JOINT_1]SCALE
 setp arisc.pwm.1.dc-cmd     0.5 # 50%
 #setp arisc.pwm.1.dc-max-t   5000
 setp arisc.pwm.1.dir-hold   20000
@@ -25,6 +30,10 @@ setp arisc.pwm.1.pwm-port   0 # PA
 setp arisc.pwm.1.pwm-pin    14
 setp arisc.pwm.1.dir-port   0 # PA
 setp arisc.pwm.1.dir-pin    13
+
+net z-vel-cmd  joint.1.vel-cmd         arisc.pwm.1.vel-cmd
 net z-pos-cmd  joint.1.motor-pos-cmd   arisc.pwm.1.pos-cmd
 net z-pos-fb   joint.1.motor-pos-fb    arisc.pwm.1.pos-fb
 net z-en       joint.1.amp-enable-out  arisc.pwm.1.enable
+
+

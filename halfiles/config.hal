@@ -6,8 +6,7 @@ loadrt mux8 count=2
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm
 loadrt lincurve personality=7
-#loadrt pid names=pid.s
-#loadrt near count=1 # NOT sure if I would need it.
+loadrt near names=spindle-at-speed
 
 # add RT functions to the servo thread
 addf arisc.encoder.read       servo-thread
@@ -21,8 +20,7 @@ addf arisc.gpio.write         servo-thread
 addf lowpass.spindle-rpm      servo-thread
 addf scale.s-rpm              servo-thread
 addf lincurve.0               servo-thread
-#addf pid.s.do-pid-calcs       servo-thread
-#addf near.0                   servo-thread
+addf spindle-at-speed         servo-thread
 
 
 # E-Stop
@@ -63,7 +61,6 @@ net end-z arisc.gpio.PC2-in-not     => joint.1.pos-lim-sw-in
 loadusr -W hal_manualtoolchange
 net tool-change iocontrol.0.tool-change => hal_manualtoolchange.change
 net tool-changed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
-#net external-tool-changed hal_manualtoolchange.change_button <= parport.0.pin-12-in
 net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
 net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
 

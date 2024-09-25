@@ -48,13 +48,13 @@ setp lincurve.0.x-val-01 25
 setp lincurve.0.y-val-01 100
 
 setp lincurve.0.x-val-02 400
-setp lincurve.0.y-val-02 400
+setp lincurve.0.y-val-02 390
 
 setp lincurve.0.x-val-03 600
-setp lincurve.0.y-val-03 580
+setp lincurve.0.y-val-03 550
 
 setp lincurve.0.x-val-04 1000
-setp lincurve.0.y-val-04 920
+setp lincurve.0.y-val-04 890
 
 setp lincurve.0.x-val-05 1250
 setp lincurve.0.y-val-05 1170
@@ -65,5 +65,14 @@ setp lincurve.0.y-val-06 1250
 net s-rpm-commanded  spindle.0.speed-out-abs  lincurve.0.in
 net s-rpm-correced   lincurve.0.out           arisc.pwm.2.dc-cmd
 
-#net spind-direct spindle.0.speed-out-abs arisc.pwm.2.dc-cmd 
+#net spind-direct spindle.0.speed-out-abs arisc.pwm.2.dc-cmd
+
+setp spindle-at-speed.difference 100
+
+net s-rpm-commanded spindle-at-speed.in1
+net s-velocity-rpm-filtered spindle-at-speed.in2
+net s-ready spindle-at-speed.out spindle.0.at-speed
+
+
+
 

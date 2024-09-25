@@ -176,8 +176,8 @@ class emc_control:
                         self.set_motion_mode()
                         self.isjogging[axis] = direction
                         self.emccommand.jog(self.emc.JOG_CONTINUOUS, 0, axis, direction * self.jog_velocity)
-                
-	def quill_up(self):
+        
+        def quill_up(self):
                 if self.masked: return
                 self.emccommand.mode(self.emc.MODE_MANUAL)
                 self.set_motion_mode()
@@ -185,7 +185,7 @@ class emc_control:
                 self.emccommand.jog(self.emc.JOG_CONTINUOUS, 0, 2, 100)
 
         def feed_override(self, f):
-		if self.masked: return
+                if self.masked: return
                 self.emccommand.feedrate(f/100.0)
 
         def spindle_override(self, s):

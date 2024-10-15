@@ -34,10 +34,13 @@ class filechooser:
                 l.set_text(files[i])
             else:
                 l.set_text('')
+
             if self.selected == self.fileoffset + i:
-                e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#fff'))
+                e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#024663'))
+                l.modify_fg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#fcfcfc'))
             else:
                 e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#ccc'))
+                l.modify_fg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#232323'))
 
     def select(self, eventbox, event):
         n = int(eventbox.get_name()[20:])

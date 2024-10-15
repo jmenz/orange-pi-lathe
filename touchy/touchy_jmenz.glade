@@ -2374,7 +2374,7 @@
                                     <child>
                                       <widget class="GtkLabel" id="label47">
                                         <property name="visible">True</property>
-                                        <property name="label" translatable="yes">&lt;span foreground="blue" weight="bold"&gt;Start Point&lt;/span&gt;</property>
+                                        <property name="label" translatable="yes">&lt;span weight="bold"&gt;Start Point&lt;/span&gt;</property>
                                         <property name="use_markup">True</property>
                                         <property name="single_line_mode">True</property>
                                       </widget>

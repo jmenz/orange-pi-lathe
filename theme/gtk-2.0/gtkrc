@@ -43,11 +43,11 @@ style "default"
     base[PRELIGHT]    = "#002849"
     base[SELECTED]    = "#003263"
 
-    bg[ACTIVE]        = "#151515"
+    bg[ACTIVE]        = "#1d4354"#active buttons
     bg[INSENSITIVE]   = "#303030"
     bg[NORMAL]        = "#232323"
-    bg[PRELIGHT]      = "#003263"
-    bg[SELECTED]      = "#002849"
+    bg[PRELIGHT]      = "#024663"#hover
+    bg[SELECTED]      = "#024663"
 
     fg[ACTIVE]        = "#dadada"
     fg[INSENSITIVE]   = "#151515"
@@ -165,6 +165,8 @@ class "MetaFrames"                 style "titlebar"
 widget_class "MetaFrames"          style "titlebar"
 
 
+#============================================
+# Not currenly used. I left just as an example
 # These custom themed widget require the widget name 
 # to match in the glade file 
 style "halsourceview" = "default"

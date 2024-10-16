@@ -38,11 +38,15 @@ class listing:
                 l.set_text('')
             
             if self.start_line == self.lineoffset + i:
-                e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#66f'))
+                e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#024663'))
+                l.modify_fg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#fcfcfc'))
             elif self.selected == self.lineoffset + i:
                 e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#fff'))
+                l.modify_fg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#fcfcfc'))
             else:
                 e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#ccc'))
+                l.modify_fg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#232323'))
+
 
     def show_line(self, n):
         if len(self.program) <= self.numlabels:

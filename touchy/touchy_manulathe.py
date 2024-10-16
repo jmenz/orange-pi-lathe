@@ -306,14 +306,17 @@ class touchy:
                 gobject.timeout_add(50, self.periodic_status)
                 gobject.timeout_add(100, self.periodic_radiobuttons)
 
-                self.fullscreen_activated = 0
-                gobject.timeout_add(1500, self.fullscreen)
+                self.fullscreen = self.prefs.getpref('fullscreen', 1);
+                self.fullscreen_startup_processed = 0
+                gobject.timeout_add(1500, self.fullscreen_startup)
 
                 # event bindings
                 dic = {
                         "quit" : self.quit,
                         "on_pointer_show_clicked" : self.pointer_show,
                         "on_pointer_hide_clicked" : self.pointer_hide,
+                        "on_fullscreen_on_clicked" : self.fullscreen_on,
+                        "on_fullscreen_off_clicked" : self.fullscreen_off,
                         "on_opstop_on_clicked" : self.opstop_on,
                         "on_opstop_off_clicked" : self.opstop_off,
                         "on_blockdel_on_clicked" : self.blockdel_on,
@@ -452,6 +455,18 @@ class touchy:
                 self.prefs.putpref('invisible_cursor', 0)
                 self.invisible_cursor = 0
                 self.wTree.get_widget("MainWindow").window.set_cursor(None)
+
+        def fullscreen_on(self, b):
+                if self.radiobutton_mask: return
+                self.prefs.putpref('fullscreen', 1)
+                self.fullscreen = 1
+                self.wTree.get_widget('MainWindow').fullscreen()
+
+        def fullscreen_off(self, b):
+                if self.radiobutton_mask: return
+                self.prefs.putpref('fullscreen', 0)
+                self.fullscreen = 0
+                self.wTree.get_widget('MainWindow').unfullscreen()
 
         def dro_commanded(self, b):
                 if self.radiobutton_mask: return
@@ -604,7 +619,7 @@ class touchy:
                           "spindle_faster", "spindle_slower",
                           "dro_commanded", "dro_actual", "dro_inch", "dro_mm",
                           "reload_tooltable", "opstop_on", "opstop_off",
-                          "blockdel_on", "blockdel_off", "pointer_hide", "pointer_show",
+                          "blockdel_on", "blockdel_off", "pointer_hide", "pointer_show", "fullscreen_on", "fullscreen_off",
                           "toolset_workpiece", "toolset_fixture","change_theme","reset_spinde_index","shut_down"]:
                         w = self.wTree.get_widget(i)
                         if w:
@@ -789,6 +804,8 @@ class touchy:
             set_active(self.wTree.get_widget("scrolling"), self.wheel == "scrolling")
             set_active(self.wTree.get_widget("pointer_show"), not self.invisible_cursor)
             set_active(self.wTree.get_widget("pointer_hide"), self.invisible_cursor)
+            set_active(self.wTree.get_widget("fullscreen_on"), self.fullscreen)
+            set_active(self.wTree.get_widget("fullscreen_off"), not self.fullscreen)
             set_active(self.wTree.get_widget("toolset_workpiece"), not self.g10l11)
             set_active(self.wTree.get_widget("toolset_fixture"), self.g10l11)
             self.radiobutton_mask = 0
@@ -824,10 +841,11 @@ class touchy:
 
             return True
         
-        def fullscreen(self):
-                if(self.fullscreen_activated == 1): return
-                self.wTree.get_widget('MainWindow').fullscreen()
-                self.fullscreen_activated = 1
+        def fullscreen_startup(self):
+                if(self.fullscreen_startup_processed == 1): return
+
+                if (self.fullscreen): self.wTree.get_widget('MainWindow').fullscreen()                
+                self.fullscreen_startup_processed = 1
                 
 
 	def hack_leave(self,w):

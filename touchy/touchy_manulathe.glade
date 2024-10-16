@@ -3240,6 +3240,7 @@ F1 S1</property>
                                       <widget class="GtkTable" id="table23">
                                         <property name="visible">True</property>
                                         <property name="n_rows">2</property>
+                                        <property name="n_columns">2</property>
                                         <child>
                                           <widget class="GtkToggleButton" id="pointer_hide">
                                             <property name="label" translatable="yes">Hide pointer</property>
@@ -3262,6 +3263,36 @@ F1 S1</property>
                                             <signal name="clicked" handler="on_pointer_show_clicked"/>
                                           </widget>
                                           <packing>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <widget class="GtkToggleButton" id="fullscreen_on">
+                                            <property name="label" translatable="yes">Fullscreen On</property>
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="receives_default">False</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="focus_on_click">False</property>
+                                            <signal name="clicked" handler="on_fullscreen_on_clicked"/>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <widget class="GtkToggleButton" id="fullscreen_off">
+                                            <property name="label" translatable="yes">Fullscreen Off</property>
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="receives_default">False</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="focus_on_click">False</property>
+                                            <signal name="clicked" handler="on_fullscreen_off_clicked"/>
+                                          </widget>
+                                          <packing>
+                                            <property name="left_attach">1</property>
                                             <property name="top_attach">1</property>
                                             <property name="bottom_attach">2</property>
                                           </packing>

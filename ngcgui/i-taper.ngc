@@ -1,15 +1,15 @@
 
 (info: inner taper)
 o<i-taper> sub
-#<X_Reference>          = #1 (= 0 X Reference Diameter)
-#<D_Start>              = #2 (= 0 Start Diameter (optional))
-#<D_End>                = #3 (= 20 Final Diameter)
-#<Z_Start>              = #4 (= 0 Z Start)
-#<Angle>                = #5 (= 30 Angle)
-#<Depth_Cut>            = #6 (= 1 Depth of Cut)
-#<Feed_Rate>            = #7 (= 30 Feed Rate)
-#<Surface_Speed>        = #8 (= 30 Surface Speed)
-#<Back_Travel_Offset>   = #9 (= 0.5 Back Travel Offset)
+#<X_Reference>          = #1  (= 10 X Reference Diameter)
+#<D_Start>              = #2  (= 10 Start Diameter optional)
+#<D_End>                = #3  (= 20 Final Diameter)
+#<Z_Start>              = #4  (= 0 Z Start)
+#<Angle>                = #5  (= 30 Angle)
+#<Depth_Cut>            = #6  (= 1 Depth of Cut)
+#<Feed_Rate>            = #7  (= 30 Feed Rate)
+#<Surface_Speed>        = #8  (= 30 Surface Speed)
+#<Back_Travel_Offset>   = #9  (= 0.5 Back Travel Offset)
 #<Max_RPM>              = #10 (= 1200 Max RPM)
 
 o100  if [#<D_Start> LT #<X_Reference>]
@@ -37,7 +37,7 @@ o1011   else
         #<D_Current>=#<D_End>
 o1011   endif
 
-#<Z_Current> = [[[#<D_Current> - #<X_Reference>] / 2] / TAN[#<Angle>]]
+#<Z_Current> = [#<Z_Start> + [[[#<D_Current> - #<X_Reference>] / 2] / TAN[#<Angle>]]]
 (debug, Z_Current: #<Z_Current>)
 
 G0 Z#<Z_Current>

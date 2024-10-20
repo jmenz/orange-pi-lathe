@@ -16,6 +16,9 @@ o100  if [#<D_Start> LT #<X_Reference>]
         #<D_Start> = #<X_Reference>
 o100  endif
 
+#<D_Current> = #<D_Start>
+#<Z_Current> = #<Z_Start>
+
 ; G43: toollength offset
 ; G7:  diameter mode
 ; G96: constant surface speed
@@ -23,13 +26,14 @@ G43 G7 G96 D#<Max_RPM> S#<Surface_Speed>
 
 M3; start spindle
 
+
 G0 Z#<Z_Start>
-#<D_Current>=#<D_Start>
 
 ; ====== Cycle start
 o101 while [#<D_Current> LT #<D_End>]
 
-G0 X[#<X_Reference> - #<Back_Travel_Offset>]
+G0 X[#<D_Current> - #<Back_Travel_Offset>]
+G0 X[#<X_Reference> - #<Back_Travel_Offset>] Z#<Z_Current>
 
 o1011   if [[#<D_Current>+#<Depth_Cut>] LT #<D_End>]
         #<D_Current>=[#<D_Current>+#<Depth_Cut>]
@@ -38,10 +42,9 @@ o1011   else
 o1011   endif
 
 #<Z_Current> = [#<Z_Start> + [[[#<D_Current> - #<X_Reference>] / 2] / TAN[#<Angle>]]]
-(debug, Z_Current: #<Z_Current>)
 
 G0 Z#<Z_Current>
-X#<X_Reference>
+G0 X#<X_Reference>
 
 G1 X#<D_Current> Z#<Z_Start> F#<Feed_Rate> ; Main cut travel
 

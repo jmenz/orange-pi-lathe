@@ -24,13 +24,16 @@ o<g76base> sub
             #<r> = #9 (=  1.0   R: Depth degression)
             #<q> = #10 (= 29.5   Q: Compound slide angle)
             #<h> = #11 (=  2     H: No. of spring passes)
-            #<e> = #12 (=  0.050 E: Taper dist =K typ)
-            #<l> = #13 (=  2     L: End Taper 0,1,2,3)
+;            #<e> = #12 (=  0.050 E: Taper dist =K typ)
+;            #<l> = #13 (=  2     L: End Taper 0,1,2,3)
 
 ; other:
-      #<spindir> = #14 (=3 Dir: Right=3 Left=4)
-         #<mode> = #15 (=7 G7/G8 Radius=8 Diam=7)
-      #<verbose> = #16 (=0 0:silent, 1:verbose)
+      #<spindir> = #12 (=3 Dir: Right=3 Left=4)
+         #<mode> = #13 (=7 G7/G8 Radius=8 Diam=7)
+      #<verbose> = #14 (=0 0:silent, 1:verbose)
+
+#<e> = 0.050
+#<l> = 2
 
 o<if00> if [#<p> LT 0]
           #<p> = ABS[25.4 / #<p>]

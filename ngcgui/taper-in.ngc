@@ -1,8 +1,8 @@
 
-(info: taper)
-o<taper> sub
-#<Start_Dia>            = #1 (= 20 Start Diameter)
-#<Final_Dia>            = #2 (= 10 Final Diameter)
+(info: inner taper)
+o<taper-in> sub
+#<Start_Dia>            = #1 (= 10 Start Diameter)
+#<Final_Dia>            = #2 (= 20 Final Diameter)
 #<Z_StartOfCut>         = #3 (= 0 Z Start)
 #<Z_EndOfCut>           = #4 (= -20 Z End)
 #<Angle>                = #5 (= 10 Angle)
@@ -24,15 +24,12 @@ G0 X#<Start_Dia> Z#<Z_StartOfCut>
 #<Current_Dia>=#<Start_Dia>
 #<Diff>=[#<Start_Dia>-#<Final_Dia>]
 
-o100    if [#<Diff> LT 0]
-        #<Depth_Cut> = [-#<Depth_Cut>]
-        #<Back_Travel_Offset> = [-#<Back_Travel_Offset>]
-o100    endif
+(debug, diff: #<Diff> mm)
 
 o101    while [ABS[#<Diff>] NE 0]
 
 o1011   if [ABS[#<Diff>] GT ABS[#<Depth_Cut>]]
-        #<Current_Dia>=[#<Current_Dia>-#<Depth_Cut>]
+        #<Current_Dia>=[#<Current_Dia>+#<Depth_Cut>]
 o1011   else
         #<Current_Dia>=#<Final_Dia>
 o1011   endif
@@ -41,11 +38,11 @@ o1011   endif
         (debug, Left to cut: #<Diff> mm)
 
         #<X-End> = [[[#<Current_Dia> /2 ] + [[#<Z_StartOfCut> - #<Z_EndOfCut>] * TAN[#<Angle>]]] * 2]
-
+    
         G0 X#<Current_Dia>
         G1 Z#<Z_EndOfCut> X#<X-End> F#<FeedRate>
 
-        G0 X[#<X-End>+#<Back_Travel_Offset>]
+        G0 X[#<Current_Dia> - #<Back_Travel_Offset>]
         Z#<Z_StartOfCut>
 o101 endwhile
 
@@ -53,4 +50,4 @@ G0 X[#<Final_Dia>]
 M5              ; stop spindle
 Z#<Z_StartOfCut>
 
-o<taper> endsub
+o<taper-in> endsub

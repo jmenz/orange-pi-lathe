@@ -42,7 +42,7 @@ o1011   endif
         G0 X#<Current_Dia>
         G1 Z#<Z_EndOfCut> X#<X-End> F#<FeedRate>
 
-        G0 X[#<Current_Dia> - #<Back_Travel_Offset>]
+        G0 X#<Current_Dia>
         Z#<Z_StartOfCut>
 o101 endwhile
 

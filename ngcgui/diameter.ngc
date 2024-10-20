@@ -40,7 +40,7 @@ o1011   endif
         #<Diff>=[#<Current_Dia>-#<Final_Dia>]
         (debug, Left to cut: #<Diff> mm)
 
-        X#<Current_Dia>
+        G0 X#<Current_Dia>
         G1 Z#<Z_EndOfCut> F#<FeedRate>
         G0 X[#<Current_Dia>+#<Back_Travel_Offset>]
         Z#<Z_StartOfCut>

@@ -1,15 +1,20 @@
 
 (info: inner taper)
 o<i-taper> sub
-#<D_Start>              = #1 (= 10 Start Diameter)
-#<D_End>                = #2 (= 20 Final Diameter)
-#<Z_Start>              = #3 (= 0 Z Start)
-#<Angle>                = #4 (= 10 Angle)
-#<Depth_Cut>            = #5 (= 0.5 Depth of Cut)
-#<Feed_Rate>            = #6 (= 30 Feed Rate)
-#<Surface_Speed>        = #7 (= 30 Surface Speed)
-#<Back_Travel_Offset>   = #8 (= 0.5 Back Travel Offset)
-#<Max_RPM>              = #9 (= 1200 Max RPM)
+#<X_Reference>          = #1 (= 0 X Reference Diameter)
+#<D_Start>              = #2 (= 0 Start Diameter (optional))
+#<D_End>                = #3 (= 20 Final Diameter)
+#<Z_Start>              = #4 (= 0 Z Start)
+#<Angle>                = #5 (= 30 Angle)
+#<Depth_Cut>            = #6 (= 1 Depth of Cut)
+#<Feed_Rate>            = #7 (= 30 Feed Rate)
+#<Surface_Speed>        = #8 (= 30 Surface Speed)
+#<Back_Travel_Offset>   = #9 (= 0.5 Back Travel Offset)
+#<Max_RPM>              = #10 (= 1200 Max RPM)
+
+o100  if [#<D_Start> LT #<X_Reference>]
+        #<D_Start> = #<X_Reference>
+o100  endif
 
 ; G43: toollength offset
 ; G7:  diameter mode
@@ -24,7 +29,7 @@ G0 Z#<Z_Start>
 ; ====== Cycle start
 o101 while [#<D_Current> LT #<D_End>]
 
-G0 X[#<D_Start> - #<Back_Travel_Offset>]
+G0 X[#<X_Reference> - #<Back_Travel_Offset>]
 
 o1011   if [[#<D_Current>+#<Depth_Cut>] LT #<D_End>]
         #<D_Current>=[#<D_Current>+#<Depth_Cut>]
@@ -32,11 +37,11 @@ o1011   else
         #<D_Current>=#<D_End>
 o1011   endif
 
-#<Z_Current> = [[[#<D_Current> - #<D_Start>] / 2] / TAN[#<Angle>]]
+#<Z_Current> = [[[#<D_Current> - #<X_Reference>] / 2] / TAN[#<Angle>]]
 (debug, Z_Current: #<Z_Current>)
 
 G0 Z#<Z_Current>
-X#<D_Start>
+X#<X_Reference>
 
 G1 X#<D_Current> Z#<Z_Start> F#<Feed_Rate> ; Main cut travel
 
@@ -44,6 +49,5 @@ o101 endwhile
 ; ====== Cycle end
 
 M5; stop spindle
-
 
 o<i-taper> endsub

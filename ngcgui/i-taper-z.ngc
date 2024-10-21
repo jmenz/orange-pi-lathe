@@ -1,0 +1,64 @@
+
+(info: inner taper by angle and z)
+o<i-taper-z> sub
+#<Z_Reference>          = #1  (= 0)
+#<Z_Start>              = #2  (= 0 Z Start optional)
+#<Z_End>                = #3  (= -20 Z End)
+#<D_Start>              = #4  (= 0 Start Diameter)
+#<Angle>                = #5  (= 30 Angle)
+#<Depth_Cut>            = #6  (= 1 Depth of Cut)
+#<Feed_Rate>            = #7  (= 30 Feed Rate)
+#<Surface_Speed>        = #8  (= 30 Surface Speed)
+#<Back_Travel_Offset>   = #9  (= 0.5 Back Travel Offset)
+#<Max_RPM>              = #10 (= 1200 Max RPM)
+
+#<Z_Current> = #<Z_Start>
+#<Diff>=[#<Z_Current> - #<Z_End>]
+
+o101    if [#<Diff> GT 0]
+        #<Angle> = [- #<Angle>]
+        #<Depth_Cut> = [-#<Depth_Cut>]
+        
+        o1011   if [#<Z_Start> GT #<Z_Reference>]
+                #<Z_Start> = #<Z_Reference>
+        o1011   endif
+o101    else
+        o1012   if [#<Z_Start> LT #<Z_Reference>]
+                #<Z_Start> = #<Z_Reference>
+        o1012   endif
+o101    endif
+
+; G43: toollength offset
+; G7:  diameter mode
+; G96: constant surface speed
+G43 G7 G96 D#<Max_RPM> S#<Surface_Speed>
+
+M3; start spindle
+
+G0 Z#<Z_Reference> ;X#[#<D_Start> - #<Back_Travel_Offset>]
+
+; ====== Cycle start
+o102 while [ABS[#<Diff>] NE 0]
+
+o1021   if [ABS[#<Diff>] GT ABS[#<Depth_Cut>]]
+        #<Z_Current>=[#<Z_Current>+#<Depth_Cut>]
+o1021   else
+        #<Z_Current> = #<Z_End>
+o1021   endif
+
+#<Diff>=[#<Z_Current> - #<Z_End>]
+
+#<D_Current> = [#<D_Start> +[[[#<Z_Current> - #<Z_Reference>] * TAN[#<Angle>]] * 2]]
+
+G0 X[#<D_Start> - #<Back_Travel_Offset>]
+G0 Z#<Z_Current>
+G0 X#<D_Start>
+
+G1 X#<D_Current> Z#<Z_Reference> F#<Feed_Rate> ; Main cut travel
+
+o102 endwhile
+; ====== Cycle end
+
+M5; stop spindle
+
+o<i-taper-z> endsub

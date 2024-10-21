@@ -1,6 +1,6 @@
 
-(info: inner taper)
-o<i-taper> sub
+(info: inner taper by angle and x)
+o<i-taper-x> sub
 #<X_Reference>          = #1  (= 10 X Reference Diameter)
 #<D_Start>              = #2  (= 10 Start Diameter optional)
 #<D_End>                = #3  (= 20 Final Diameter)
@@ -53,4 +53,4 @@ o101 endwhile
 
 M5; stop spindle
 
-o<i-taper> endsub
+o<i-taper-x> endsub

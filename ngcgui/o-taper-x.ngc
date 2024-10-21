@@ -5,7 +5,7 @@ o<o-taper-x> sub
 #<D_Start>              = #2  (= 200 Start Diameter optional)
 #<D_End>                = #3  (= 10 Final Diameter)
 #<Z_Start>              = #4  (= 0 Z Start)
-#<Angle>                = #5  (= 30 Angle)
+#<Angle>                = #5  (= 30 ° Angle, NEG for right)
 #<Depth_Cut>            = #6  (= 1 Depth of Cut)
 #<Feed_Rate>            = #7  (= 30 Feed Rate)
 #<Surface_Speed>        = #8  (= 30 Surface Speed)

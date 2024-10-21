@@ -2,10 +2,10 @@
 (info: inner taper by angle and x)
 o<i-taper-x> sub
 #<X_Reference>          = #1  (= 10 X Reference Diameter)
-#<D_Start>              = #2  (= 10 Start Diameter optional)
+#<D_Start>              = #2  (= 10 Start Diameter, optional)
 #<D_End>                = #3  (= 20 Final Diameter)
 #<Z_Start>              = #4  (= 0 Z Start)
-#<Angle>                = #5  (= 30 Angle)
+#<Angle>                = #5  (= -30 ° Angle, POS for right)
 #<Depth_Cut>            = #6  (= 1 Depth of Cut)
 #<Feed_Rate>            = #7  (= 30 Feed Rate)
 #<Surface_Speed>        = #8  (= 30 Surface Speed)

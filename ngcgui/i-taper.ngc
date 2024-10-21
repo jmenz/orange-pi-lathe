@@ -17,7 +17,7 @@ o100  if [#<D_Start> LT #<X_Reference>]
 o100  endif
 
 #<D_Current> = #<D_Start>
-#<Z_Current> = #<Z_Start>
+#<Z_Current> = [#<Z_Start> + [[[#<D_Current> - #<X_Reference>] / 2] / TAN[#<Angle>]]]
 
 ; G43: toollength offset
 ; G7:  diameter mode

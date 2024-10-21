@@ -13,6 +13,7 @@ o<i-taper-z> sub
 #<Max_RPM>              = #10 (= 1200 Max RPM)
 
 #<Z_Current> = #<Z_Start>
+#<D_Current> = #<D_Start>
 #<Diff>=[#<Z_Current> - #<Z_End>]
 
 o101    if [#<Diff> GT 0]
@@ -35,10 +36,13 @@ G43 G7 G96 D#<Max_RPM> S#<Surface_Speed>
 
 M3; start spindle
 
-G0 Z#<Z_Reference> ;X#[#<D_Start> - #<Back_Travel_Offset>]
+G0 Z#<Z_Reference>
 
 ; ====== Cycle start
 o102 while [ABS[#<Diff>] NE 0]
+
+G0 X[#<D_Current> - #<Back_Travel_Offset>]
+G0 X[#<D_Start> - #<Back_Travel_Offset>]Z#<Z_Current>
 
 o1021   if [ABS[#<Diff>] GT ABS[#<Depth_Cut>]]
         #<Z_Current>=[#<Z_Current>+#<Depth_Cut>]
@@ -50,7 +54,6 @@ o1021   endif
 
 #<D_Current> = [#<D_Start> +[[[#<Z_Current> - #<Z_Reference>] * TAN[#<Angle>]] * 2]]
 
-G0 X[#<D_Start> - #<Back_Travel_Offset>]
 G0 Z#<Z_Current>
 G0 X#<D_Start>
 

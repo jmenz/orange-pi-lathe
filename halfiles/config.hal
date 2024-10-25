@@ -1,12 +1,13 @@
 # load RT components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt arisc pwm="p,p,f" out="PA0,PA3,PA12,PG8" in="PA7,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=4
+loadrt arisc pwm="v,v,f" out="PA0,PA3,PA12,PG8" in="PA7,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=4
 loadrt mux8 count=2
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm
 loadrt lincurve personality=7
 loadrt near names=spindle-at-speed
+loadrt pid names=pid.x,pid.z
 
 # add RT functions to the servo thread
 addf arisc.encoder.read       servo-thread
@@ -14,6 +15,8 @@ addf arisc.pwm.read           servo-thread
 addf arisc.gpio.read          servo-thread
 addf motion-command-handler   servo-thread
 addf motion-controller        servo-thread
+addf pid.x.do-pid-calcs       servo-thread
+addf pid.z.do-pid-calcs       servo-thread
 addf arisc.pwm.write          servo-thread
 addf arisc.gpio.write         servo-thread
 

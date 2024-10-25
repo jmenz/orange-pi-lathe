@@ -19,15 +19,10 @@ setp pid.x.error-previous-target 1
 #setp pid.x.maxerror 0.05
 setp pid.x.deadband 0.001
 
-#net x-vel-cmd  joint.0.vel-cmd         arisc.pwm.0.vel-cmd
-#net x-pos-cmd  joint.0.motor-pos-cmd   arisc.pwm.0.pos-cmd
-#net x-pos-fb   joint.0.motor-pos-fb    arisc.pwm.0.pos-fb
-#net x-en       joint.0.amp-enable-out  arisc.pwm.0.enable  arisc.gpio.PA12-out
-
 net x-pos-cmd  joint.0.motor-pos-cmd  => pid.x.command
 net x-pos-fb   arisc.pwm.0.pos-fb     => joint.0.motor-pos-fb => pid.x.feedback
 net x-vel-cmd  pid.x.output           => arisc.pwm.0.vel-cmd
-net x-en       joint.0.amp-enable-out => arisc.pwm.0.enable   => pid.x.enable
+net x-en       joint.0.amp-enable-out => arisc.pwm.0.enable   => pid.x.enable => arisc.gpio.PA12-out
 
 
 

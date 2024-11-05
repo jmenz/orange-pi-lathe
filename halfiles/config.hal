@@ -1,13 +1,15 @@
 # load RT components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt arisc pwm="v,v,f" out="PA0,PA3,PA12,PG8" in="PA7,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=4
+loadrt arisc pwm="v,v,f" out="PA0,PA3,PA12,PG8" in="PA7,PA8,PA9,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=3
 loadrt mux8 count=2
+loadrt encoder num_chan=1
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm
 loadrt lincurve personality=7
 loadrt near names=spindle-at-speed
 loadrt pid names=pid.x,pid.z
+
 
 # add RT functions to the servo thread
 addf arisc.encoder.read       servo-thread
@@ -20,11 +22,12 @@ addf pid.z.do-pid-calcs       servo-thread
 addf arisc.pwm.write          servo-thread
 addf arisc.gpio.write         servo-thread
 
+addf encoder.update-counters  servo-thread
+addf encoder.capture-position servo-thread
 addf lowpass.spindle-rpm      servo-thread
 addf scale.s-rpm              servo-thread
 addf lincurve.0               servo-thread
 addf spindle-at-speed         servo-thread
-
 
 # E-Stop
 setp arisc.gpio.PA20-pull 1
@@ -66,15 +69,6 @@ net tool-change iocontrol.0.tool-change => hal_manualtoolchange.change
 net tool-changed iocontrol.0.tool-changed <= hal_manualtoolchange.changed
 net tool-number iocontrol.0.tool-prep-number => hal_manualtoolchange.number
 net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
-
-
-#Touchy Wheel enc PA8:A, PA9:8
-setp arisc.encoder.3.A-port     0  # 0=PA
-setp arisc.encoder.3.A-pin      8  # 
-setp arisc.encoder.3.B-port     0  # 0=PA
-setp arisc.encoder.3.B-pin      9  # 
-setp arisc.encoder.3.x4-mode    0  # The config is inversed 1 means disabled
-setp arisc.encoder.3.enable     1
 
 
 

@@ -5,18 +5,19 @@ addf mux8.1                  servo-thread
 #Manual Encoders:
 
 #MPG X
-# PE5:A, PE4:B
-setp arisc.encoder.1.A-port     4   # 4=PE
-setp arisc.encoder.1.A-pin      5   # 
-setp arisc.encoder.1.B-port     4   # 4=PE
-setp arisc.encoder.1.B-pin      4  # 
-setp arisc.encoder.1.x4-mode    1   # The config is inversed 1 means disabled
-setp arisc.encoder.1.enable     1
+# PE4:A, PE5:B
+setp arisc.gpio.PE4-pull -1
+setp arisc.gpio.PE5-pull -1
+setp encoder.1.index-enable 0
+setp encoder.1.x4-mode 0
 
-net jog-wheel-counts-x <= arisc.encoder.1.counts
+net jog-wheel-x-a encoder.1.phase-A <= arisc.gpio.PE4-in
+net jog-wheel-x-b encoder.1.phase-B <= arisc.gpio.PE5-in
+
+net jog-wheel-counts-x <= encoder.1.counts
 net jog-wheel-counts-x => joint.0.jog-counts => axis.x.jog-counts
-net jog-enable-x <= arisc.encoder.1.enable
-net jog-enable-x => joint.0.jog-enable => axis.x.jog-enable
+setp joint.0.jog-enable 1
+setp axis.x.jog-enable 1
 
 #Switch X
 setp arisc.gpio.PE0-pull 1
@@ -36,18 +37,20 @@ net jog-wheel-scale-x <= axis.x.jog-scale => joint.0.jog-scale <= mux8.0.out
 
 
 #MPG Z
-# PE6:A, PE7:B
-setp arisc.encoder.2.A-port     4   # 4=PE
-setp arisc.encoder.2.A-pin      6   # 
-setp arisc.encoder.2.B-port     4   # 4=PE
-setp arisc.encoder.2.B-pin      7   # 
-setp arisc.encoder.2.x4-mode    1   # The config is inversed 1 means disabled
-setp arisc.encoder.2.enable     1
+# PE7:A, PE6:B
+setp arisc.gpio.PE6-pull -1
+setp arisc.gpio.PE7-pull -1
+setp encoder.2.index-enable 0
+setp encoder.2.x4-mode 0
 
-net jog-wheel-counts-z <= arisc.encoder.2.counts
+net jog-wheel-z-a encoder.2.phase-A <= arisc.gpio.PE7-in
+net jog-wheel-z-b encoder.2.phase-B <= arisc.gpio.PE6-in
+
+net jog-wheel-counts-z <= encoder.2.counts
 net jog-wheel-counts-z => joint.1.jog-counts => axis.z.jog-counts
-net jog-enable-z <= arisc.encoder.2.enable
-net jog-enable-z => joint.1.jog-enable => axis.z.jog-enable
+setp joint.1.jog-enable 1
+setp axis.z.jog-enable 1
+
 
 #Switch Z
 

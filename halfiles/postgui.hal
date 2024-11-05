@@ -17,6 +17,8 @@ net program-status-indicator touchy.status-indicator arisc.gpio.PG8-out-not
 ########## WHEEL
 setp arisc.gpio.PA8-pull -1
 setp arisc.gpio.PA9-pull -1
+setp encoder.0.index-enable 0
+
 net touchy-wheel-a encoder.0.phase-A <= arisc.gpio.PA9-in
 net touchy-wheel-b encoder.0.phase-B <= arisc.gpio.PA8-in
 net touchy-wheel-counts encoder.0.counts => touchy.wheel-counts

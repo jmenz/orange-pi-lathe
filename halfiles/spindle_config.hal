@@ -71,8 +71,8 @@ setp spindle-at-speed.difference 100
 
 net s-rpm-commanded spindle-at-speed.in1
 net s-velocity-rpm-filtered spindle-at-speed.in2
-net s-ready spindle-at-speed.out spindle.0.at-speed
-
+#net s-ready spindle-at-speed.out spindle.0.at-speed
+setp spindle.0.at-speed 1
 
 
 

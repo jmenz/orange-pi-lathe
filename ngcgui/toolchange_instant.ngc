@@ -1,0 +1,9 @@
+
+(info: Instant Toolchange)
+o<toolchange_instant> sub
+      #<tool_no> =  #1 (=1 Tool Number)
+
+T#<tool_no> M61 Q#<tool_no>
+G43 H#<tool_no>
+
+o<toolchange_instant> endsub

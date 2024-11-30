@@ -41,7 +41,7 @@ class listing:
                 e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#024663'))
                 l.modify_fg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#fcfcfc'))
             elif self.selected == self.lineoffset + i:
-                e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#fff'))
+                e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#024663'))
                 l.modify_fg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#fcfcfc'))
             else:
                 e.modify_bg(self.gtk.STATE_NORMAL, self.gtk.gdk.color_parse('#ccc'))

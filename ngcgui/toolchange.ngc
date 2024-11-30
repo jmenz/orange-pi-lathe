@@ -1,9 +1,0 @@
-
-(info: Change tool)
-o<toolchange> sub
-      #<tool_no> =  #1 (=1 Tool Number)
-
-M61 Q#<tool_no>
-G43 H#<tool_no>
-
-o<toolchange> endsub

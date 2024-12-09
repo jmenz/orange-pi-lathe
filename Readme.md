@@ -1,7 +1,10 @@
 # Linuxcnc lathe controller based on OrangePI Plus 2E
 
+#Disclaimer:
+This is my personal hobby project. You can use it or any of its parts at your own risk. I'm not responsible for any damage to your equipment or your injury.
+
 #Important!
-Use only with good active collant system
+Use only with a good active coolant system
 
 
 Download and flash the Armbian_21.02.3 Buster 5.10.21 (not later) image and run the Orange PI.
@@ -20,6 +23,7 @@ cp ~/linuxcnc/configs/orange-pi-lathe/additional_files/simulate_index_v1.patch ~
 cd ~/installer/linuxcnc/drv/h3/
 patch < simulate_index_v1.patch
 ```
+keep in mind that it's quite slow and misses position on speeds over 10kHz
 
 ### install LCNC
 ```
@@ -42,7 +46,7 @@ cd ~/linuxcnc/configs/orange-pi-lathe
 sudo sh ./install-theme.sh
 ```
 
-### Add custom display resolution
+### Add custom display resolution (optional)
 ```
 cp ~/linuxcnc/configs/orange-pi-lathe/additional_files/.xsessionrc ~/.xsessionrc
 ```

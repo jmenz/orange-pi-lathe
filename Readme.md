@@ -8,6 +8,7 @@ Use only with a good active coolant system
 
 
 Download and flash the Armbian_21.02.3 Buster 5.10.21 (not later) image and run the Orange PI.
+https://drive.google.com/file/d/1FwBf0fV3swwGzbODMnL5-IoIjtYwaIQ2/view?usp=sharing
 
 # Installation
 

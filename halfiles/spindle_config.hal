@@ -1,7 +1,68 @@
 # spindle setup
 
+## SPINDLE ENCODER ##
+
+# PC0:B, PC1:A, PC2:Z(index)
+setp arisc.encoder.0.pos-scale  1600 #
+setp arisc.encoder.0.A-port     2   # 2=PC
+setp arisc.encoder.0.A-pin      4   # in front of spindle
+setp arisc.encoder.0.B-port     2   # 2=PC
+setp arisc.encoder.0.B-pin      7   # in front of spindle.
+setp arisc.encoder.0.Z-port     3   # 3=PD
+setp arisc.encoder.0.Z-pin      14
+setp arisc.encoder.0.enable     1
+setp arisc.encoder.0.x4-mode    0
+setp arisc.encoder.0.simulate-index	1
+
+net s-position     arisc.encoder.0.pos => spindle.0.revs
+net s-index-enable arisc.encoder.0.index-enable <=> spindle.0.index-enable
+
+
 setp lowpass.spindle-rpm.gain 0.0100000
 setp scale.s-rpm.gain 0.01666666666666
+
+
+net s-velocity-rpm          arisc.encoder.0.vel-rpm => lowpass.spindle-rpm.in
+net s-velocity-rpm-filtered lowpass.spindle-rpm.out => scale.s-rpm.in 
+net s-velocity-rps          scale.s-rpm.out         => spindle.0.speed-in
+
+net s-rpm-commanded  spindle.0.speed-out-abs
+
+setp spindle-at-speed.difference 100
+
+net s-rpm-commanded spindle-at-speed.in1
+net s-velocity-rpm-filtered spindle-at-speed.in2
+net s-ready spindle-at-speed.out spindle.0.at-speed
+#setp spindle.0.at-speed 1
+
+
+## VELOCITY CONTROL ##
+
+net s-rpm-commanded => mb2hal.rpm.00
+
+addf mux8.2         servo-thread
+addf timedelay.0    servo-thread
+addf not.0          servo-thread
+
+setp mux8.2.in0    4660 #idle
+setp mux8.2.in1    8738 #forward
+setp mux8.2.in2    4369 #reverce
+setp mux8.2.in3    0    #disable
+
+setp timedelay.0.on-delay  1
+setp timedelay.0.off-delay  0
+
+
+net s-en         spindle.0.on      => not.0.in
+net s-en-not     not.0.out         => timedelay.0.in
+net s-forward    spindle.0.forward => mux8.2.sel0
+net s-reverse    spindle.0.reverse => mux8.2.sel1
+net s-off        timedelay.0.out   => mux8.2.sel2
+
+net s-command    mux8.2.out => mb2hal.control.00
+
+
+########### POSITION ##########
 
 #PWM
 # PA1:PWM,  PA0:FORWARD,  PA3:REWERSE
@@ -14,65 +75,5 @@ setp arisc.pwm.2.dir-port    3  # 3=PD
 setp arisc.pwm.2.dir-pin     11
 setp arisc.pwm.2.dir-invert  0
 
-net s-en        spindle.0.on         arisc.pwm.2.enable
-net s-forward   spindle.0.forward    arisc.gpio.PA0-out
-net s-reverse   spindle.0.reverse    arisc.gpio.PA3-out
-
-#Spindle Encoders
-# PC0:B, PC1:A, PC2:Z(index)
-setp arisc.encoder.0.pos-scale  1600 #
-setp arisc.encoder.0.A-port     2   # 2=PC
-setp arisc.encoder.0.A-pin      4   # in front of spindle
-#setp arisc.encoder.0.A-invert  1
-setp arisc.encoder.0.B-port     2   # 2=PC
-setp arisc.encoder.0.B-pin      7   # in front of spindle.
-#setp arisc.encoder.0.B-invert  1
-setp arisc.encoder.0.Z-port     3   # 3=PD
-setp arisc.encoder.0.Z-pin      14
-setp arisc.encoder.0.enable     1
-setp arisc.encoder.0.x4-mode    0
-setp arisc.encoder.0.simulate-index	1
-
-net s-position     arisc.encoder.0.pos => spindle.0.revs
-net s-index-enable arisc.encoder.0.index-enable <=> spindle.0.index-enable
-
-net s-velocity-rpm          arisc.encoder.0.vel-rpm => lowpass.spindle-rpm.in
-net s-velocity-rpm-filtered lowpass.spindle-rpm.out => scale.s-rpm.in 
-net s-velocity-rps          scale.s-rpm.out         => spindle.0.speed-in
-
-
-setp lincurve.0.x-val-00 0
-setp lincurve.0.y-val-00 0
-
-setp lincurve.0.x-val-01 25
-setp lincurve.0.y-val-01 100
-
-setp lincurve.0.x-val-02 400
-setp lincurve.0.y-val-02 390
-
-setp lincurve.0.x-val-03 600
-setp lincurve.0.y-val-03 550
-
-setp lincurve.0.x-val-04 1000
-setp lincurve.0.y-val-04 890
-
-setp lincurve.0.x-val-05 1250
-setp lincurve.0.y-val-05 1170
-
-setp lincurve.0.x-val-06 1300
-setp lincurve.0.y-val-06 1250
-
-net s-rpm-commanded  spindle.0.speed-out-abs  lincurve.0.in
-net s-rpm-correced   lincurve.0.out           arisc.pwm.2.dc-cmd
-
-#net spind-direct spindle.0.speed-out-abs arisc.pwm.2.dc-cmd
-
-setp spindle-at-speed.difference 100
-
-net s-rpm-commanded spindle-at-speed.in1
-net s-velocity-rpm-filtered spindle-at-speed.in2
-#net s-ready spindle-at-speed.out spindle.0.at-speed
-setp spindle.0.at-speed 1
-
-
+setp arisc.pwm.2.enable 0 # temporary
 

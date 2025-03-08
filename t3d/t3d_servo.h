@@ -6,27 +6,56 @@
 #include <hal.h>
 #include <glob.h>
 #include <string.h>
+#include <errno.h>
 #include <modbus/modbus.h>
 
 // Define HAL Component Structure
 typedef struct {
     hal_float_t *spindle_speed;   // Speed command (RPM)
-    hal_bit_t *on;              // Spindle on/off
-    hal_bit_t *forward;         // Forward (CCW)
-    hal_bit_t *reverse;         // Reverse (CW)
-    hal_bit_t *error_flag;      // True if error_code > 0
-    hal_s32_t *error_code;      // Read error code
+    hal_bit_t *on;                // Spindle on/off
+    hal_bit_t *forward;           // Forward (CCW)
+    hal_bit_t *reverse;           // Reverse (CW)
+    hal_bit_t *error_flag;        // True if error_code > 0
+    hal_s32_t *error_code;        // Read error code
 
-    modbus_t *mb_ctx;           // Modbus context
+    modbus_t *mb_ctx;             // Modbus context
     float last_speed;             // Last written speed (avoid redundant writes)
-    int last_control;           // Last recorded control
-    char device;                // device name (/dev/ttyUSB0)
-    int slave_num;              // index number of device
+    int last_control;             // Last recorded control
+    char device;                  // device name (/dev/ttyUSB0)
+    int slave_num;                // index number of device
 } t3d_servo_t;
 
+// 🔹 Define Register Addresses
+#define MODBUS_REG_RPM      76      // RPM Setpoint Register
+#define MODBUS_REG_CONTROL  4112    // Control Command Register
+#define MODBUS_REG_ALARM    26      // Error Code Register
+
+// 🔹 Define Control Command Values (from HAL MUX configuration)
+typedef struct {
+    uint16_t stop;
+    uint16_t forward;
+    uint16_t reverse;
+    uint16_t  off;
+} t3d_servo_control_t;
+
+static const t3d_servo_control_t t3d_servo_control = {
+    .stop    = 4660,  // STOP Command
+    .forward = 8738,  // FORWARD Command
+    .reverse = 4369,  // REVERSE Command
+    .off     = 0
+};
+
 // Function Prototypes
-char *find_serial_device(); 
+char *find_serial_device();
 int init(void);
 void update(void *arg, long period);
+
+int modbus_03_read(modbus_t *mb_ctx, int reg, uint16_t *value);
+int modbus_06_write(modbus_t *mb_ctx, int reg, uint16_t value);
+
+void update_speed(t3d_servo_t *comp);
+void update_control(t3d_servo_t *comp);
+
+int modbus_check_connection(t3d_servo_t *comp);
 
 #endif // T3D_SERVO_H

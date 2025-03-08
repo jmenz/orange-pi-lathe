@@ -4,25 +4,6 @@
 static t3d_servo_t *comp_instance;  // Component instance
 static int comp_id; // Store the component ID
 
-// 🔹 Define Register Addresses
-#define MODBUS_REG_RPM      76      // RPM Setpoint Register
-#define MODBUS_REG_CONTROL  4112    // Control Command Register
-#define MODBUS_REG_ALARM    26      // Error Code Register
-
-// 🔹 Define Control Command Values (from HAL MUX configuration)
-typedef struct {
-    uint16_t stop;
-    uint16_t forward;
-    uint16_t reverse;
-} t3d_servo_control_t;
-
-static const t3d_servo_control_t t3d_servo_control = {
-    .stop    = 4660,  // STOP Command
-    .forward = 8738,  // FORWARD Command
-    .reverse = 4369   // REVERSE Command
-};
-
-
 char *find_serial_device() {
     static char device_path[256];
     glob_t glob_result;
@@ -122,8 +103,6 @@ int init(void) {
 void update(void *arg, long period) {
     t3d_servo_t *comp = (t3d_servo_t *)arg;
 
-    int ret;
-
     // Read Alarm/Error Code (MODBUS_REG_ALARM, Function 04)
     // uint16_t alarm_reg;
     // int ret;
@@ -142,16 +121,22 @@ void update(void *arg, long period) {
     // // Set error flag if error_code > 0
     // *(comp->error_flag) = (*(comp->error_code) > 0);
 
+    update_control(comp);
+    update_speed(comp);
+}
+
+void update_speed(t3d_servo_t *comp) {
     // Only send speed if it changed (MODBUS_REG_RPM, Function 06)
     if (*(comp->spindle_speed) != comp->last_speed) {
         uint16_t speed_val = *(comp->spindle_speed);
-        ret = modbus_write_register(comp->mb_ctx, MODBUS_REG_RPM, speed_val);
-        if (ret != 1) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Error writing speed to register");
-        }
-        comp->last_speed = *(comp->spindle_speed);
-    }
 
+        if (modbus_06_write(comp->mb_ctx, MODBUS_REG_RPM, speed_val) >= 0) {
+            comp->last_speed = *(comp->spindle_speed);
+        }
+    }
+}
+
+void update_control(t3d_servo_t *comp) {
     // Determine control command
     uint16_t control_val = t3d_servo_control.stop;  // Default to STOP
     if (*(comp->on)) {
@@ -162,18 +147,79 @@ void update(void *arg, long period) {
         }
     }
 
-    // Only send control command if it changed (MODBUS_REG_CONTROL, Function 06)
+    // Only send control command if it changed
     if (control_val != comp->last_control) {
-        if (modbus_write_register(comp->mb_ctx, MODBUS_REG_CONTROL, control_val) != 1) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Error writing control to register");
+        if (modbus_06_write(comp->mb_ctx, MODBUS_REG_CONTROL, control_val) >= 0) {
+            comp->last_control = control_val;
         }
-        comp->last_control = control_val;
     }
 }
 
+int modbus_check_connection(t3d_servo_t *comp) {
+    uint16_t test_reg;
+    int status = modbus_read_registers(comp->mb_ctx, 76, 1, &test_reg);
+    
+    if (status == -1) {  // Modbus error
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Modbus connection lost. Attempting to reconnect...");
+        
+        modbus_close(comp->mb_ctx);
+        modbus_free(comp->mb_ctx);
+        
+        char *device = find_serial_device();
+        if (device == NULL) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: No Modbus USB device found.");
+            return -1;
+        }
+        
+        comp->mb_ctx = modbus_new_rtu(device, 19200, 'E', 8, 1);
+        if (comp->mb_ctx == NULL) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Failed to create Modbus context.");
+            return -1;
+        }
 
-// Define HAL component ID
-static int comp_id;
+        modbus_set_slave(comp->mb_ctx, 1);
+        if (modbus_connect(comp->mb_ctx) == -1) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Reconnection failed.");
+            modbus_free(comp->mb_ctx);
+            return -1;
+        }
+
+        rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Reconnected to Modbus device.");
+    }
+    
+    return 0; // Connection OK
+}
+
+int modbus_03_read(modbus_t *mb_ctx, int reg, uint16_t *value) {
+    int ret = modbus_read_registers(comp_instance->mb_ctx, reg, 1, value);
+
+    if (ret < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Modbus read error at reg %d: %s", reg, modbus_strerror(errno));
+
+        // If the connection is lost, close it and return failure
+        if (modbus_get_socket(comp_instance->mb_ctx) < 0) {
+            modbus_close(comp_instance->mb_ctx);
+        }
+        return ret;
+    }
+    return ret;  // Success
+}
+
+int modbus_06_write(modbus_t *mb_ctx, int reg, uint16_t value) {
+    int ret = modbus_write_register(mb_ctx, reg, value);
+
+    if (ret < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Modbus write error at reg %d: %s", reg, modbus_strerror(errno));
+
+        // If the connection is lost, close it and return failure
+        if (modbus_get_socket(comp_instance->mb_ctx) < 0) {
+            modbus_close(comp_instance->mb_ctx);
+        }
+        return ret;
+    }
+    return ret;
+}
+
 
 // Entry point for the component
 int rtapi_app_main(void) {
@@ -183,6 +229,7 @@ int rtapi_app_main(void) {
 // Cleanup function
 void rtapi_app_exit(void) {
     if (comp_instance && comp_instance->mb_ctx) {
+
         modbus_close(comp_instance->mb_ctx);
         modbus_free(comp_instance->mb_ctx);
     }

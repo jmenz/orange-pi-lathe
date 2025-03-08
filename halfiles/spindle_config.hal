@@ -38,28 +38,14 @@ net s-ready spindle-at-speed.out spindle.0.at-speed
 
 ## VELOCITY CONTROL ##
 
-net s-rpm-commanded => mb2hal.rpm.00
+net s-en         spindle.0.on
+net s-forward    spindle.0.forward
+net s-reverse    spindle.0.reverse
 
-addf mux8.2         servo-thread
-addf timedelay.0    servo-thread
-addf not.0          servo-thread
-
-setp mux8.2.in0    4660 #idle
-setp mux8.2.in1    8738 #forward
-setp mux8.2.in2    4369 #reverce
-setp mux8.2.in3    0    #disable
-
-setp timedelay.0.on-delay  1
-setp timedelay.0.off-delay  0
-
-
-net s-en         spindle.0.on      => not.0.in
-net s-en-not     not.0.out         => timedelay.0.in
-net s-forward    spindle.0.forward => mux8.2.sel0
-net s-reverse    spindle.0.reverse => mux8.2.sel1
-net s-off        timedelay.0.out   => mux8.2.sel2
-
-net s-command    mux8.2.out => mb2hal.control.00
+net s-rpm-commanded => t3d_servo.spindle-speed
+net s-forward => t3d_servo.forward
+net s-reverse => t3d_servo.reverse
+net s-en      => t3d_servo.on
 
 
 ########### POSITION ##########

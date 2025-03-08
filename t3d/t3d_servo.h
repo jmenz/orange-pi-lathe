@@ -15,20 +15,41 @@ typedef struct {
     hal_bit_t *on;                // Spindle on/off
     hal_bit_t *forward;           // Forward (CCW)
     hal_bit_t *reverse;           // Reverse (CW)
-    hal_bit_t *error_flag;        // True if error_code > 0
-    hal_s32_t *error_code;        // Read error code
+    hal_bit_t *alarm_flag;        // True if alarm_code > 0
+    hal_s32_t *alarm_code;        // Read error code
 
     modbus_t *mb_ctx;             // Modbus context
     float last_speed;             // Last written speed (avoid redundant writes)
     int last_control;             // Last recorded control
     char device;                  // device name (/dev/ttyUSB0)
     int slave_num;                // index number of device
+
+    rtapi_u64 last_modbus_read_time;
 } t3d_servo_t;
+
 
 // 🔹 Define Register Addresses
 #define MODBUS_REG_RPM      76      // RPM Setpoint Register
 #define MODBUS_REG_CONTROL  4112    // Control Command Register
 #define MODBUS_REG_ALARM    26      // Error Code Register
+
+
+typedef struct {
+    char *device;
+    int baud;
+    char parity;
+    int data_bit;
+    int stop_bit
+} t3d_modbus_param_t;
+
+static const t3d_modbus_param_t t3d_modbus_params = {
+    .device    = "/dev/ttyUSB0",
+    .baud      = 19200,
+    .parity    = 'E',
+    .data_bit  = 8,
+    .stop_bit  = 1
+};
+
 
 // 🔹 Define Control Command Values (from HAL MUX configuration)
 typedef struct {
@@ -45,16 +66,20 @@ static const t3d_servo_control_t t3d_servo_control = {
     .off     = 0
 };
 
+
+
 // Function Prototypes
 char *find_serial_device();
 int init(void);
 void update(void *arg, long period);
 
 int modbus_03_read(modbus_t *mb_ctx, int reg, uint16_t *value);
+int modbus_04_read(modbus_t *mb_ctx, int reg, uint16_t *value);
 int modbus_06_write(modbus_t *mb_ctx, int reg, uint16_t value);
 
 void update_speed(t3d_servo_t *comp);
 void update_control(t3d_servo_t *comp);
+void read_alarm(t3d_servo_t *comp);
 
 int modbus_check_connection(t3d_servo_t *comp);
 

@@ -51,10 +51,10 @@ int init(void) {
     retval = hal_pin_bit_new("t3d_servo.reverse", HAL_IN, &(comp_instance->reverse), comp_id);
     if (retval < 0) return retval;
 
-    retval = hal_pin_s32_new("t3d_servo.error-code", HAL_OUT, &(comp_instance->error_code), comp_id);
+    retval = hal_pin_s32_new("t3d_servo.alarm-code", HAL_OUT, &(comp_instance->alarm_code), comp_id);
     if (retval < 0) return retval;
 
-    retval = hal_pin_bit_new("t3d_servo.error-flag", HAL_OUT, &(comp_instance->error_flag), comp_id);
+    retval = hal_pin_bit_new("t3d_servo.alarm", HAL_OUT, &(comp_instance->alarm_flag), comp_id);
     if (retval < 0) return retval;
 
     // Initialize Values
@@ -62,8 +62,8 @@ int init(void) {
     *(comp_instance->on) = 0;
     *(comp_instance->forward) = 0;
     *(comp_instance->reverse) = 0;
-    *(comp_instance->error_code) = 0;
-    *(comp_instance->error_flag) = 0;
+    *(comp_instance->alarm_code) = 0;
+    *(comp_instance->alarm_flag) = 0;
 
     comp_instance->last_speed = 0;
     comp_instance->last_control = 0;
@@ -77,7 +77,14 @@ int init(void) {
     rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Using Modbus device %s", device);
 
     // Initialize Modbus connection
-    comp_instance->mb_ctx = modbus_new_rtu(device, 19200, 'E', 8, 1);
+    comp_instance->mb_ctx = modbus_new_rtu(
+        device,
+        t3d_modbus_params.baud,
+        t3d_modbus_params.parity,
+        t3d_modbus_params.data_bit,
+        t3d_modbus_params.stop_bit
+    );
+
     if (!comp_instance->mb_ctx) {
         rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Failed to create Modbus context");
         return -1;
@@ -103,26 +110,16 @@ int init(void) {
 void update(void *arg, long period) {
     t3d_servo_t *comp = (t3d_servo_t *)arg;
 
-    // Read Alarm/Error Code (MODBUS_REG_ALARM, Function 04)
-    // uint16_t alarm_reg;
-    // int ret;
-    
-    // ret = modbus_read_input_registers(comp->mb_ctx, MODBUS_REG_ALARM, 1, &alarm_reg);
-
-    // if (ret == 1) {
-    //     *(comp->error_code) = alarm_reg;
-    //     rtapi_print_msg(RTAPI_MSG_INFO, alarm_reg);
-    // } else {
-
-    //     rtapi_print_msg(RTAPI_MSG_INFO, ret);
-    //     rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Error reading alarm register");
-    // }
-
-    // // Set error flag if error_code > 0
-    // *(comp->error_flag) = (*(comp->error_code) > 0);
-
     update_control(comp);
     update_speed(comp);
+
+    rtapi_u64 current_time = rtapi_get_time();
+
+    // Read Modbus every 1 second (1,000,000,000 nanoseconds)
+    if ((current_time - comp->last_modbus_read_time) >= 1000000000) {
+        read_alarm(comp);
+        comp->last_modbus_read_time = current_time;
+    }
 }
 
 void update_speed(t3d_servo_t *comp) {
@@ -152,6 +149,16 @@ void update_control(t3d_servo_t *comp) {
         if (modbus_06_write(comp->mb_ctx, MODBUS_REG_CONTROL, control_val) >= 0) {
             comp->last_control = control_val;
         }
+    }
+}
+
+void read_alarm(t3d_servo_t *comp) {
+    
+    uint16_t alarm_code;
+
+    if (modbus_04_read(comp->mb_ctx, MODBUS_REG_ALARM, &alarm_code) >= 0) {
+        *comp->alarm_code = alarm_code;
+        *comp->alarm_flag = (alarm_code > 0) ? 1 : 0;
     }
 }
 
@@ -205,6 +212,22 @@ int modbus_03_read(modbus_t *mb_ctx, int reg, uint16_t *value) {
     return ret;  // Success
 }
 
+int modbus_04_read(modbus_t *mb_ctx, int reg, uint16_t *value) {
+    int ret = modbus_read_input_registers(mb_ctx, reg, 1, value);
+
+    if (ret < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Modbus 04 read error at reg %d: %s", reg, modbus_strerror(errno));
+
+        // If the connection is lost, close it and return failure
+        if (modbus_get_socket(mb_ctx) < 0) {
+            modbus_close(mb_ctx);
+        }
+        return ret;
+    }
+    return ret;  // Success
+}
+
+
 int modbus_06_write(modbus_t *mb_ctx, int reg, uint16_t value) {
     int ret = modbus_write_register(mb_ctx, reg, value);
 
@@ -229,7 +252,7 @@ int rtapi_app_main(void) {
 // Cleanup function
 void rtapi_app_exit(void) {
     if (comp_instance && comp_instance->mb_ctx) {
-
+        modbus_06_write(comp_instance->mb_ctx, MODBUS_REG_CONTROL, t3d_servo_control.off);
         modbus_close(comp_instance->mb_ctx);
         modbus_free(comp_instance->mb_ctx);
     }

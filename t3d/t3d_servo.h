@@ -76,8 +76,9 @@ static const t3d_servo_control_t t3d_servo_control = {
 
 // Function Prototypes
 void handle_sigint(int sig);
-int init(void);
-int init_hal_pins(int *comp_id);
+int init_modbus(void);
+int init_hal_component();
+int init_hal_pins();
 void update(void *arg);
 
 void update_speed(t3d_servo_t *comp);

@@ -1,7 +1,7 @@
 #include "t3d_servo.h"
 
 t3d_servo_t *comp_instance;  // Component instance
-static int comp_id; // Store the component ID
+int comp_id; // Store the component ID
 
 
 int main(int argc, char *argv[]) {
@@ -9,15 +9,16 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, handle_sigint);
     signal(SIGTERM, handle_sigint);
 
-    // Initialize HAL component
-    comp_id = hal_init("t3d_servo");
-    if (comp_id < 0) {
-        fprintf(stderr, "t3d_servo: Initialization failed\n");
+    comp_instance->last_speed = 0;
+    comp_instance->last_control = 0;
+
+    if (init_hal_component() < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Hal component init failed\n");
         return 1;
     }
-
-    if (init() < 0) {
-        fprintf(stderr, "t3d_servo: Initialization failed\n");
+    
+    if (init_modbus() < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Initialization failed\n");
         return 1;
     }
 
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
     // Finalize HAL component setup
     hal_ready(comp_id);
 
-    printf("t3d_servo: Loaded successfully");
+    rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Loaded successfully");
 
     // Keep the process running indefinitely (like other LinuxCNC user-space components)
     while (1) {
@@ -38,57 +39,6 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-int init(void) {
-    int retval;
-
-    // Allocate HAL memory for component
-    comp_instance = hal_malloc(sizeof(t3d_servo_t));
-    if (!comp_instance) {
-        printf("t3d_servo: HAL memory allocation failed");
-        return -1;
-    }
-
-    retval = init_hal_pins(&comp_id);
-    if (retval < 0) {
-        printf("t3d_servo: hal pin creation failed");
-        return retval;
-    } 
-
-    comp_instance->last_speed = 0;
-    comp_instance->last_control = 0;
-
-    char *device = find_serial_device();
-    if (device == NULL) {
-        printf("t3d_servo: No Modbus USB device found!");
-        return -1;
-    }
-
-    fprintf(stderr, "t3d_servo: Using Modbus device %s", device);
-
-    // Initialize Modbus connection
-    comp_instance->mb_ctx = modbus_new_rtu(
-        device,
-        t3d_modbus_params.baud,
-        t3d_modbus_params.parity,
-        t3d_modbus_params.data_bit,
-        t3d_modbus_params.stop_bit
-    );
-
-    if (!comp_instance->mb_ctx) {
-        printf("t3d_servo: Failed to create Modbus context");
-        return -1;
-    }
-
-    modbus_set_slave(comp_instance->mb_ctx, t3d_modbus_params.slave);  // Use configured slave number
-    if (modbus_connect(comp_instance->mb_ctx) == -1) {
-        printf("t3d_servo: Failed to connect to Modbus device");
-        return -1;
-    }
-
-    return 0;
-}
-
 
 void *modbus_thread(void *arg) {
     while (1) {
@@ -173,7 +123,7 @@ void read_alarm(t3d_servo_t *comp) {
 
 // Signal handler to clean up before exit
 void handle_sigint(int sig) {
-    printf("t3d_servo: Exiting...\n");
+    rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Exiting...\n");
     if (comp_instance && comp_instance->mb_ctx) {
         modbus_06_write(MODBUS_REG_CONTROL, t3d_servo_control.off);
         modbus_close(comp_instance->mb_ctx);

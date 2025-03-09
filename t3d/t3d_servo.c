@@ -16,11 +16,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Initialize HAL component
     if (init() < 0) {
         fprintf(stderr, "t3d_servo: Initialization failed\n");
         return 1;
     }
+
+    // Start a background thread for Modbus communication
+    pthread_t thread;
+    pthread_create(&thread, NULL, modbus_thread, comp_instance);
+    pthread_detach(thread);  // Don't wait for it to finish
+
+    // Finalize HAL component setup
+    hal_ready(comp_id);
+
+    printf("t3d_servo: Loaded successfully");
 
     // Keep the process running indefinitely (like other LinuxCNC user-space components)
     while (1) {
@@ -28,23 +37,6 @@ int main(int argc, char *argv[]) {
     }
 
     return 0;
-}
-
-char *find_serial_device() {
-    static char device_path[256];
-    glob_t glob_result;
-
-    // Look for any device inside /dev/serial/by-id/
-    if (glob("/dev/serial/by-id/*", 0, NULL, &glob_result) == 0) {
-        if (glob_result.gl_pathc > 0) {
-            strncpy(device_path, glob_result.gl_pathv[0], sizeof(device_path) - 1);
-            globfree(&glob_result);
-            return device_path;
-        }
-        globfree(&glob_result);
-    }
-
-    return NULL;  // No matching device found
 }
 
 int init(void) {
@@ -94,15 +86,6 @@ int init(void) {
         return -1;
     }
 
-    // Start a background thread for Modbus communication
-    pthread_t thread;
-    pthread_create(&thread, NULL, modbus_thread, comp_instance);
-    pthread_detach(thread);  // Don't wait for it to finish
-
-    // Finalize HAL component setup
-    hal_ready(comp_id);
-
-    printf("t3d_servo: Loaded successfully");
     return 0;
 }
 
@@ -116,20 +99,35 @@ void *modbus_thread(void *arg) {
 }
 
 void update(void *arg) {
-    // t3d_servo_t *comp = (t3d_servo_t *)arg;
+    t3d_servo_t *comp = (t3d_servo_t *)arg;
 
-    printf("T3D_SERVO: update funtc run");
+    update_control(comp);
+    update_speed(comp);
 
-    // update_control(comp);
-    // update_speed(comp);
+    rtapi_u64 current_time = rtapi_get_time();
 
-    // rtapi_u64 current_time = rtapi_get_time();
+    // Read Modbus every 1 second (1,000,000,000 nanoseconds)
+    if ((current_time - comp->last_modbus_read_time) >= 1000000000) {
+        read_alarm(comp);
+        comp->last_modbus_read_time = current_time;
+    }
+}
 
-    // // Read Modbus every 1 second (1,000,000,000 nanoseconds)
-    // if ((current_time - comp->last_modbus_read_time) >= 1000000000) {
-    //     read_alarm(comp);
-    //     comp->last_modbus_read_time = current_time;
-    // }
+char *find_serial_device() {
+    static char device_path[256];
+    glob_t glob_result;
+
+    // Look for any device inside /dev/serial/by-id/
+    if (glob("/dev/serial/by-id/*", 0, NULL, &glob_result) == 0) {
+        if (glob_result.gl_pathc > 0) {
+            strncpy(device_path, glob_result.gl_pathv[0], sizeof(device_path) - 1);
+            globfree(&glob_result);
+            return device_path;
+        }
+        globfree(&glob_result);
+    }
+
+    return NULL;  // No matching device found
 }
 
 void update_speed(t3d_servo_t *comp) {

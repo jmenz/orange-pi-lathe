@@ -21,7 +21,7 @@ int modbus_04_read(int reg, uint16_t *value) {
     int ret = modbus_read_input_registers(comp_instance->mb_ctx, reg, MODBUS_READ_REGISTERS_NUM, value);
 
     if (ret < 0) {
-        fprintf(stderr,  "t3d_servo: Modbus 04 read error at reg %d: %s", reg, modbus_strerror(errno));
+        fprintf(stderr, "t3d_servo: Modbus 04 read error at reg %d: %s", reg, modbus_strerror(errno));
 
         // If the connection is lost, close it and return failure
         if (modbus_get_socket(comp_instance->mb_ctx) < 0) {

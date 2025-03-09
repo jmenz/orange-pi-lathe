@@ -3,28 +3,30 @@ COMPONENT = t3d_servo
 
 # Compiler and Flags
 CC = gcc
-CFLAGS = -fPIC -I/usr/include/modbus -I/usr/include/linuxcnc -DULAPI
-LDFLAGS = -shared -L/usr/lib/arm-linux-gnueabihf -lmodbus -lpthread -lm
+CFLAGS = -fPIC -I/usr/include/modbus -I/usr/include/linuxcnc -DULAPI -Os
+LDFLAGS = -L/usr/lib -llinuxcnchal -L/usr/lib/arm-linux-gnueabihf -lmodbus -lpthread -lm
 
-# Source files
-SRCS = t3d_servo.c t3d_servo_modbus.c t3d_servo_hal.c
-OBJS = $(SRCS:.c=.o)
+# Build Targets
+all: $(COMPONENT)
 
-# Build Target
-all: $(COMPONENT).so
+$(COMPONENT): $(COMPONENT).o t3d_servo_modbus.o t3d_servo_hal.o
+	$(CC) -o $@ $^ $(LDFLAGS) 
 
-# Compile each .c file into an object file
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# Compile source files
+$(COMPONENT).o: $(COMPONENT).c $(COMPONENT).h
+	$(CC) $(CFLAGS) -c $(COMPONENT).c -o $(COMPONENT).o
 
-# Link object files into the final shared library
-$(COMPONENT).so: $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+t3d_servo_modbus.o: t3d_servo_modbus.c t3d_servo.h
+	$(CC) $(CFLAGS) -c t3d_servo_modbus.c -o t3d_servo_modbus.o
 
-# Install the shared object to LinuxCNC modules directory
-install: $(COMPONENT).so
-	sudo cp $(COMPONENT).so /usr/lib/linuxcnc/modules/
+t3d_servo_hal.o: t3d_servo_hal.c t3d_servo.h
+	$(CC) $(CFLAGS) -c t3d_servo_hal.c -o t3d_servo_hal.o
+
+# Install the binary to the LinuxCNC userspace path
+install: $(COMPONENT)
+	sudo cp $(COMPONENT) /usr/bin/
+	sudo chmod +x /usr/bin/$(COMPONENT)
 
 # Clean up compiled files
 clean:
-	rm -f $(COMPONENT).so $(OBJS)
+	rm -f $(COMPONENT) $(COMPONENT).o t3d_servo_modbus.o t3d_servo_hal.o

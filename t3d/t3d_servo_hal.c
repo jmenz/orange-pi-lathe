@@ -1,35 +1,32 @@
 #include "t3d_servo.h"
 
-extern t3d_servo_t *comp_instance;
-extern int comp_id;
-
-int init_hal_component() {
+t3d_servo_t *init_hal_component(int *comp_id) {
     // Initialize HAL component
-    comp_id = hal_init("t3d_servo");
-    if (comp_id < 0) {
+    *comp_id = hal_init("t3d_servo");
+    if (*comp_id < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Initialization failed\n");
-        return -1;
+        return NULL;
     }
 
-    // Allocate HAL memory for component
-    comp_instance = hal_malloc(sizeof(t3d_servo_t));
-    if (!comp_instance) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: HAL memory allocation failed");
-        return -1;
-    }
-    
-    comp_instance->last_speed = 0;
-    comp_instance->last_control = 0;
-
-    if (init_hal_pins(comp_instance) < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: hal pin creation failed");
-        return -1;
+    t3d_servo_t *comp = hal_malloc(sizeof(t3d_servo_t));
+    if (!comp) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: hal_malloc failed! Exiting...");
+        return NULL;
     }
 
-    return 0;
+    comp->last_speed = 0;
+    comp->last_control = 0;
+
+    // Initialize HAL Pins
+    if (init_hal_pins(comp, *comp_id) < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Failed to initialize HAL pins");
+        return NULL;
+    }
+
+    return comp;  // Return the allocated instance
 }
 
-int init_hal_pins(t3d_servo_t *comp) {
+int init_hal_pins(t3d_servo_t *comp, int comp_id) {
     int retval;
 
     // Create HAL Pins

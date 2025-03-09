@@ -1,7 +1,7 @@
 #include "t3d_servo.h"
 
 t3d_servo_t *comp_instance;  // Component instance
-int comp_id; // Store the component ID
+static int comp_id; // Store the component ID
 
 
 int main(int argc, char *argv[]) {
@@ -10,8 +10,10 @@ int main(int argc, char *argv[]) {
     signal(SIGTERM, handle_sigint);
 
 
-    if (init_hal_component() < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Hal component init failed\n");
+    // Initialize HAL Component & Get Instance
+    comp_instance = init_hal_component(&comp_id);
+    if (!comp_instance) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: HAL component initialization failed. Exiting...");
         return 1;
     }
     

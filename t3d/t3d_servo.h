@@ -74,9 +74,9 @@ static const t3d_servo_control_t t3d_servo_control = {
 
 
 // Function Prototypes
+t3d_servo_t *init_hal_component(int *comp_id);
 void handle_sigint(int sig);
-int init_hal_component();
-int init_hal_pins(t3d_servo_t *comp);
+int init_hal_pins(t3d_servo_t *comp, int comp_id);
 void main_loop(t3d_servo_t *comp);
 void servo_write(t3d_servo_t *comp);
 void servo_read(t3d_servo_t *comp);

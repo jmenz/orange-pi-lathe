@@ -14,9 +14,6 @@ int main(int argc, char *argv[]) {
         rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Hal component init failed\n");
         return 1;
     }
-
-    comp_instance->last_speed = 0;
-    comp_instance->last_control = 0;
     
     if (init_modbus(comp_instance) < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Initialization failed\n");
@@ -28,27 +25,34 @@ int main(int argc, char *argv[]) {
 
     rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Loaded successfully");
 
-    // Keep the process running indefinitely (like other LinuxCNC user-space components)
-    while (1) {
-        update(); 
-        usleep(100000);  // Sleep for 100ms (10 Hz polling rate)
-    }
+    main_loop(comp_instance);
 
     return 0;
 }
 
-void update() {
+void main_loop(t3d_servo_t *comp) {
 
+    while (1) {
+        servo_write(comp);
+
+        // Read Modbus every 1 second (1,000,000,000 nanoseconds)
+        rtapi_u64 current_time = rtapi_get_time();
+        if ((current_time - comp->last_modbus_read_time) >= 1000000000) {
+            servo_read(comp);
+            comp->last_modbus_read_time = current_time;
+        }
+
+        usleep(100000);  // Sleep for 100ms (10 Hz polling rate)
+    }
+}
+
+void servo_write(t3d_servo_t *comp) {
     update_control(comp_instance);
     update_speed(comp_instance);
+}
 
-    rtapi_u64 current_time = rtapi_get_time();
-
-    // Read Modbus every 1 second (1,000,000,000 nanoseconds)
-    if ((current_time - comp_instance->last_modbus_read_time) >= 1000000000) {
-        read_alarm(comp_instance);
-        comp_instance->last_modbus_read_time = current_time;
-    }
+void servo_read(t3d_servo_t *comp) {
+    read_alarm(comp_instance);
 }
 
 void update_speed(t3d_servo_t *comp) {

@@ -6,10 +6,19 @@ CC = gcc
 CFLAGS = -fPIC -I/usr/include/modbus -I/usr/include/linuxcnc -DULAPI
 LDFLAGS = -shared -L/usr/lib/arm-linux-gnueabihf -lmodbus -lm
 
-# Build Targets
+# Source files
+SRCS = t3d_servo.c t3d_servo_modbus.c t3d_servo_hal.c
+OBJS = $(SRCS:.c=.o)
+
+# Build Target
 all: $(COMPONENT).so
 
-$(COMPONENT).so: $(COMPONENT).c
+# Compile each .c file into an object file
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Link object files into the final shared library
+$(COMPONENT).so: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Install the shared object to LinuxCNC modules directory
@@ -18,4 +27,4 @@ install: $(COMPONENT).so
 
 # Clean up compiled files
 clean:
-	rm -f $(COMPONENT).so
+	rm -f $(COMPONENT).so $(OBJS)

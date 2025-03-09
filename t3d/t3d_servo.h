@@ -13,6 +13,7 @@
 typedef struct {
     hal_float_t *spindle_speed;   // Speed command (RPM)
     hal_bit_t *on;                // Spindle on/off
+    hal_bit_t *hold_motor;        // Hold the motor when not rotating
     hal_bit_t *forward;           // Forward (CCW)
     hal_bit_t *reverse;           // Reverse (CW)
     hal_bit_t *alarm_flag;        // True if alarm_code > 0
@@ -29,27 +30,29 @@ typedef struct {
 
 
 // 🔹 Define Register Addresses
-#define MODBUS_REG_RPM      76      // RPM Setpoint Register
-#define MODBUS_REG_CONTROL  4112    // Control Command Register
-#define MODBUS_REG_ALARM    26      // Error Code Register
-
+#define MODBUS_REG_RPM      76      // RPM Setpoint Register (0x004C)
+#define MODBUS_REG_CONTROL  4112    // Control Command Register (0x1010)
+#define MODBUS_REG_ALARM    26      // Error Code Register (0x001A)
 
 typedef struct {
     char *device;
+    int slave;
     int baud;
     char parity;
     int data_bit;
-    int stop_bit
+    int stop_bit;
 } t3d_modbus_param_t;
 
 static const t3d_modbus_param_t t3d_modbus_params = {
     .device    = "/dev/ttyUSB0",
+    .slave     = 1,
     .baud      = 19200,
     .parity    = 'E',
     .data_bit  = 8,
     .stop_bit  = 1
 };
 
+#define MODBUS_READ_REGISTERS_NUM  1   // Number of registers to read at once
 
 // 🔹 Define Control Command Values (from HAL MUX configuration)
 typedef struct {
@@ -71,16 +74,17 @@ static const t3d_servo_control_t t3d_servo_control = {
 // Function Prototypes
 char *find_serial_device();
 int init(void);
+int init_hal_pins(int *comp_id);
 void update(void *arg, long period);
 
-int modbus_03_read(modbus_t *mb_ctx, int reg, uint16_t *value);
-int modbus_04_read(modbus_t *mb_ctx, int reg, uint16_t *value);
-int modbus_06_write(modbus_t *mb_ctx, int reg, uint16_t value);
+int modbus_03_read(int reg, uint16_t *value);
+int modbus_04_read(int reg, uint16_t *value);
+int modbus_06_write(int reg, uint16_t value);
 
 void update_speed(t3d_servo_t *comp);
 void update_control(t3d_servo_t *comp);
 void read_alarm(t3d_servo_t *comp);
 
-int modbus_check_connection(t3d_servo_t *comp);
+int modbus_check_connection();
 
 #endif // T3D_SERVO_H

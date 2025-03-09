@@ -9,7 +9,7 @@ loadrt scale names=scale.s-rpm
 loadrt near names=spindle-at-speed
 loadrt pid names=pid.x,pid.z
 
-loadrt t3d_servo
+loadusr -W t3d_servo
 
 # add RT functions to the servo thread
 addf arisc.encoder.read       servo-thread

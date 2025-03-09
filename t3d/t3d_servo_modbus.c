@@ -2,7 +2,7 @@
 
 extern t3d_servo_t *comp_instance; 
 
-int modbus_03_read(int reg, uint16_t *value) {
+int modbus_03_read(t3d_servo_t *comp, int reg, uint16_t *value) {
     int ret = modbus_read_registers(comp_instance->mb_ctx, reg, MODBUS_READ_REGISTERS_NUM, value);
 
     if (ret < 0) {
@@ -17,7 +17,7 @@ int modbus_03_read(int reg, uint16_t *value) {
     return ret;  // Success
 }
 
-int modbus_04_read(int reg, uint16_t *value) {
+int modbus_04_read(t3d_servo_t *comp, int reg, uint16_t *value) {
     int ret = modbus_read_input_registers(comp_instance->mb_ctx, reg, MODBUS_READ_REGISTERS_NUM, value);
 
     if (ret < 0) {
@@ -33,7 +33,7 @@ int modbus_04_read(int reg, uint16_t *value) {
 }
 
 
-int modbus_06_write(int reg, uint16_t value) {
+int modbus_06_write(t3d_servo_t *comp, int reg, uint16_t value) {
     int ret = modbus_write_register(comp_instance->mb_ctx, reg, value);
 
     if (ret < 0) {
@@ -49,7 +49,7 @@ int modbus_06_write(int reg, uint16_t value) {
 }
 
 
-int modbus_check_connection() {
+int modbus_check_connection(t3d_servo_t *comp) {
     uint16_t test_reg;
     int status = modbus_read_registers(comp_instance->mb_ctx, 76, 1, &test_reg);
     
@@ -85,7 +85,7 @@ int modbus_check_connection() {
 }
 
 
-int init_modbus(void) {
+int init_modbus(t3d_servo_t *comp) {
 
     char *device = find_serial_device();
     if (device == NULL) {
@@ -116,4 +116,22 @@ int init_modbus(void) {
     }
 
     return 0;
+}
+
+
+char *find_serial_device() {
+    static char device_path[256];
+    glob_t glob_result;
+
+    // Look for any device inside /dev/serial/by-id/
+    if (glob("/dev/serial/by-id/*", 0, NULL, &glob_result) == 0) {
+        if (glob_result.gl_pathc > 0) {
+            strncpy(device_path, glob_result.gl_pathv[0], sizeof(device_path) - 1);
+            globfree(&glob_result);
+            return device_path;
+        }
+        globfree(&glob_result);
+    }
+
+    return NULL;  // No matching device found
 }

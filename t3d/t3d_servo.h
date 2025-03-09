@@ -6,7 +6,6 @@
 #include <glob.h>
 #include <string.h>
 #include <errno.h>
-#include <pthread.h>  // For threading
 #include <unistd.h>   // For sleep
 #include <signal.h>
 #include <stdlib.h>
@@ -76,22 +75,21 @@ static const t3d_servo_control_t t3d_servo_control = {
 
 // Function Prototypes
 void handle_sigint(int sig);
-int init_modbus(void);
 int init_hal_component();
 int init_hal_pins();
-void update(void *arg);
+void update();
 
 void update_speed(t3d_servo_t *comp);
 void update_control(t3d_servo_t *comp);
 void read_alarm(t3d_servo_t *comp);
 
 
-char *find_serial_device();
-void *modbus_thread(void *arg);
-int modbus_03_read(int reg, uint16_t *value);
-int modbus_04_read(int reg, uint16_t *value);
-int modbus_06_write(int reg, uint16_t value);
+int init_modbus(t3d_servo_t *comp);
+int modbus_03_read(t3d_servo_t *comp, int reg, uint16_t *value);
+int modbus_04_read(t3d_servo_t *comp, int reg, uint16_t *value);
+int modbus_06_write(t3d_servo_t *comp, int reg, uint16_t value);
 
-int modbus_check_connection();
+char *find_serial_device();
+int modbus_check_connection(t3d_servo_t *comp);
 
 #endif // T3D_SERVO_H

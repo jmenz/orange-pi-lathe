@@ -9,23 +9,19 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, handle_sigint);
     signal(SIGTERM, handle_sigint);
 
-    comp_instance->last_speed = 0;
-    comp_instance->last_control = 0;
 
     if (init_hal_component() < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Hal component init failed\n");
         return 1;
     }
+
+    comp_instance->last_speed = 0;
+    comp_instance->last_control = 0;
     
-    if (init_modbus() < 0) {
+    if (init_modbus(comp_instance) < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Initialization failed\n");
         return 1;
     }
-
-    // Start a background thread for Modbus communication
-    pthread_t thread;
-    pthread_create(&thread, NULL, modbus_thread, comp_instance);
-    pthread_detach(thread);  // Don't wait for it to finish
 
     // Finalize HAL component setup
     hal_ready(comp_id);
@@ -34,50 +30,25 @@ int main(int argc, char *argv[]) {
 
     // Keep the process running indefinitely (like other LinuxCNC user-space components)
     while (1) {
-        sleep(1);
+        update(); 
+        usleep(100000);  // Sleep for 100ms (10 Hz polling rate)
     }
 
     return 0;
 }
 
-void *modbus_thread(void *arg) {
-    while (1) {
-        update(arg);  // Call the update function
-        usleep(100000);  // Sleep for 100ms (10 Hz polling rate)
-    }
-    return NULL;
-}
+void update() {
 
-void update(void *arg) {
-    t3d_servo_t *comp = (t3d_servo_t *)arg;
-
-    update_control(comp);
-    update_speed(comp);
+    update_control(comp_instance);
+    update_speed(comp_instance);
 
     rtapi_u64 current_time = rtapi_get_time();
 
     // Read Modbus every 1 second (1,000,000,000 nanoseconds)
-    if ((current_time - comp->last_modbus_read_time) >= 1000000000) {
-        read_alarm(comp);
-        comp->last_modbus_read_time = current_time;
+    if ((current_time - comp_instance->last_modbus_read_time) >= 1000000000) {
+        read_alarm(comp_instance);
+        comp_instance->last_modbus_read_time = current_time;
     }
-}
-
-char *find_serial_device() {
-    static char device_path[256];
-    glob_t glob_result;
-
-    // Look for any device inside /dev/serial/by-id/
-    if (glob("/dev/serial/by-id/*", 0, NULL, &glob_result) == 0) {
-        if (glob_result.gl_pathc > 0) {
-            strncpy(device_path, glob_result.gl_pathv[0], sizeof(device_path) - 1);
-            globfree(&glob_result);
-            return device_path;
-        }
-        globfree(&glob_result);
-    }
-
-    return NULL;  // No matching device found
 }
 
 void update_speed(t3d_servo_t *comp) {
@@ -85,7 +56,7 @@ void update_speed(t3d_servo_t *comp) {
     if (*(comp->spindle_speed) != comp->last_speed) {
         uint16_t speed_val = *(comp->spindle_speed);
 
-        if (modbus_06_write(MODBUS_REG_RPM, speed_val) >= 0) {
+        if (modbus_06_write(comp, MODBUS_REG_RPM, speed_val) >= 0) {
             comp->last_speed = *(comp->spindle_speed);
         }
     }
@@ -104,7 +75,7 @@ void update_control(t3d_servo_t *comp) {
 
     // Only send control command if it changed
     if (control_val != comp->last_control) {
-        if (modbus_06_write(MODBUS_REG_CONTROL, control_val) >= 0) {
+        if (modbus_06_write(comp, MODBUS_REG_CONTROL, control_val) >= 0) {
             comp->last_control = control_val;
         }
     }
@@ -114,7 +85,7 @@ void read_alarm(t3d_servo_t *comp) {
     
     uint16_t alarm_code;
 
-    if (modbus_04_read(MODBUS_REG_ALARM, &alarm_code) >= 0) {
+    if (modbus_04_read(comp, MODBUS_REG_ALARM, &alarm_code) >= 0) {
         *comp->alarm_code = alarm_code;
         *comp->alarm_flag = (alarm_code > 0) ? 1 : 0;
     }
@@ -125,7 +96,7 @@ void read_alarm(t3d_servo_t *comp) {
 void handle_sigint(int sig) {
     rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Exiting...\n");
     if (comp_instance && comp_instance->mb_ctx) {
-        modbus_06_write(MODBUS_REG_CONTROL, t3d_servo_control.off);
+        modbus_06_write(comp_instance, MODBUS_REG_CONTROL, t3d_servo_control.off);
         modbus_close(comp_instance->mb_ctx);
         modbus_free(comp_instance->mb_ctx);
     }

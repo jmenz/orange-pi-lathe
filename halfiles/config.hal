@@ -22,8 +22,6 @@ addf pid.z.do-pid-calcs       servo-thread
 addf arisc.pwm.write          servo-thread
 addf arisc.gpio.write         servo-thread
 
-addf t3d_servo.update         servo-thread
-
 addf encoder.update-counters  servo-thread
 addf encoder.capture-position servo-thread
 addf lowpass.spindle-rpm      servo-thread

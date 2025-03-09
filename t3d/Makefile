@@ -4,7 +4,7 @@ COMPONENT = t3d_servo
 # Compiler and Flags
 CC = gcc
 CFLAGS = -fPIC -I/usr/include/modbus -I/usr/include/linuxcnc -DULAPI
-LDFLAGS = -shared -L/usr/lib/arm-linux-gnueabihf -lmodbus -lm
+LDFLAGS = -shared -L/usr/lib/arm-linux-gnueabihf -lmodbus -lpthread -lm
 
 # Source files
 SRCS = t3d_servo.c t3d_servo_modbus.c t3d_servo_hal.c

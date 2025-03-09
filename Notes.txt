@@ -1,0 +1,10 @@
+Machine configuration file is 'config.ini'
+Starting LinuxCNC...
+Found file(REL): ./halfiles/config.hal
+Note: Using POSIX realtime
+./halfiles/config.hal:12: execv(t3d_servo): No such file or directory
+./halfiles/config.hal:12: waitpid failed t3d_servo t3d_servo
+./halfiles/config.hal:12: t3d_servo exited without becoming ready
+Shutting down and cleaning up LinuxCNC...
+Note: Using POSIX realtime
+

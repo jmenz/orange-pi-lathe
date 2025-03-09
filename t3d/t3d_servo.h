@@ -2,11 +2,15 @@
 #define T3D_SERVO_H
 
 #include <rtapi.h>
-#include <rtapi_app.h>
 #include <hal.h>
 #include <glob.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>  // For threading
+#include <unistd.h>   // For sleep
+#include <signal.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <modbus/modbus.h>
 
 // Define HAL Component Structure
@@ -70,20 +74,22 @@ static const t3d_servo_control_t t3d_servo_control = {
 };
 
 
-
 // Function Prototypes
-char *find_serial_device();
+void handle_sigint(int sig);
 int init(void);
 int init_hal_pins(int *comp_id);
-void update(void *arg, long period);
-
-int modbus_03_read(int reg, uint16_t *value);
-int modbus_04_read(int reg, uint16_t *value);
-int modbus_06_write(int reg, uint16_t value);
+void update(void *arg);
 
 void update_speed(t3d_servo_t *comp);
 void update_control(t3d_servo_t *comp);
 void read_alarm(t3d_servo_t *comp);
+
+
+char *find_serial_device();
+void *modbus_thread(void *arg);
+int modbus_03_read(int reg, uint16_t *value);
+int modbus_04_read(int reg, uint16_t *value);
+int modbus_06_write(int reg, uint16_t value);
 
 int modbus_check_connection();
 

@@ -38,14 +38,15 @@ setp spindle.0.at-speed 1
 
 ## VELOCITY CONTROL ##
 
-net s-en         spindle.0.on
+setp t3d_servo.hold-motor 0
+
 net s-forward    spindle.0.forward
 net s-reverse    spindle.0.reverse
 
 net s-rpm-commanded => t3d_servo.spindle-speed
-net s-forward => t3d_servo.forward
-net s-reverse => t3d_servo.reverse
-net s-en      => t3d_servo.on
+net s-forward       => t3d_servo.forward
+net s-reverse       => t3d_servo.reverse
+net machine-on  => t3d_servo.on
 
 
 ########### POSITION ##########

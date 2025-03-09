@@ -24,7 +24,6 @@ int main(int argc, char *argv[]) {
 
     // Finalize HAL component setup
     hal_ready(comp_id);
-
     rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Loaded successfully");
 
     main_loop(comp_instance);
@@ -49,7 +48,7 @@ void main_loop(t3d_servo_t *comp) {
 }
 
 void servo_write(t3d_servo_t *comp) {
-    update_control(comp_instance);
+    update_motor_status(comp_instance);
     update_speed(comp_instance);
 }
 
@@ -68,21 +67,30 @@ void update_speed(t3d_servo_t *comp) {
     }
 }
 
-void update_control(t3d_servo_t *comp) {
-    // Determine control command
-    uint16_t control_val = t3d_servo_control.stop;  // Default to STOP
+void update_motor_status(t3d_servo_t *comp) {
+    
     if (*(comp->on)) {
-        if (*(comp->forward) && !*(comp->reverse)) {
-            control_val = t3d_servo_control.forward;  // FORWARD
-        } else if (*(comp->reverse) && !*(comp->forward)) {
-            control_val = t3d_servo_control.reverse;  // REVERSE
-        }
-    }
+        // Determine control command
+        uint16_t command = t3d_servo_control.stop;
 
+        if (*(comp->forward) && !*(comp->reverse)) {
+            command = t3d_servo_control.forward;  // FORWARD
+        } else if (*(comp->reverse) && !*(comp->forward)) {
+            command = t3d_servo_control.reverse;  // REVERSE
+        }
+        
+        send_motor_command(comp, command);
+
+    } else {
+        send_motor_command(comp, t3d_servo_control.off);
+    }
+}
+
+void send_motor_command(t3d_servo_t *comp, uint16_t command) {
     // Only send control command if it changed
-    if (control_val != comp->last_control) {
-        if (modbus_06_write(comp, MODBUS_REG_CONTROL, control_val) >= 0) {
-            comp->last_control = control_val;
+    if (command != comp->last_command) {
+        if (modbus_06_write(comp, MODBUS_REG_CONTROL, command) >= 0) {
+            comp->last_command = command;
         }
     }
 }
@@ -92,8 +100,10 @@ void read_alarm(t3d_servo_t *comp) {
     uint16_t alarm_code;
 
     if (modbus_04_read(comp, MODBUS_REG_ALARM, &alarm_code) >= 0) {
-        *comp->alarm_code = alarm_code;
-        *comp->alarm_flag = (alarm_code > 0) ? 1 : 0;
+        if (*comp->alarm_code != alarm_code) {
+            *comp->alarm_code = alarm_code;
+            *comp->alarm_flag = (alarm_code > 0) ? 1 : 0;
+        }
     }
 }
 

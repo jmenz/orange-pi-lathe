@@ -28,6 +28,9 @@ addf lowpass.spindle-rpm      servo-thread
 addf scale.s-rpm              servo-thread
 addf spindle-at-speed         servo-thread
 
+# General status
+net machine-on <= motion.motion-enabled => arisc.gpio.PA12-out
+
 # E-Stop
 setp arisc.gpio.PA20-pull 1
 net estop arisc.gpio.PA20-in => iocontrol.0.emc-enable-in

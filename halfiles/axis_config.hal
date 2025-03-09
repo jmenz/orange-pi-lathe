@@ -19,10 +19,10 @@ setp pid.x.error-previous-target 1
 #setp pid.x.maxerror 0.05
 setp pid.x.deadband 0.001
 
-net x-pos-cmd  joint.0.motor-pos-cmd  => pid.x.command
-net x-pos-fb   arisc.pwm.0.pos-fb     => joint.0.motor-pos-fb => pid.x.feedback
-net x-vel-cmd  pid.x.output           => arisc.pwm.0.vel-cmd
-net x-en       joint.0.amp-enable-out => arisc.pwm.0.enable   => pid.x.enable => arisc.gpio.PA12-out
+net x-pos-cmd     joint.0.motor-pos-cmd  => pid.x.command
+net x-pos-fb      arisc.pwm.0.pos-fb     => joint.0.motor-pos-fb => pid.x.feedback
+net x-vel-cmd     pid.x.output           => arisc.pwm.0.vel-cmd
+net machine-on => arisc.pwm.0.enable   => pid.x.enable => arisc.gpio.PA12-out
 
 
 
@@ -48,10 +48,10 @@ setp pid.z.error-previous-target 1
 #setp pid.z.maxerror 0.05
 setp pid.z.deadband 0.001
 
-net z-pos-cmd  joint.1.motor-pos-cmd  => pid.z.command
-net z-pos-fb   arisc.pwm.1.pos-fb     => joint.1.motor-pos-fb => pid.z.feedback
-net z-vel-cmd  pid.z.output           => arisc.pwm.1.vel-cmd
-net z-en       joint.1.amp-enable-out => arisc.pwm.1.enable   => pid.z.enable
+net z-pos-cmd     joint.1.motor-pos-cmd  => pid.z.command
+net z-pos-fb      arisc.pwm.1.pos-fb     => joint.1.motor-pos-fb => pid.z.feedback
+net z-vel-cmd     pid.z.output           => arisc.pwm.1.vel-cmd
+net machine-on => arisc.pwm.1.enable   => pid.z.enable
 
 
 

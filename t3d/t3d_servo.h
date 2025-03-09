@@ -14,19 +14,18 @@
 
 // Define HAL Component Structure
 typedef struct {
-    hal_float_t *spindle_speed;   // Speed command (RPM)
-    hal_bit_t *on;                // Spindle on/off
-    hal_bit_t *hold_motor;        // Hold the motor when not rotating
-    hal_bit_t *forward;           // Forward (CCW)
-    hal_bit_t *reverse;           // Reverse (CW)
-    hal_bit_t *alarm_flag;        // True if alarm_code > 0
-    hal_s32_t *alarm_code;        // Read error code
+    hal_float_t *spindle_speed;     // Speed command (RPM)
+    hal_bit_t *on;                  // Spindle on/off
+    hal_bit_t *hold_motor;          // Hold the motor when not rotating
+    hal_bit_t *forward;             // Forward (CCW)
+    hal_bit_t *reverse;             // Reverse (CW)
+    hal_bit_t *alarm_flag;          // True if alarm_code > 0
+    hal_s32_t *alarm_code;          // Read error code
+    hal_u32_t *motor_release_delay; // Delay in ms that determines how long to hold motor after stop
 
-    modbus_t *mb_ctx;             // Modbus context
-    float last_speed;             // Last written speed (avoid redundant writes)
-    int last_control;             // Last recorded control
-    char device;                  // device name (/dev/ttyUSB0)
-    int slave_num;                // index number of device
+    modbus_t *mb_ctx;               // Modbus context
+    float last_speed;               // Last written speed (avoid redundant writes)
+    int last_command;               // Last recorded control
 
     rtapi_u64 last_modbus_read_time;
 } t3d_servo_t;
@@ -82,7 +81,8 @@ void servo_write(t3d_servo_t *comp);
 void servo_read(t3d_servo_t *comp);
 
 void update_speed(t3d_servo_t *comp);
-void update_control(t3d_servo_t *comp);
+void update_motor_status(t3d_servo_t *comp);
+void send_motor_command(t3d_servo_t *comp, uint16_t command);
 void read_alarm(t3d_servo_t *comp);
 
 

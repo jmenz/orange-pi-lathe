@@ -13,18 +13,13 @@ int main(int argc, char *argv[]) {
     // Initialize HAL Component & Get Instance
     comp_instance = init_hal_component(&comp_id);
     if (!comp_instance) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: HAL component initialization failed. Exiting...");
-        return 1;
-    }
-    
-    if (init_modbus(comp_instance) < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Initialization failed\n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: HAL component initialization failed. Exiting...\n");
         return 1;
     }
 
     // Finalize HAL component setup
     hal_ready(comp_id);
-    rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Loaded successfully");
+    rtapi_print_msg(RTAPI_MSG_INFO, "T3D_SERVO: Loaded successfully\n");
 
     main_loop(comp_instance);
 
@@ -34,6 +29,20 @@ int main(int argc, char *argv[]) {
 void main_loop(t3d_servo_t *comp) {
 
     while (1) {
+        if (!*(comp->enable)) {
+            if (comp->modbus_inited) {
+                modbus_06_write(comp_instance, MODBUS_REG_CONTROL, t3d_servo_control.off);
+                comp->modbus_inited = false;
+            }
+            continue;
+        }
+            
+        if (init_modbus(comp_instance) < 0) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Initialization failed\n");
+            break;//TODO: temp, try to reinit later
+        }
+
+        
         servo_write(comp);
 
         // Read Modbus every 1 second (1,000,000,000 nanoseconds)
@@ -110,7 +119,7 @@ void read_alarm(t3d_servo_t *comp) {
 
 // Signal handler to clean up before exit
 void handle_sigint(int sig) {
-    rtapi_print_msg(RTAPI_MSG_INFO, "t3d_servo: Exiting...\n");
+    rtapi_print_msg(RTAPI_MSG_INFO, "T3D_SERVO: Exiting...\n");
     if (comp_instance && comp_instance->mb_ctx) {
         modbus_06_write(comp_instance, MODBUS_REG_CONTROL, t3d_servo_control.off);
         modbus_close(comp_instance->mb_ctx);

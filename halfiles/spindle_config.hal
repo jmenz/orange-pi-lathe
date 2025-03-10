@@ -38,6 +38,7 @@ setp spindle.0.at-speed 1
 
 ## VELOCITY CONTROL ##
 
+setp t3d_servo.enable 1
 setp t3d_servo.hold-motor 0
 
 net s-forward    spindle.0.forward

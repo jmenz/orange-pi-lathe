@@ -14,6 +14,7 @@
 
 // Define HAL Component Structure
 typedef struct {
+    hal_bit_t *enable;              // Enable the whole component
     hal_float_t *spindle_speed;     // Speed command (RPM)
     hal_bit_t *on;                  // Spindle on/off
     hal_bit_t *hold_motor;          // Hold the motor when not rotating
@@ -26,6 +27,8 @@ typedef struct {
     modbus_t *mb_ctx;               // Modbus context
     float last_speed;               // Last written speed (avoid redundant writes)
     int last_command;               // Last recorded control
+
+    bool modbus_inited;
 
     rtapi_u64 last_modbus_read_time;
 } t3d_servo_t;

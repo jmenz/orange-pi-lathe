@@ -4,13 +4,13 @@ t3d_servo_t *init_hal_component(int *comp_id) {
     // Initialize HAL component
     *comp_id = hal_init("t3d_servo");
     if (*comp_id < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Initialization failed\n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Initialization failed\n");
         return NULL;
     }
 
     t3d_servo_t *comp = hal_malloc(sizeof(t3d_servo_t));
     if (!comp) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: hal_malloc failed! Exiting...");
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: hal_malloc failed! Exiting...");
         return NULL;
     }
 
@@ -19,7 +19,7 @@ t3d_servo_t *init_hal_component(int *comp_id) {
 
     // Initialize HAL Pins
     if (init_hal_pins(comp, *comp_id) < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "t3d_servo: Failed to initialize HAL pins");
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to initialize HAL pins");
         return NULL;
     }
 
@@ -30,6 +30,9 @@ int init_hal_pins(t3d_servo_t *comp, int comp_id) {
     int retval;
 
     // Create HAL Pins
+    retval = hal_pin_bit_new("t3d_servo.enable", HAL_IN, &(comp->enable), comp_id);
+    if (retval < 0) return retval;
+
     retval = hal_pin_float_new("t3d_servo.spindle-speed", HAL_IN, &(comp->spindle_speed), comp_id);
     if (retval < 0) return retval;
 
@@ -55,6 +58,7 @@ int init_hal_pins(t3d_servo_t *comp, int comp_id) {
     if (retval < 0) return retval;
 
     // Initialize Values
+    *(comp->enable) = 0;
     *(comp->spindle_speed) = 0;
     *(comp->on) = 0;
     *(comp->hold_motor) = 0;

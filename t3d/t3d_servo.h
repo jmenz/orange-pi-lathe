@@ -36,6 +36,13 @@ typedef struct {
     rtapi_u64 last_modbus_read_time;
 } t3d_servo_t;
 
+// 🔹 Define Conponent params
+#define MAIN_LOOP_PERIOD 100000  // 100ms (10 Hz polling rate)
+#define READ_CYCLE_PERIOD 1000000000 // Every 1 second (1,000,000,000 nanoseconds)
+
+// 🔹 Define Modbus constants
+#define MODBUS_READ_REGISTERS_NUM  1   // Number of registers to read at once
+#define MODBUS_MAX_RECONNECT_ATTEMPTS 3
 
 // 🔹 Define Register Addresses
 #define MODBUS_REG_RPM      76      // RPM Setpoint Register (0x004C)
@@ -59,9 +66,6 @@ static const t3d_modbus_param_t t3d_modbus_params = {
     .data_bit  = 8,
     .stop_bit  = 1
 };
-
-#define MODBUS_READ_REGISTERS_NUM  1   // Number of registers to read at once
-#define MODBUS_MAX_RECONNECT_ATTEMPTS 3
 
 // 🔹 Define Control Command Values (from HAL MUX configuration)
 typedef struct {

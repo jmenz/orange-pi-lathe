@@ -54,8 +54,7 @@ int init_modbus(t3d_servo_t *comp) {
         return 0;
     }
 
-    if (comp->modbus_reconnect_attempts >= MODBUS_MAX_RECONNECT_ATTEMPTS) {
-        handle_modbus_failure(comp);
+    if (comp->modbus_reconnect_attempts >= MODBUS_MAX_RECONNECT_ATTEMPTS + 1) {
         return -1;
     }
 
@@ -104,7 +103,8 @@ int init_modbus(t3d_servo_t *comp) {
 
 void handle_modbus_failure(t3d_servo_t *comp) {
     if (comp->modbus_reconnect_attempts >= MODBUS_MAX_RECONNECT_ATTEMPTS) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to connect to Modbus device within %s attempts \n", MODBUS_MAX_RECONNECT_ATTEMPTS); //todo trow alarm to EMC
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to connect to Modbus device within %d attempts \n", MODBUS_MAX_RECONNECT_ATTEMPTS); //todo trow alarm to EMC
+        comp->modbus_reconnect_attempts++;
         return;
     }
     comp->modbus_inited = false;

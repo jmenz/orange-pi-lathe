@@ -34,40 +34,38 @@ void main_loop(t3d_servo_t *comp) {
             if (comp->modbus_inited) {
                 modbus_06_write(comp_instance, MODBUS_REG_CONTROL, t3d_servo_control.off);
                 comp->modbus_inited = false;
+                comp->modbus_reconnect_attempts = 0;
             }
-            continue;
-        }
-        
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: tick\n");
-            
-        if (init_modbus(comp_instance) < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Modbus initialization failed\n");
-            continue;
-        }
 
+            usleep(MAIN_LOOP_PERIOD);
+            continue;
+        }
 
         check_on_status(comp);
-        
+            
+        if (init_modbus(comp_instance) < 0) {
+            usleep(MAIN_LOOP_PERIOD);
+            continue;
+        }
+
         servo_write(comp);
 
         // Read Modbus every 1 second (1,000,000,000 nanoseconds)
         rtapi_u64 current_time = rtapi_get_time();
-        if ((current_time - comp->last_modbus_read_time) >= 1000000000) {
+        if ((current_time - comp->last_modbus_read_time) >= READ_CYCLE_PERIOD) {
             servo_read(comp);
             comp->last_modbus_read_time = current_time;
         }
 
-        usleep(100000);  // Sleep for 100ms (10 Hz polling rate)
+        usleep(MAIN_LOOP_PERIOD);  // Sleep for 100ms (10 Hz polling rate)
     }
 }
 
 void check_on_status(t3d_servo_t *comp) {
     if (comp->last_on_status != *(comp->on)) {
         comp->last_on_status = *(comp->on);
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: comp->on = %d", *(comp->on));
 
         if (*(comp->on) == 1) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: reset reconnect count after machine on");
             comp->modbus_reconnect_attempts = 0; //reset reconnect attempts when component turned back on
         }
     }
@@ -77,6 +75,7 @@ void servo_write(t3d_servo_t *comp) {
     update_motor_status(comp_instance);
     update_speed(comp_instance);
 }
+
 void update_speed(t3d_servo_t *comp) {
     // Only send speed if it changed (MODBUS_REG_RPM, Function 06)
     if (*(comp->spindle_speed) != comp->last_speed) {

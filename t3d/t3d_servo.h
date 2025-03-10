@@ -28,7 +28,10 @@ typedef struct {
     float last_speed;               // Last written speed (avoid redundant writes)
     int last_command;               // Last recorded control
 
-    bool modbus_inited;
+    int modbus_reconnect_attempts; //number of attempts to reconnect to modbus
+
+    bool modbus_inited;             //is modbus inited and ready to work
+    bool last_on_status;
 
     rtapi_u64 last_modbus_read_time;
 } t3d_servo_t;
@@ -58,6 +61,7 @@ static const t3d_modbus_param_t t3d_modbus_params = {
 };
 
 #define MODBUS_READ_REGISTERS_NUM  1   // Number of registers to read at once
+#define MODBUS_MAX_RECONNECT_ATTEMPTS 3
 
 // 🔹 Define Control Command Values (from HAL MUX configuration)
 typedef struct {
@@ -87,14 +91,15 @@ void update_speed(t3d_servo_t *comp);
 void update_motor_status(t3d_servo_t *comp);
 void send_motor_command(t3d_servo_t *comp, uint16_t command);
 void read_alarm(t3d_servo_t *comp);
+void check_on_status(t3d_servo_t *comp);
 
 
 int init_modbus(t3d_servo_t *comp);
 int modbus_03_read(t3d_servo_t *comp, int reg, uint16_t *value);
 int modbus_04_read(t3d_servo_t *comp, int reg, uint16_t *value);
 int modbus_06_write(t3d_servo_t *comp, int reg, uint16_t value);
+void handle_modbus_failure(t3d_servo_t *comp);
 
 char *find_serial_device();
-int modbus_check_connection(t3d_servo_t *comp);
 
 #endif // T3D_SERVO_H

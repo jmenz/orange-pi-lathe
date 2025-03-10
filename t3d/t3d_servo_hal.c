@@ -10,16 +10,18 @@ t3d_servo_t *init_hal_component(int *comp_id) {
 
     t3d_servo_t *comp = hal_malloc(sizeof(t3d_servo_t));
     if (!comp) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: hal_malloc failed! Exiting...");
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: hal_malloc failed! Exiting...\n");
         return NULL;
     }
 
     comp->last_speed = 0;
     comp->last_command = 0;
+    comp->last_on_status = 0;
+    comp->modbus_reconnect_attempts = 0;
 
     // Initialize HAL Pins
     if (init_hal_pins(comp, *comp_id) < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to initialize HAL pins");
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to initialize HAL pins\n");
         return NULL;
     }
 

@@ -30,18 +30,23 @@ void main_loop(t3d_servo_t *comp) {
 
     while (1) {
         if (!*(comp->enable)) {
+            // turn off if was inited
             if (comp->modbus_inited) {
                 modbus_06_write(comp_instance, MODBUS_REG_CONTROL, t3d_servo_control.off);
                 comp->modbus_inited = false;
             }
             continue;
         }
+        
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: tick\n");
             
         if (init_modbus(comp_instance) < 0) {
-            rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Initialization failed\n");
-            break;//TODO: temp, try to reinit later
+            rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Modbus initialization failed\n");
+            continue;
         }
 
+
+        check_on_status(comp);
         
         servo_write(comp);
 
@@ -56,15 +61,22 @@ void main_loop(t3d_servo_t *comp) {
     }
 }
 
+void check_on_status(t3d_servo_t *comp) {
+    if (comp->last_on_status != *(comp->on)) {
+        comp->last_on_status = *(comp->on);
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: comp->on = %d", *(comp->on));
+
+        if (*(comp->on) == 1) {
+            rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: reset reconnect count after machine on");
+            comp->modbus_reconnect_attempts = 0; //reset reconnect attempts when component turned back on
+        }
+    }
+}
+
 void servo_write(t3d_servo_t *comp) {
     update_motor_status(comp_instance);
     update_speed(comp_instance);
 }
-
-void servo_read(t3d_servo_t *comp) {
-    read_alarm(comp_instance);
-}
-
 void update_speed(t3d_servo_t *comp) {
     // Only send speed if it changed (MODBUS_REG_RPM, Function 06)
     if (*(comp->spindle_speed) != comp->last_speed) {
@@ -104,6 +116,11 @@ void send_motor_command(t3d_servo_t *comp, uint16_t command) {
     }
 }
 
+
+void servo_read(t3d_servo_t *comp) {
+    read_alarm(comp_instance);
+}
+
 void read_alarm(t3d_servo_t *comp) {
     
     uint16_t alarm_code;
@@ -115,7 +132,6 @@ void read_alarm(t3d_servo_t *comp) {
         }
     }
 }
-
 
 // Signal handler to clean up before exit
 void handle_sigint(int sig) {

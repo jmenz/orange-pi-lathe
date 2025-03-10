@@ -23,6 +23,7 @@ typedef struct {
     hal_bit_t *alarm_flag;          // True if alarm_code > 0
     hal_s32_t *alarm_code;          // Read error code
     hal_u32_t *motor_release_delay; // Delay in ms that determines how long to hold motor after stop
+    hal_bit_t *reset_alarm;         // Signal to reset alarm
 
     modbus_t *mb_ctx;               // Modbus context
     float last_speed;               // Last written speed (avoid redundant writes)
@@ -39,6 +40,7 @@ typedef struct {
 // 🔹 Define Conponent params
 #define MAIN_LOOP_PERIOD 100000  // 100ms (10 Hz polling rate)
 #define READ_CYCLE_PERIOD 1000000000 // Every 1 second (1,000,000,000 nanoseconds)
+#define RESET_ALARM_DELAY 500000 // 500ms
 
 // 🔹 Define Modbus constants
 #define MODBUS_READ_REGISTERS_NUM  1   // Number of registers to read at once
@@ -47,7 +49,10 @@ typedef struct {
 // 🔹 Define Register Addresses
 #define MODBUS_REG_RPM      76      // RPM Setpoint Register (0x004C)
 #define MODBUS_REG_CONTROL  4112    // Control Command Register (0x1010)
-#define MODBUS_REG_ALARM    26      // Error Code Register (0x001A)
+#define MODBUS_REG_ALARM    26      // Alarm Code Register (0x001A)
+#define MODBUS_REG_RESET_ALARM 4100 // Reset Alarm Register (0x1004)
+
+#define MODBUS_RESET_ALARM_VALUE 4112
 
 typedef struct {
     char *device;
@@ -94,6 +99,7 @@ void servo_read(t3d_servo_t *comp);
 void update_speed(t3d_servo_t *comp);
 void update_motor_status(t3d_servo_t *comp);
 void send_motor_command(t3d_servo_t *comp, uint16_t command);
+void watch_reset_alert_signal(t3d_servo_t *comp);
 void read_alarm(t3d_servo_t *comp);
 void check_on_status(t3d_servo_t *comp);
 

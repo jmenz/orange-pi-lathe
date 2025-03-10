@@ -41,6 +41,7 @@ void main_loop(t3d_servo_t *comp) {
             continue;
         }
 
+        watch_reset_alert_signal(comp);
         check_on_status(comp);
             
         if (init_modbus(comp_instance) < 0) {
@@ -115,13 +116,20 @@ void send_motor_command(t3d_servo_t *comp, uint16_t command) {
     }
 }
 
+void watch_reset_alert_signal(t3d_servo_t *comp) {
+    if (*(comp->reset_alarm)) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: reset alarm");
+        modbus_06_write(comp, MODBUS_REG_RESET_ALARM, MODBUS_RESET_ALARM_VALUE);
+        usleep(RESET_ALARM_DELAY);
+    }
+}
+
 
 void servo_read(t3d_servo_t *comp) {
     read_alarm(comp_instance);
 }
 
 void read_alarm(t3d_servo_t *comp) {
-    
     uint16_t alarm_code;
 
     if (modbus_04_read(comp, MODBUS_REG_ALARM, &alarm_code) >= 0) {

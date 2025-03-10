@@ -2,12 +2,17 @@
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
 loadrt arisc pwm="v,v,f" out="PA0,PA3,PA12,PG8" in="PA7,PA8,PA9,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE4,PE5,PE6,PE7,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=1
-loadrt mux8 count=2
 loadrt encoder num_chan=3
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm
 loadrt near names=spindle-at-speed
 loadrt pid names=pid.x,pid.z
+
+# Logic components
+loadrt mux8 count=2
+loadrt and2 names=and.estop
+loadrt not names=not.servo_alarm
+loadrt timedelay names=delay.servo-reset-alarm
 
 loadusr -W t3d_servo
 
@@ -28,12 +33,20 @@ addf lowpass.spindle-rpm      servo-thread
 addf scale.s-rpm              servo-thread
 addf spindle-at-speed         servo-thread
 
+addf and.estop                servo-thread
+addf not.servo_alarm          servo-thread
+addf delay.servo-reset-alarm  servo-thread
+
+
 # General status
 net machine-on <= motion.motion-enabled => arisc.gpio.PA12-out
 
 # E-Stop
+net estop and.estop.out => iocontrol.0.emc-enable-in
+
 setp arisc.gpio.PA20-pull 1
-net estop arisc.gpio.PA20-in => iocontrol.0.emc-enable-in
+net hardware-estop arisc.gpio.PA20-in => and.estop.in0
+
 
 #Limit Switches
 setp arisc.gpio.PA19-pull 1 # not optical isolated

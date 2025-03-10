@@ -47,7 +47,16 @@ net s-reverse    spindle.0.reverse
 net s-rpm-commanded => t3d_servo.spindle-speed
 net s-forward       => t3d_servo.forward
 net s-reverse       => t3d_servo.reverse
-net machine-on  => t3d_servo.on
+net machine-on      => t3d_servo.on
+
+net servo-alarm       not.servo_alarm.in <= t3d_servo.alarm
+net software-estop    and.estop.in1 <= not.servo_alarm.out
+
+setp delay.servo-reset-alarm.on-delay 0
+setp delay.servo-reset-alarm.off-delay 0.2
+
+net user-request-eable iocontrol.0.user-request-enable => delay.servo-reset-alarm.in
+net servo-alarm-reset t3d_servo.reset-alarm <= delay.servo-reset-alarm.out
 
 
 ########### POSITION ##########

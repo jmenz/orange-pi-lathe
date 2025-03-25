@@ -124,7 +124,7 @@ void watch_reset_alert_signal(t3d_servo_t *comp) {
     }
 }
 
-
+// -------------------- Read Section ---------------------
 void servo_read(t3d_servo_t *comp) {
     read_alarm(comp_instance);
 }

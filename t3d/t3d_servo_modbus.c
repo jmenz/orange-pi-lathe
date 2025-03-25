@@ -95,9 +95,17 @@ int init_modbus(t3d_servo_t *comp) {
         return -1;
     }
 
+    uint16_t alarm_code;
+    if (modbus_04_read(comp, MODBUS_REG_ALARM, &alarm_code) < 0) {
+        return -1;
+    } else {
+        *comp->alarm_code = alarm_code;
+        *comp->alarm_flag = (alarm_code > 0) ? 1 : 0;
+    }
+
     comp->modbus_reconnect_attempts = 0;
     comp->modbus_inited = true;
-
+    
     return 0;
 }
 

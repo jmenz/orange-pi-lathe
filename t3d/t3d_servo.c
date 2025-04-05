@@ -124,6 +124,13 @@ void watch_reset_alert_signal(t3d_servo_t *comp) {
     }
 }
 
+
+int update_servo_settings(t3d_servo_t *comp) {
+    rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: set speedlimit %d \n", comp->speed_limit);
+    modbus_06_write(comp, MODBUS_REG_MAX_RPM, comp->speed_limit);
+}
+
+
 // -------------------- Read Section ---------------------
 void servo_read(t3d_servo_t *comp) {
     read_alarm(comp_instance);

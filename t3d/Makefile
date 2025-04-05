@@ -1,6 +1,9 @@
 # Name of the HAL component
 COMPONENT = t3d_servo
 
+#before compile install libmodbus-dev
+# sudo apt install libmodbus-dev
+
 # Compiler and Flags
 CC = gcc
 CFLAGS = -fPIC -I/usr/include/modbus -I/usr/include/linuxcnc -DULAPI -Os

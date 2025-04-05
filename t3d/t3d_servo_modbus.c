@@ -103,6 +103,8 @@ int init_modbus(t3d_servo_t *comp) {
         *comp->alarm_flag = (alarm_code > 0) ? 1 : 0;
     }
 
+    update_servo_settings(comp);
+
     comp->modbus_reconnect_attempts = 0;
     comp->modbus_inited = true;
     

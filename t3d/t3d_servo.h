@@ -25,6 +25,8 @@ typedef struct {
     hal_u32_t *motor_release_delay; // Delay in ms that determines how long to hold motor after stop
     hal_bit_t *reset_alarm;         // Signal to reset alarm
 
+    hal_u32_t speed_limit;        // Speed command (RPM)
+
     modbus_t *mb_ctx;               // Modbus context
     float last_speed;               // Last written speed (avoid redundant writes)
     int last_command;               // Last recorded control
@@ -47,9 +49,10 @@ typedef struct {
 #define MODBUS_MAX_RECONNECT_ATTEMPTS 3
 
 // 🔹 Define Register Addresses
-#define MODBUS_REG_RPM      76      // RPM Setpoint Register (0x004C)
-#define MODBUS_REG_CONTROL  4112    // Control Command Register (0x1010)
-#define MODBUS_REG_ALARM    26      // Alarm Code Register (0x001A)
+#define MODBUS_REG_RPM         76   // RPM Setpoint Register (0x004C)
+#define MODBUS_REG_MAX_RPM     75   // Maximum speed 
+#define MODBUS_REG_CONTROL     4112 // Control Command Register (0x1010)
+#define MODBUS_REG_ALARM       26   // Alarm Code Register (0x001A)
 #define MODBUS_REG_RESET_ALARM 4100 // Reset Alarm Register (0x1004)
 
 #define MODBUS_RESET_ALARM_VALUE 4112
@@ -102,7 +105,7 @@ void send_motor_command(t3d_servo_t *comp, uint16_t command);
 void watch_reset_alert_signal(t3d_servo_t *comp);
 void read_alarm(t3d_servo_t *comp);
 void check_on_status(t3d_servo_t *comp);
-
+int update_servo_settings(t3d_servo_t *comp);
 
 int init_modbus(t3d_servo_t *comp);
 int modbus_03_read(t3d_servo_t *comp, int reg, uint16_t *value);

@@ -40,6 +40,7 @@ setp spindle.0.at-speed 1
 
 setp t3d_servo.enable 1
 setp t3d_servo.hold-motor 0
+setp t3d_servo.speed-limit 3000
 
 net s-forward    spindle.0.forward
 net s-reverse    spindle.0.reverse

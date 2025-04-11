@@ -64,7 +64,13 @@ int init_modbus(t3d_servo_t *comp) {
         comp->mb_ctx = NULL;  // Prevent double free
     }
 
-    char *device = find_serial_device();
+    rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: params device %s\n", device);
+    rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: params slave %d\n", slave);
+
+    if (device == NULL) {
+        device = find_serial_device();
+    }
+
     if (device == NULL) {
         rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: No Modbus USB device found!\n");
         handle_modbus_failure(comp);
@@ -88,7 +94,7 @@ int init_modbus(t3d_servo_t *comp) {
         return -1;
     }
 
-    modbus_set_slave(comp->mb_ctx, t3d_modbus_params.slave);  // Use configured slave number
+    modbus_set_slave(comp->mb_ctx, slave);  // Use configured slave number
     if (modbus_connect(comp->mb_ctx) == -1) {
         rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to connect to Modbus device\n");
         handle_modbus_failure(comp);
@@ -138,4 +144,42 @@ char *find_serial_device() {
     }
 
     return NULL;  // No matching device found
+}
+
+void readParams(int argc, char *argv[]) {
+    //fprintf(stderr, "T3D_SERVO: test err");
+    for (int i = 1; i < argc; i++) {
+        char *arg = argv[i];
+        char *eq_ptr = strchr(arg, '='); // Find the '=' sign
+
+        if (eq_ptr != NULL) {
+            *eq_ptr = '\0'; // Temporarily null-terminate the key
+            char *key = arg;
+            char *value = eq_ptr + 1; // Value starts after '='
+
+            if (strcmp(key, "device") == 0) {
+                device = value;
+
+            } else if (strcmp(key, "slave") == 0) {
+                // Found 'slave=', convert value to integer
+                char *endptr;
+                errno = 0; 
+                long val = strtol(value, &endptr, 10); 
+
+                // Check for conversion errors
+                if (!(errno == ERANGE ||
+                    *endptr != '\0' ||
+                    value == endptr)) {
+
+                    if (val >= 0 && val <= 255) { 
+                        slave = (int)val;
+                    } else {
+                         fprintf(stderr, "Warning: Slave ID %ld out of valid range (0-255). Ignoring.\n", val);
+                    }
+                }
+            }
+
+            *eq_ptr = '=';
+        }
+    }
 }

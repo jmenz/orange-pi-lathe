@@ -6,11 +6,13 @@
 #include <glob.h>
 #include <string.h>
 #include <errno.h>
-#include <unistd.h>   // For sleep
+#include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <modbus/modbus.h>
+
+// USAGE: loadusr -W t3d_servo device=/dev/ttyUSB1 slave=1
 
 // Define HAL Component Structure
 typedef struct {
@@ -57,9 +59,10 @@ typedef struct {
 
 #define MODBUS_RESET_ALARM_VALUE 4112
 
+static char *device = NULL;
+static int slave = 1;
+
 typedef struct {
-    char *device;
-    int slave;
     int baud;
     char parity;
     int data_bit;
@@ -67,8 +70,6 @@ typedef struct {
 } t3d_modbus_param_t;
 
 static const t3d_modbus_param_t t3d_modbus_params = {
-    .device    = "/dev/ttyUSB0",
-    .slave     = 1,
     .baud      = 19200,
     .parity    = 'E',
     .data_bit  = 8,
@@ -113,6 +114,7 @@ int modbus_04_read(t3d_servo_t *comp, int reg, uint16_t *value);
 int modbus_06_write(t3d_servo_t *comp, int reg, uint16_t value);
 void handle_modbus_failure(t3d_servo_t *comp);
 
+void readParams(int argc, char *argv[]);
 char *find_serial_device();
 
 #endif // T3D_SERVO_H

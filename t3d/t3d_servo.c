@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, handle_sigint);
     signal(SIGTERM, handle_sigint);
 
+    readParams(argc, argv);
 
     // Initialize HAL Component & Get Instance
     comp_instance = init_hal_component(&comp_id);
@@ -126,7 +127,6 @@ void watch_reset_alert_signal(t3d_servo_t *comp) {
 
 
 int update_servo_settings(t3d_servo_t *comp) {
-    rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: set speedlimit %d \n", comp->speed_limit);
     modbus_06_write(comp, MODBUS_REG_MAX_RPM, comp->speed_limit);
 }
 
@@ -146,6 +146,8 @@ void read_alarm(t3d_servo_t *comp) {
         }
     }
 }
+
+//--------------------General functions
 
 // Signal handler to clean up before exit
 void handle_sigint(int sig) {

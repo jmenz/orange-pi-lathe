@@ -14,7 +14,7 @@ loadrt and2 names=and.estop
 loadrt not names=not.servo_alarm
 loadrt timedelay names=delay.servo-reset-alarm
 
-loadusr -W t3d_servo
+loadusr -W t3d_servo slave=1
 
 # add RT functions to the servo thread
 addf arisc.encoder.read       servo-thread

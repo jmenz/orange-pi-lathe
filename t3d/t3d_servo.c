@@ -14,13 +14,13 @@ int main(int argc, char *argv[]) {
     // Initialize HAL Component & Get Instance
     comp_instance = init_hal_component(&comp_id);
     if (!comp_instance) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: HAL component initialization failed. Exiting...\n");
+        fprintf(stderr, "T3D_SERVO: HAL component initialization failed. Exiting...\n");
         return 1;
     }
 
     // Finalize HAL component setup
     hal_ready(comp_id);
-    rtapi_print_msg(RTAPI_MSG_INFO, "T3D_SERVO: Loaded successfully\n");
+    fprintf(stdout, "T3D_SERVO: Loaded successfully\n");
 
     main_loop(comp_instance);
 
@@ -123,7 +123,7 @@ void send_motor_command(t3d_servo_t *comp, uint16_t command) {
 
 void watch_reset_alert_signal(t3d_servo_t *comp) {
     if (*(comp->reset_alarm)) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: reset alarm");
+        fprintf(stderr,  "T3D_SERVO: reset alarm");
         modbus_06_write(comp, MODBUS_REG_RESET_ALARM, MODBUS_RESET_ALARM_VALUE);
         usleep(RESET_ALARM_DELAY);
     }
@@ -155,7 +155,6 @@ void read_alarm(t3d_servo_t *comp) {
 
 // Signal handler to clean up before exit
 void handle_sigint(int sig) {
-    rtapi_print_msg(RTAPI_MSG_INFO, "T3D_SERVO: Exiting...\n");
     if (comp_instance && comp_instance->mb_ctx) {
         modbus_06_write(comp_instance, MODBUS_REG_CONTROL, t3d_servo_control.off);
         modbus_close(comp_instance->mb_ctx);

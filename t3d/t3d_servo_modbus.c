@@ -4,7 +4,7 @@ int modbus_03_read(t3d_servo_t *comp, int reg, uint16_t *value) {
     int ret = modbus_read_registers(comp->mb_ctx, reg, MODBUS_READ_REGISTERS_NUM, value);
 
     if (ret < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Modbus read error at reg %d: %s\n", reg, modbus_strerror(errno));
+        fprintf(stderr, "T3D_SERVO: Modbus read error at reg %d: %s\n", reg, modbus_strerror(errno));
 
         // If the connection is lost, close it and return failure
         if (modbus_get_socket(comp->mb_ctx) < 0) {
@@ -20,7 +20,7 @@ int modbus_04_read(t3d_servo_t *comp, int reg, uint16_t *value) {
     int ret = modbus_read_input_registers(comp->mb_ctx, reg, MODBUS_READ_REGISTERS_NUM, value);
 
     if (ret < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Modbus 04 read error at reg %d: %s\n", reg, modbus_strerror(errno));
+        fprintf(stderr, "T3D_SERVO: Modbus 04 read error at reg %d: %s\n", reg, modbus_strerror(errno));
 
         // If the connection is lost, close it and return failure
         if (modbus_get_socket(comp->mb_ctx) < 0) {
@@ -37,7 +37,7 @@ int modbus_06_write(t3d_servo_t *comp, int reg, uint16_t value) {
     int ret = modbus_write_register(comp->mb_ctx, reg, value);
 
     if (ret < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Modbus write error at reg %d: %s\n", reg, modbus_strerror(errno));
+        fprintf(stderr, "T3D_SERVO: Modbus write error at reg %d: %s\n", reg, modbus_strerror(errno));
 
         // If the connection is lost, close it and return failure
         if (modbus_get_socket(comp->mb_ctx) < 0) {
@@ -64,20 +64,17 @@ int init_modbus(t3d_servo_t *comp) {
         comp->mb_ctx = NULL;  // Prevent double free
     }
 
-    rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: params device %s\n", device);
-    rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: params slave %d\n", slave);
-
     if (device == NULL) {
         device = find_serial_device();
     }
 
     if (device == NULL) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: No Modbus USB device found!\n");
+        fprintf(stderr, "T3D_SERVO: No Modbus USB device found!\n");
         handle_modbus_failure(comp);
         return -1;
     }
 
-    rtapi_print_msg(RTAPI_MSG_INFO, "T3D_SERVO: Using Modbus device %s\n", device);
+    fprintf(stdout, "T3D_SERVO: Using Modbus device %s\n", device);
 
     // Initialize Modbus connection
     comp->mb_ctx = modbus_new_rtu(
@@ -89,14 +86,14 @@ int init_modbus(t3d_servo_t *comp) {
     );
 
     if (!comp->mb_ctx) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to create Modbus context\n");
+        fprintf(stderr, "T3D_SERVO: Failed to create Modbus context\n");
         handle_modbus_failure(comp);
         return -1;
     }
 
     modbus_set_slave(comp->mb_ctx, slave);  // Use configured slave number
     if (modbus_connect(comp->mb_ctx) == -1) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to connect to Modbus device\n");
+        fprintf(stderr, "T3D_SERVO: Failed to connect to Modbus device\n");
         handle_modbus_failure(comp);
         return -1;
     }
@@ -119,13 +116,13 @@ int init_modbus(t3d_servo_t *comp) {
 
 void handle_modbus_failure(t3d_servo_t *comp) {
     if (comp->modbus_reconnect_attempts >= MODBUS_MAX_RECONNECT_ATTEMPTS) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Failed to connect to Modbus device within %d attempts \n", MODBUS_MAX_RECONNECT_ATTEMPTS); //todo trow alarm to EMC
+        fprintf(stderr, "T3D_SERVO: Failed to connect to Modbus device within %d attempts \n", MODBUS_MAX_RECONNECT_ATTEMPTS); //todo trow alarm to EMC
         comp->modbus_reconnect_attempts++;
         return;
     }
     comp->modbus_inited = false;
     comp->modbus_reconnect_attempts++;
-    rtapi_print_msg(RTAPI_MSG_ERR, "T3D_SERVO: Attemt to reconnect # %d\n", comp->modbus_reconnect_attempts);
+    fprintf(stderr, "T3D_SERVO: Attemt to reconnect # %d\n", comp->modbus_reconnect_attempts);
     usleep(700000);
 }
 
@@ -147,7 +144,6 @@ char *find_serial_device() {
 }
 
 void readParams(int argc, char *argv[]) {
-    //fprintf(stderr, "T3D_SERVO: test err");
     for (int i = 1; i < argc; i++) {
         char *arg = argv[i];
         char *eq_ptr = strchr(arg, '='); // Find the '=' sign

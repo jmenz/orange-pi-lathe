@@ -26,7 +26,9 @@ typedef struct {
     hal_s32_t *alarm_code;          // Read error code
     hal_bit_t *reset_alarm;         // Signal to reset alarm
 
-    hal_u32_t speed_limit;        // Speed command (RPM)
+    hal_u32_t speed_limit;          // Speed limit (RPM)
+    hal_u32_t acceleration_time;    // Acceleration timed (MS)
+    hal_u32_t deceleration_time;    // Deceleration timed (MS)
 
     modbus_t *mb_ctx;               // Modbus context
     float last_speed;               // Last written speed (avoid redundant writes)
@@ -51,7 +53,9 @@ typedef struct {
 
 // 🔹 Define Register Addresses
 #define MODBUS_REG_RPM         76   // RPM Setpoint Register (0x004C)
-#define MODBUS_REG_MAX_RPM     75   // Maximum speed 
+#define MODBUS_REG_MAX_RPM     75   // Maximum speed
+#define MODBUS_REG_ACCEL_TIME  60   // Speed acceleration time
+#define MODBUS_REG_DECEL_TIME  61   // Speed deceleration time
 #define MODBUS_REG_CONTROL     4112 // Control Command Register (0x1010)
 #define MODBUS_REG_ALARM       26   // Alarm Code Register (0x001A)
 #define MODBUS_REG_RESET_ALARM 4100 // Reset Alarm Register (0x1004)

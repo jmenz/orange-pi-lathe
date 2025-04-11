@@ -59,7 +59,14 @@ int init_hal_pins(t3d_servo_t *comp, int comp_id) {
     retval = hal_pin_bit_new("t3d_servo.reset-alarm", HAL_IN, &(comp->reset_alarm), comp_id);
     if (retval < 0) return retval;
 
+    // Create HAL Params
     retval = hal_param_u32_new("t3d_servo.speed-limit", HAL_RW , &(comp->speed_limit), comp_id);
+    if (retval < 0) return retval;
+
+    retval = hal_param_u32_new("t3d_servo.accel-time", HAL_RW , &(comp->acceleration_time), comp_id);
+    if (retval < 0) return retval;
+
+    retval = hal_param_u32_new("t3d_servo.decel-time", HAL_RW , &(comp->deceleration_time), comp_id);
     if (retval < 0) return retval;
 
     // Initialize Values
@@ -72,7 +79,9 @@ int init_hal_pins(t3d_servo_t *comp, int comp_id) {
     *(comp->alarm_code) = 0;
     *(comp->reset_alarm) = 0;
 
-    comp->speed_limit = 2500.0;
+    comp->speed_limit = 2500;
+    comp->acceleration_time = 1000;
+    comp->deceleration_time = 1000;
 
     return 0;
 }

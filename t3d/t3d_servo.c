@@ -132,6 +132,8 @@ void watch_reset_alert_signal(t3d_servo_t *comp) {
 
 int update_servo_settings(t3d_servo_t *comp) {
     modbus_06_write(comp, MODBUS_REG_MAX_RPM, comp->speed_limit);
+    modbus_06_write(comp, MODBUS_REG_ACCEL_TIME, comp->acceleration_time);
+    modbus_06_write(comp, MODBUS_REG_DECEL_TIME, comp->deceleration_time);
 }
 
 

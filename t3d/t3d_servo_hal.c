@@ -38,7 +38,6 @@ int init_hal_pins(t3d_servo_t *comp, int comp_id) {
     retval = hal_pin_float_new("t3d_servo.spindle-speed", HAL_IN, &(comp->spindle_speed), comp_id);
     if (retval < 0) return retval;
     
-
     retval = hal_pin_bit_new("t3d_servo.on", HAL_IN, &(comp->on), comp_id);
     if (retval < 0) return retval;
 
@@ -57,9 +56,6 @@ int init_hal_pins(t3d_servo_t *comp, int comp_id) {
     retval = hal_pin_bit_new("t3d_servo.alarm", HAL_OUT, &(comp->alarm_flag), comp_id);
     if (retval < 0) return retval;
 
-    retval = hal_pin_u32_new("t3d_servo.motor-release-delay", HAL_IN, &(comp->motor_release_delay), comp_id);
-    if (retval < 0) return retval;
-
     retval = hal_pin_bit_new("t3d_servo.reset-alarm", HAL_IN, &(comp->reset_alarm), comp_id);
     if (retval < 0) return retval;
 
@@ -74,7 +70,6 @@ int init_hal_pins(t3d_servo_t *comp, int comp_id) {
     *(comp->forward) = 0;
     *(comp->reverse) = 0;
     *(comp->alarm_code) = 0;
-    *(comp->motor_release_delay) = 500;
     *(comp->reset_alarm) = 0;
 
     comp->speed_limit = 2500.0;

@@ -24,7 +24,6 @@ typedef struct {
     hal_bit_t *reverse;             // Reverse (CW)
     hal_bit_t *alarm_flag;          // True if alarm_code > 0
     hal_s32_t *alarm_code;          // Read error code
-    hal_u32_t *motor_release_delay; // Delay in ms that determines how long to hold motor after stop
     hal_bit_t *reset_alarm;         // Signal to reset alarm
 
     hal_u32_t speed_limit;        // Speed command (RPM)
@@ -81,7 +80,7 @@ typedef struct {
     uint16_t stop;
     uint16_t forward;
     uint16_t reverse;
-    uint16_t  off;
+    uint16_t off;
 } t3d_servo_control_t;
 
 static const t3d_servo_control_t t3d_servo_control = {

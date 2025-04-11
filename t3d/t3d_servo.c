@@ -93,7 +93,11 @@ void update_motor_status(t3d_servo_t *comp) {
     
     if (*(comp->on)) {
         // Determine control command
-        uint16_t command = t3d_servo_control.stop;
+
+        uint16_t command = t3d_servo_control.off;
+        if (*(comp->hold_motor) == 1) {
+            command = t3d_servo_control.stop;
+        }
 
         if (*(comp->forward) && !*(comp->reverse)) {
             command = t3d_servo_control.forward;  // FORWARD

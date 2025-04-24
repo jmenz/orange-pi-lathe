@@ -28,7 +28,7 @@ o<g76diam> sub
             #<l> = #14 (=  2     L: End Taper 0,1,2,3)
 
 ; other:
-      #<spindir> = #15 (=3 Dir: Right=3 Left=4)
+      #<spindir> = #15 (=4 Dir: Right=3 Left=4)
          #<mode> = #16 (=8 G7/G8 Radius=8 Diam=7)
       #<verbose> = #17 (=0 0:quiet,1:verbose)
 

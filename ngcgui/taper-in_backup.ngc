@@ -18,7 +18,7 @@ o<taper-in> sub
 G43 G7 G96 D#<Max_RPM> S#<SurfaceSpeed>
 
 ; Turn the OD
-M3
+M4
 
 G0 X#<Start_Dia> Z#<Z_StartOfCut>
 #<Current_Dia>=#<Start_Dia>

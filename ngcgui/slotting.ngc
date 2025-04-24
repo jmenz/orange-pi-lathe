@@ -1,27 +1,21 @@
 
-(info: Inside diameter -- Boring)
-o<i-diameter> sub
-          #<Hole_Dia> =  #1 (=10 Starting Hole Diameter)
-         #<Final_Dia> =  #2 (=20 Final Hole Diameter)
+(info: Slotting)
+o<slotting> sub
+          #<Start_Position> =  #1 (=10 Start position)
+         #<Final_Dia> =  #2 (=20 Final position)
       #<Z_StartOfCut> =  #3 (=0 Z Start of Cut)
         #<Z_EndOfCut> =  #4 (=-10 Z End of Cut)
          #<Depth_Cut> =  #5 (=0.2 Depth of Cut)
-          #<FeedRate> =  #6 (=30 Feed Rate)
-      #<SurfaceSpeed> =  #7 (=40 Surface Speed)
-#<Back_Travel_Offset> =  #8 (=0.5 Back Travel Offset)
-           #<Max_RPM> =  #9 (=1200 Max RPM)
-       #<Spring_Cuts> = #10 (=0 Spring Cuts)
+          #<FeedRate> =  #6 (=600 Feed Rate)
+#<Back_Travel_Offset> =  #7 (=0.5 Back Travel Offset)
+       #<Spring_Cuts> =  #8 (=0 Spring Cuts)
 
 ; G43: toollength offset
-; G7:  diameter mode
-; G96: constant surface speed
-G43 G7 G96 D#<Max_RPM> S#<SurfaceSpeed>
+; G8:  diameter mode
+G43 G8
 
-; Turn the OD
-M4
-
-G0 X#<Hole_Dia> Z#<Z_StartOfCut>
-#<Current-Diameter> = #<Hole_Dia>
+G0 X#<Start_Position> Z#<Z_StartOfCut>
+#<Current-Diameter> = #<Start_Position>
 
 o100 while [#<Current-Diameter> lt #<Final_Dia>]
 
@@ -46,8 +40,7 @@ o102  repeat [#<Spring_Cuts>]
 o102 endrepeat
 
 G0 X[#<Final_Dia>]
-M5           ; stop spindle
 Z#<Z_StartOfCut>
 ;G49               ; cancel tool length offset
 
-o<i-diameter>endsub
+o<slotting>endsub

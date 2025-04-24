@@ -3742,7 +3742,7 @@
                         <property name="border_width">5</property>
                         <child>
                           <widget class="GtkToggleButton" id="spindle_reverse">
-                            <property name="label" translatable="yes">Reverse</property>
+                            <property name="label" translatable="yes">CCW</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -3752,12 +3752,12 @@
                             <signal name="clicked" handler="on_spindle_reverse_clicked"/>
                           </widget>
                           <packing>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
                           <widget class="GtkToggleButton" id="spindle_forward">
-                            <property name="label" translatable="yes">Forward</property>
+                            <property name="label" translatable="yes">CW</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -3767,7 +3767,7 @@
                             <signal name="clicked" handler="on_spindle_forward_clicked"/>
                           </widget>
                           <packing>
-                            <property name="position">1</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>

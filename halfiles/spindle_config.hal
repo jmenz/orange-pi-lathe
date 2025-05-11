@@ -38,7 +38,7 @@ setp spindle.0.at-speed 1
 
 ## VELOCITY CONTROL ##
 
-setp t3d_servo.enable 0
+setp t3d_servo.enable 1
 setp t3d_servo.hold-motor 0
 setp t3d_servo.speed-limit 3000
 setp t3d_servo.accel-time 500

@@ -44,10 +44,13 @@ setp t3d_servo.speed-limit 3000
 setp t3d_servo.accel-time 500
 setp t3d_servo.decel-time 500
 
-net s-forward    spindle.0.forward
-net s-reverse    spindle.0.reverse
+setp scale.servo.gain 1.466
 
-net s-rpm-commanded => t3d_servo.spindle-speed
+net s-forward    spindle.0.reverse
+net s-reverse    spindle.0.forward
+
+net s-rpm-commanded => scale.servo.in
+net s-rpm-scaled       scale.servo.out => t3d_servo.spindle-speed
 net s-forward       => t3d_servo.forward
 net s-reverse       => t3d_servo.reverse
 net machine-on      => t3d_servo.on
@@ -66,14 +69,16 @@ net servo-alarm-reset t3d_servo.reset-alarm <= delay.servo-reset-alarm.out
 
 #PWM
 # PA1:PWM,  PA0:FORWARD,  PA3:REWERSE
-setp arisc.pwm.2.freq-cmd    1000.0 # Hz
-setp arisc.pwm.2.dc-scale    1250.0 # max RPM
+setp arisc.pwm.2.pos-scale   30
+setp arisc.pwm.2.vel-scale   30
+setp arisc.pwm.2.dc-cmd      0.5 # 50%
+setp arisc.pwm.2.dir-hold   50000
+setp arisc.pwm.2.dir-setup  50000
 setp arisc.pwm.2.pwm-port    0  # 0=PA
-setp arisc.pwm.2.pwm-pin     1
+setp arisc.pwm.2.pwm-pin     0
 setp arisc.pwm.2.pwm-invert  0
-setp arisc.pwm.2.dir-port    3  # 3=PD
-setp arisc.pwm.2.dir-pin     11
+setp arisc.pwm.2.dir-port    0  # 0=PA
+setp arisc.pwm.2.dir-pin     3
 setp arisc.pwm.2.dir-invert  0
-
-setp arisc.pwm.2.enable 0 # temporary
+setp arisc.pwm.2.enable      1
 

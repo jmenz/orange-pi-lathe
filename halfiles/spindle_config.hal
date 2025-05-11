@@ -38,7 +38,7 @@ setp spindle.0.at-speed 1
 
 ## VELOCITY CONTROL ##
 
-setp t3d_servo.enable 1
+setp t3d_servo.enable 0
 setp t3d_servo.hold-motor 0
 setp t3d_servo.speed-limit 3000
 setp t3d_servo.accel-time 500
@@ -69,8 +69,8 @@ net servo-alarm-reset t3d_servo.reset-alarm <= delay.servo-reset-alarm.out
 
 #PWM
 # PA1:PWM,  PA0:FORWARD,  PA3:REWERSE
-setp arisc.pwm.2.pos-scale   30
-setp arisc.pwm.2.vel-scale   30
+setp arisc.pwm.2.pos-scale   [JOINT_2]SCALE
+setp arisc.pwm.2.vel-scale   [JOINT_2]SCALE
 setp arisc.pwm.2.dc-cmd      0.5 # 50%
 setp arisc.pwm.2.dir-hold   50000
 setp arisc.pwm.2.dir-setup  50000
@@ -80,5 +80,11 @@ setp arisc.pwm.2.pwm-invert  0
 setp arisc.pwm.2.dir-port    0  # 0=PA
 setp arisc.pwm.2.dir-pin     3
 setp arisc.pwm.2.dir-invert  0
-setp arisc.pwm.2.enable      1
+
+
+net c-pos-cmd     joint.2.motor-pos-cmd  => arisc.pwm.2.pos-cmd
+net c-pos-fb      joint.2.motor-pos-fb   <= arisc.pwm.2.pos-fb
+net machine-on => arisc.pwm.2.enable
+
+
 

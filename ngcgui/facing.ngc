@@ -19,7 +19,7 @@ G95
 G43 G7 G96 D#<Max_RPM> S#<SurfaceSpeed>
 
 ; Turn the OD
-M4
+M3
 
 G0 X#<Material_Dia> Z#<Z_StartOfCut>
 #<Current_Z>=#<Z_StartOfCut>

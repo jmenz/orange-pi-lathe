@@ -24,7 +24,7 @@ o100  endif
 ; G96: constant surface speed
 G43 G7 G96 D#<Max_RPM> S#<Surface_Speed>
 
-M4; start spindle
+M3; start spindle
 
 
 G0 Z#<Z_Start>

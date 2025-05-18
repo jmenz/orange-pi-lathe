@@ -28,12 +28,12 @@ net s-velocity-rps          scale.s-rpm.out         => spindle.0.speed-in
 
 net s-rpm-commanded  spindle.0.speed-out-abs
 
-setp spindle-at-speed.difference 100
+setp spindle-at-speed.difference 50
 
 net s-rpm-commanded spindle-at-speed.in1
 net s-velocity-rpm-filtered spindle-at-speed.in2
-#net s-ready spindle-at-speed.out spindle.0.at-speed
-setp spindle.0.at-speed 1
+net s-ready spindle-at-speed.out spindle.0.at-speed
+#setp spindle.0.at-speed 1
 
 
 ## VELOCITY CONTROL ##
@@ -46,8 +46,8 @@ setp t3d_servo.decel-time 500
 
 setp scale.servo.gain 1.466
 
-net s-forward    spindle.0.reverse
-net s-reverse    spindle.0.forward
+net s-forward    spindle.0.forward
+net s-reverse    spindle.0.reverse
 
 net s-rpm-commanded => scale.servo.in
 net s-rpm-scaled       scale.servo.out => t3d_servo.spindle-speed

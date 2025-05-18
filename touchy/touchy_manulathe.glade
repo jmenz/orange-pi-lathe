@@ -3752,7 +3752,7 @@
                             <signal name="clicked" handler="on_spindle_reverse_clicked"/>
                           </widget>
                           <packing>
-                            <property name="position">1</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
@@ -3767,7 +3767,7 @@
                             <signal name="clicked" handler="on_spindle_forward_clicked"/>
                           </widget>
                           <packing>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>

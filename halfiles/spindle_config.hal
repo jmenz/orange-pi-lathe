@@ -3,26 +3,26 @@
 ## SPINDLE ENCODER ##
 
 # PC0:B, PC1:A, PC2:Z(index)
-setp arisc.encoder.0.pos-scale  1600 #
-setp arisc.encoder.0.A-port     2   # 2=PC
-setp arisc.encoder.0.A-pin      4   # in front of spindle
-setp arisc.encoder.0.B-port     2   # 2=PC
-setp arisc.encoder.0.B-pin      7   # in front of spindle.
-setp arisc.encoder.0.Z-port     3   # 3=PD
-setp arisc.encoder.0.Z-pin      14
-setp arisc.encoder.0.enable     1
-setp arisc.encoder.0.x4-mode    0
-setp arisc.encoder.0.simulate-index	1
+setp arisc.encoder.1.pos-scale  1600 #
+setp arisc.encoder.1.A-port     2   # 2=PC
+setp arisc.encoder.1.A-pin      4   # in front of spindle
+setp arisc.encoder.1.B-port     2   # 2=PC
+setp arisc.encoder.1.B-pin      7   # in front of spindle.
+setp arisc.encoder.1.Z-port     3   # 3=PD
+setp arisc.encoder.1.Z-pin      14
+setp arisc.encoder.1.enable     1
+setp arisc.encoder.1.x4-mode    0
+setp arisc.encoder.1.simulate-index	1
 
-net s-position     arisc.encoder.0.pos => spindle.0.revs
-net s-index-enable arisc.encoder.0.index-enable <=> spindle.0.index-enable
+net s-position     arisc.encoder.1.pos => spindle.0.revs
+net s-index-enable arisc.encoder.1.index-enable <=> spindle.0.index-enable
 
 
 setp lowpass.spindle-rpm.gain 0.0100000
 setp scale.s-rpm.gain 0.01666666666666
 
 
-net s-velocity-rpm          arisc.encoder.0.vel-rpm => lowpass.spindle-rpm.in
+net s-velocity-rpm          arisc.encoder.1.vel-rpm => lowpass.spindle-rpm.in
 net s-velocity-rpm-filtered lowpass.spindle-rpm.out => scale.s-rpm.in 
 net s-velocity-rps          scale.s-rpm.out         => spindle.0.speed-in
 

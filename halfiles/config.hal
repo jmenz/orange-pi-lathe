@@ -1,7 +1,7 @@
 # load RT components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt arisc pwm="v,v,v" out="PA12,PG8" in="PA7,PA8,PA9,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE4,PE5,PE6,PE7,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=1
+loadrt arisc pwm="v,v,v" out="PA12,PG8" in="PA7,PA8,PA9,PA10,PA19,PA20,PC1,PC2,PE0,PE1,PE2,PE3,PE4,PE5,PE6,PE7,PE8,PE9,PE10,PE11,PE12,PE15,PG6,PG7,PG9" encoders=2
 loadrt encoder num_chan=3
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm,scale.servo
@@ -61,12 +61,13 @@ net end-z arisc.gpio.PC2-in-not     => joint.1.pos-lim-sw-in
 
 #Linear scales
 #X Axis:
-#setp arisc.encoder.3.A-port     0   # 0=PA
-#setp arisc.encoder.3.A-pin      2   # 
-#setp arisc.encoder.3.B-port     2   # 2=PC
-#setp arisc.encoder.3.B-pin      3   # 
-#setp arisc.encoder.3.x4-mode    1   # The config is inversed 1 means disabled
-#setp arisc.encoder.3.enable     1
+setp arisc.encoder.0.pos-scale  1000
+setp arisc.encoder.0.A-port     0   # 0=PA
+setp arisc.encoder.0.A-pin      2   # 
+setp arisc.encoder.0.B-port     2   # 2=PC
+setp arisc.encoder.0.B-pin      3   # 
+setp arisc.encoder.0.x4-mode    0   # The config is inversed 1 means disabled
+#setp arisc.encoder.0.enable     1
 #TODO: assign to Joint/Axis
 
 #Z Axis:

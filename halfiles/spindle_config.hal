@@ -69,16 +69,16 @@ net servo-alarm-reset t3d_servo.reset-alarm <= delay.servo-reset-alarm.out
 
 #PWM
 # PA1:PWM,  PA0:FORWARD,  PA3:REWERSE
-setp arisc.pwm.2.pos-scale   30
-setp arisc.pwm.2.vel-scale   30
-setp arisc.pwm.2.dc-cmd      0.5 # 50%
-setp arisc.pwm.2.dir-hold   50000
-setp arisc.pwm.2.dir-setup  50000
-setp arisc.pwm.2.pwm-port    0  # 0=PA
-setp arisc.pwm.2.pwm-pin     0
-setp arisc.pwm.2.pwm-invert  0
-setp arisc.pwm.2.dir-port    0  # 0=PA
-setp arisc.pwm.2.dir-pin     3
-setp arisc.pwm.2.dir-invert  0
-setp arisc.pwm.2.enable      1
+#setp arisc.pwm.2.pos-scale   30
+#setp arisc.pwm.2.vel-scale   30
+#setp arisc.pwm.2.dc-cmd      0.5 # 50%
+#setp arisc.pwm.2.dir-hold   50000
+#setp arisc.pwm.2.dir-setup  50000
+#setp arisc.pwm.2.pwm-port    0  # 0=PA
+#setp arisc.pwm.2.pwm-pin     0
+#setp arisc.pwm.2.pwm-invert  0
+#setp arisc.pwm.2.dir-port    0  # 0=PA
+#setp arisc.pwm.2.dir-pin     3
+#setp arisc.pwm.2.dir-invert  0
+#setp arisc.pwm.2.enable      1
 

@@ -11,15 +11,15 @@ setp arisc.pwm.0.pwm-pin    6
 setp arisc.pwm.0.dir-port   0 # PA
 setp arisc.pwm.0.dir-pin    11
 
-setp pid.x.Pgain     2
+setp pid.x.Pgain     2.2
 setp pid.x.Igain     0
 setp pid.x.Dgain     0
-setp pid.x.FF1       1.05
+setp pid.x.FF1       1.025
 setp pid.x.error-previous-target 1
 setp pid.x.maxerror 0
 setp pid.x.deadband 0.002
 
-setp pid.x.maxoutput 20
+setp pid.x.maxoutput [JOINT_0]MAX_VELOCITY
 
 net x-pos-cmd     joint.0.motor-pos-cmd  => pid.x.command
 net x-pos-fb      arisc.encoder.0.pos    => joint.0.motor-pos-fb   => pid.x.feedback
@@ -43,21 +43,9 @@ setp arisc.pwm.1.pwm-pin    14
 setp arisc.pwm.1.dir-port   0 # PA
 setp arisc.pwm.1.dir-pin    13
 
-setp pid.z.Pgain     1500
-setp pid.z.Igain     0
-setp pid.z.Dgain     0
-setp pid.z.FF1       1
-setp pid.z.error-previous-target 1
-#setp pid.z.maxerror 0.05
-setp pid.z.deadband 0.001
-
-net z-pos-cmd     joint.1.motor-pos-cmd  => pid.z.command
-net z-pos-fb      arisc.pwm.1.pos-fb     => joint.1.motor-pos-fb => pid.z.feedback
-net z-vel-cmd     pid.z.output           => arisc.pwm.1.vel-cmd
-net machine-on => arisc.pwm.1.enable   => pid.z.enable
-
-
-
+net z-pos-cmd     joint.1.motor-pos-cmd  => arisc.pwm.1.pos-cmd
+net z-pos-fb      arisc.pwm.1.pos-fb     => joint.1.motor-pos-fb
+net machine-on => arisc.pwm.1.enable
 
 
 

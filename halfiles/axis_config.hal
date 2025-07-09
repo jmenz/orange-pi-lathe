@@ -25,7 +25,7 @@ net x-pos-cmd     joint.0.motor-pos-cmd  => pid.x.command
 net x-pos-fb      arisc.encoder.0.pos    => joint.0.motor-pos-fb   => pid.x.feedback
 #net x-pos-fb      arisc.pwm.0.pos-fb    => joint.0.motor-pos-fb   => pid.x.feedback
 net x-vel-cmd     pid.x.output           => arisc.pwm.0.vel-cmd
-net machine-on => arisc.pwm.0.enable     => arisc.encoder.0.enable => pid.x.enable => arisc.gpio.PA12-out
+net machine-on => arisc.pwm.0.enable     => pid.x.enable => arisc.gpio.PA12-out
 
 
 

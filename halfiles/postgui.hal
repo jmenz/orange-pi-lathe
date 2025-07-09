@@ -28,7 +28,7 @@ setp arisc.gpio.PA10-pull 1
 net wheelreset arisc.gpio.PA10-in-not touchy.wheel-reset
 
 ######### Spindle RESET
-net reset-spindle-index touchy.reset-spindel-index arisc.encoder.0.reset
+net reset-spindle-index touchy.reset-spindel-index arisc.encoder.1.reset
 
 #JOISTICK
 

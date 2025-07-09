@@ -66,7 +66,7 @@ setp arisc.encoder.0.A-pin      2   #
 setp arisc.encoder.0.B-port     2   # 2=PC
 setp arisc.encoder.0.B-pin      3   # 
 setp arisc.encoder.0.x4-mode    0   # The config is inversed 1 means disabled
-#setp arisc.encoder.0.enable     1
+setp arisc.encoder.0.enable     1
 #TODO: assign to Joint/Axis
 
 #Z Axis:

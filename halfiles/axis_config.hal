@@ -11,10 +11,10 @@ setp arisc.pwm.0.pwm-pin    6
 setp arisc.pwm.0.dir-port   0 # PA
 setp arisc.pwm.0.dir-pin    11
 
-setp pid.x.Pgain     2.2
+setp pid.x.Pgain     3.5
 setp pid.x.Igain     0
 setp pid.x.Dgain     0
-setp pid.x.FF1       1.025
+setp pid.x.FF1       1.05
 setp pid.x.error-previous-target 1
 setp pid.x.maxerror 0
 setp pid.x.deadband 0.002

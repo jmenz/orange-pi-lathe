@@ -1,9 +1,7 @@
 /**
- * This component implements the control law:
- * Output = (Kp * position_error) + (Ki * integral_of_error) + (1 + Kv) * velocity_command
- *
- * It is designed to replace a standard PID component for position control loops
- * where direct velocity feedforward is desired.
+ * This component implements a hybrid control law:
+ * During Motion: Output = (1 + Kv) * vel_cmd + Kp * pos_error
+ * Stationary:    If error > deadband, Output = final_min_speed
  *
  * To compile this component:
  * halcompile --install ffpv_cl.c
@@ -16,7 +14,7 @@
 #include "rtapi_math.h"
 
 MODULE_AUTHOR("Yevhen Zakharchuk");
-MODULE_DESCRIPTION("Feedforward Proportional-Integral Velocity Closed-Loop Controller");
+MODULE_DESCRIPTION("Feedforward Proportional Velocity Controller with Deadband Positioning");
 MODULE_LICENSE("GPL");
 
 // --- Component Data Structure ---
@@ -31,13 +29,11 @@ typedef struct {
     hal_float_t *vel_correction; // OUTPUT: velocity correction value
 
     // HAL Parameter Values
-    hal_float_t Kp;            // PARAMETER: Proportional gain on position error
-    hal_float_t Ki;            // PARAMETER: Integral gain on position error
-    hal_float_t Kv;            // PARAMETER: Gain for the velocity feedforward term
+    hal_float_t Kp;                 // PARAMETER: Proportional gain on position error
+    hal_float_t Kv;                 // PARAMETER: Gain for the velocity feedforward term
+    hal_float_t deadband;     // PARAMETER: Acceptable stationary position error
+    hal_float_t min_speed;    // PARAMETER: Minimum speed to overcome stepgen deadband
 
-    // Internal state variables
-    hal_float_t I_term;          // Stores the accumulated integral error
-    hal_float_t last_vel_cmd;    // Used to detect when a move starts/stops
 } ffpv_cl_data;
 
 
@@ -57,46 +53,49 @@ RTAPI_MP_INT(count, "Number of ffpv_cl instances");
  */
 static void update(void *arg, long period) {
     int i;
-    double period_s = period * 1e-9; // Convert period from ns to seconds for integration
 
     for (i = 0; i < num_instances; i++) {
         ffpv_cl_data *inst = &data[i];
         double pos_error, correction_by_pos, correction_by_vel;
 
+        // If disabled, output zero
         if (!*(inst->enable)) {
             *(inst->vel_out) = 0.0;
             *(inst->vel_correction) = 0.0;
-            inst->I_term = 0.0;
-            inst->last_vel_cmd = 0.0;
             continue;
         }
-
-        // --- Integral Anti-Windup Logic ---
-        if (*(inst->vel_cmd) != 0.0 && inst->last_vel_cmd == 0.0) {
-            inst->I_term = 0.0;
-        }
-        inst->last_vel_cmd = *(inst->vel_cmd);
-
 
         // 1. Calculate the position error
         pos_error = *(inst->pos_cmd) - *(inst->pos_fb);
 
-        // 2. Accumulate the integral term (only when not moving)
+        // 2. Handle Stationary vs. Motion logic
         if (*(inst->vel_cmd) == 0.0) {
-            inst->I_term += inst->Ki * pos_error * period_s;
+            // --- STATIONARY HOLD (Deadband logic) ---
+
+            // Check if the absolute error is outside the acceptable deadband
+            if (fabs(pos_error) > inst->deadband) {
+                // Error is too large, command a move at min_speed.
+                // The sign of the error determines the direction.
+                *(inst->vel_out) = (pos_error > 0) ? inst->min_speed : -inst->min_speed;
+            } else {
+                // Error is within the deadband, command a stop.
+                *(inst->vel_out) = 0.0;
+            }
+        } else {
+            // --- IN MOTION (FF+P active) ---
+
+            // Calculate the correction velocity based on the position error and Kp
+            correction_by_pos = inst->Kp * pos_error;
+
+            // Calculate the correction velocity based on the Kv gain
+            correction_by_vel = inst->Kv * *(inst->vel_cmd);
+
+            // Sum all terms to get the final output
+            *(inst->vel_out) = *(inst->vel_cmd) + correction_by_vel + correction_by_pos;
         }
 
-        // 3. Calculate the correction velocity based on the position error and Kp
-        correction_by_pos = inst->Kp * pos_error;
-
-        // 4. Calculate the correction velocity based on the Kv gain
-        correction_by_vel = inst->Kv * *(inst->vel_cmd);
-
-        // 5. Sum all terms to get the final output
-        *(inst->vel_out) = *(inst->vel_cmd) + correction_by_vel + correction_by_pos + inst->I_term;
-
-        // 6. Update the output pin for debugging and scoping
-        *(inst->vel_correction) = correction_by_pos + correction_by_vel + inst->I_term;
+        // 3. Update the correction output pin for debugging
+        *(inst->vel_correction) = *(inst->vel_out) - *(inst->vel_cmd);
     }
 }
 
@@ -143,24 +142,26 @@ int rtapi_app_main(void) {
         // --- Create PARAMETERS ---
         retval = hal_param_float_newf(HAL_RW, &(data[i].Kp), comp_id, "ffpv-cl.%d.Kp", i);
         if(retval < 0) goto error;
-        retval = hal_param_float_newf(HAL_RW, &(data[i].Ki), comp_id, "ffpv-cl.%d.Ki", i);
-        if(retval < 0) goto error;
         retval = hal_param_float_newf(HAL_RW, &(data[i].Kv), comp_id, "ffpv-cl.%d.Kv", i);
         if(retval < 0) goto error;
+        retval = hal_param_float_newf(HAL_RW, &(data[i].deadband), comp_id, "ffpv-cl.%d.deadband", i);
+        if(retval < 0) goto error;
+        retval = hal_param_float_newf(HAL_RW, &(data[i].min_speed), comp_id, "ffpv-cl.%d.min-speed", i);
+        if(retval < 0) goto error;
+
 
         // --- Set default parameter values ---
-        data[i].Kp = 1;
-        data[i].Ki = 0.0;
+        data[i].Kp = 1.0;
         data[i].Kv = 0.0;
+        data[i].deadband = 0.001; // Default to 1 micron, user should tune
+        data[i].min_speed = 0.01; // Default to a slow speed, user must tune
         *(data[i].enable) = 1;
-        data[i].I_term = 0.0;
-        data[i].last_vel_cmd = 0.0;
     }
 
     rtapi_snprintf(name, sizeof(name), "ffpv-cl.update");
     retval = hal_export_funct(name, update, data, 1, 0, comp_id);
     if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "ffpv_cl: ERROR: hal_export_funct() failed\n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "ffpv-cl: ERROR: hal_export_funct() failed\n");
         hal_exit(comp_id);
         return -1;
     }

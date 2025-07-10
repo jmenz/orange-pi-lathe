@@ -11,9 +11,9 @@ setp arisc.pwm.0.pwm-pin    6
 setp arisc.pwm.0.dir-port   0 # PA
 setp arisc.pwm.0.dir-pin    11
 
-setp ffpv-cl.0.Kp    2.5
-setp ffpv-cl.0.Kv    0.025
-setp ffpv-cl.0.Ki    1
+setp ffpv-cl.0.Kp          2.5
+setp ffpv-cl.0.Kv          0.025
+setp ffpv-cl.0.min-speed   0.3
 
 net x-pos-cmd     joint.0.motor-pos-cmd => ffpv-cl.0.pos-cmd
 net x-vel-cmd     joint.0.vel-cmd       => ffpv-cl.0.vel-cmd

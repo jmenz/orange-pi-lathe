@@ -30,13 +30,13 @@ MODULE_LICENSE("GPL");
 // --- Component Data Structure ---
 typedef struct {
     // HAL Pin Pointers
-    hal_float_t *pos_cmd;       // INPUT: Commanded position from motion planner
-    hal_float_t *pos_fb;        // INPUT: Feedback position from encoder
-    hal_float_t *vel_cmd;       // INPUT: Commanded velocity (feedforward term)
-    hal_bit_t   *enable;        // INPUT: Enable bit for the component
+    hal_float_t *pos_cmd;        // INPUT: Commanded position from motion planner
+    hal_float_t *pos_fb;         // INPUT: Feedback position from encoder
+    hal_float_t *vel_cmd;        // INPUT: Commanded velocity (feedforward term)
+    hal_bit_t   *enable;         // INPUT: Enable bit for the component
 
-    hal_float_t *vel_out;       // OUTPUT: The final velocity command for the motor
-    hal_float_t *error;         // OUTPUT: The calculated position error for scoping
+    hal_float_t *vel_out;        // OUTPUT: The final velocity command for the motor
+    hal_float_t *vel_correction; // OUTPUT: velocity correction value
 
     // HAL Parameter Values
     hal_float_t Kp;            // PARAMETER: Proportional gain on position error
@@ -62,11 +62,11 @@ static void update(void *arg, long period) {
     int i;
     for (i = 0; i < num_instances; i++) {
         ffpv_cl_data *inst = &data[i];
-        double pos_error, correction_vel, feedforward_vel;
+        double pos_error, correction_by_pos, correction_by_vel;
 
         if (!*(inst->enable)) {
             *(inst->vel_out) = 0.0;
-            *(inst->error) = 0.0;
+            *(inst->vel_correction) = 0.0;
             continue;
         }
 
@@ -74,16 +74,16 @@ static void update(void *arg, long period) {
         pos_error = *(inst->pos_cmd) - *(inst->pos_fb);
 
         // 2. Calculate the correction velocity based on the position error and Kp
-        correction_vel = inst->Kp * pos_error;
+        correction_by_pos = inst->Kp * pos_error;
 
-        // 3. Get the feedforward velocity and apply its gain Kv
-        feedforward_vel = inst->Kv * *(inst->vel_cmd);
+        // 3. Calculate the correction velocity based on the Kv gain
+        correction_by_vel = inst->Kv * *(inst->vel_cmd);
 
         // 4. Sum the feedforward and correction velocities to get the final output
-        *(inst->vel_out) = feedforward_vel + correction_vel;
+        *(inst->vel_out) = *(inst->vel_cmd) + correction_by_vel + correction_by_pos;
 
         // 5. Update the error output pin for debugging and scoping
-        *(inst->error) = pos_error;
+        *(inst->vel_correction) = correction_by_pos + correction_by_vel;
     }
 }
 
@@ -124,7 +124,7 @@ int rtapi_app_main(void) {
         // --- Create OUTPUT pins ---
         retval = hal_pin_float_newf(HAL_OUT, &(data[i].vel_out), comp_id, "ffpv-cl.%d.vel-out", i);
         if(retval < 0) goto error;
-        retval = hal_pin_float_newf(HAL_OUT, &(data[i].error), comp_id, "ffpv-cl.%d.error", i);
+        retval = hal_pin_float_newf(HAL_OUT, &(data[i].vel_correction), comp_id, "ffpv-cl.%d.vel-correction", i);
         if(retval < 0) goto error;
 
         // --- Create PARAMETERS ---

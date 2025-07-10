@@ -1,6 +1,6 @@
 /**
  * This component implements the control law:
- * Output = (Kp * position_error) + (Kv * velocity_command)
+ * Output = (Kp * position_error) + (Ki * integral_of_error) + (1 + Kv) * velocity_command
  *
  * It is designed to replace a standard PID component for position control loops
  * where direct velocity feedforward is desired.
@@ -8,23 +8,15 @@
  * To compile this component:
  * halcompile --install ffpv_cl.c
  *
- * To load it in your HAL file:
- * loadrt ffpv_cl
- *
- * Or to load multiple instances:
- * loadrt ffpv_cl count=3
- *
  */
-
 
 #include "rtapi.h"
 #include "rtapi_app.h"
 #include "hal.h"
 #include "rtapi_math.h"
 
-
 MODULE_AUTHOR("Yevhen Zakharchuk");
-MODULE_DESCRIPTION("Feedforward Proportional Velocity Closed-Loop Controller");
+MODULE_DESCRIPTION("Feedforward Proportional-Integral Velocity Closed-Loop Controller");
 MODULE_LICENSE("GPL");
 
 // --- Component Data Structure ---
@@ -40,7 +32,12 @@ typedef struct {
 
     // HAL Parameter Values
     hal_float_t Kp;            // PARAMETER: Proportional gain on position error
+    hal_float_t Ki;            // PARAMETER: Integral gain on position error
     hal_float_t Kv;            // PARAMETER: Gain for the velocity feedforward term
+
+    // Internal state variables
+    hal_float_t I_term;          // Stores the accumulated integral error
+    hal_float_t last_vel_cmd;    // Used to detect when a move starts/stops
 } ffpv_cl_data;
 
 
@@ -60,6 +57,8 @@ RTAPI_MP_INT(count, "Number of ffpv_cl instances");
  */
 static void update(void *arg, long period) {
     int i;
+    double period_s = period * 1e-9; // Convert period from ns to seconds for integration
+
     for (i = 0; i < num_instances; i++) {
         ffpv_cl_data *inst = &data[i];
         double pos_error, correction_by_pos, correction_by_vel;
@@ -67,23 +66,37 @@ static void update(void *arg, long period) {
         if (!*(inst->enable)) {
             *(inst->vel_out) = 0.0;
             *(inst->vel_correction) = 0.0;
+            inst->I_term = 0.0;
+            inst->last_vel_cmd = 0.0;
             continue;
         }
+
+        // --- Integral Anti-Windup Logic ---
+        if (*(inst->vel_cmd) != 0.0 && inst->last_vel_cmd == 0.0) {
+            inst->I_term = 0.0;
+        }
+        inst->last_vel_cmd = *(inst->vel_cmd);
+
 
         // 1. Calculate the position error
         pos_error = *(inst->pos_cmd) - *(inst->pos_fb);
 
-        // 2. Calculate the correction velocity based on the position error and Kp
+        // 2. Accumulate the integral term (only when not moving)
+        if (*(inst->vel_cmd) == 0.0) {
+            inst->I_term += inst->Ki * pos_error * period_s;
+        }
+
+        // 3. Calculate the correction velocity based on the position error and Kp
         correction_by_pos = inst->Kp * pos_error;
 
-        // 3. Calculate the correction velocity based on the Kv gain
+        // 4. Calculate the correction velocity based on the Kv gain
         correction_by_vel = inst->Kv * *(inst->vel_cmd);
 
-        // 4. Sum the feedforward and correction velocities to get the final output
-        *(inst->vel_out) = *(inst->vel_cmd) + correction_by_vel + correction_by_pos;
+        // 5. Sum all terms to get the final output
+        *(inst->vel_out) = *(inst->vel_cmd) + correction_by_vel + correction_by_pos + inst->I_term;
 
-        // 5. Update the error output pin for debugging and scoping
-        *(inst->vel_correction) = correction_by_pos + correction_by_vel;
+        // 6. Update the output pin for debugging and scoping
+        *(inst->vel_correction) = correction_by_pos + correction_by_vel + inst->I_term;
     }
 }
 
@@ -130,13 +143,18 @@ int rtapi_app_main(void) {
         // --- Create PARAMETERS ---
         retval = hal_param_float_newf(HAL_RW, &(data[i].Kp), comp_id, "ffpv-cl.%d.Kp", i);
         if(retval < 0) goto error;
+        retval = hal_param_float_newf(HAL_RW, &(data[i].Ki), comp_id, "ffpv-cl.%d.Ki", i);
+        if(retval < 0) goto error;
         retval = hal_param_float_newf(HAL_RW, &(data[i].Kv), comp_id, "ffpv-cl.%d.Kv", i);
         if(retval < 0) goto error;
 
         // --- Set default parameter values ---
-        data[i].Kp = 0.1;
-        data[i].Kv = 1.0; // Kv should ideally be 1 if scaling is correct
-        *(data[i].enable) = 0;
+        data[i].Kp = 1;
+        data[i].Ki = 0.0;
+        data[i].Kv = 0.0;
+        *(data[i].enable) = 1;
+        data[i].I_term = 0.0;
+        data[i].last_vel_cmd = 0.0;
     }
 
     rtapi_snprintf(name, sizeof(name), "ffpv-cl.update");

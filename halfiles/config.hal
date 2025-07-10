@@ -6,7 +6,7 @@ loadrt encoder num_chan=3
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm,scale.servo
 loadrt near names=spindle-at-speed
-loadrt pid names=pid.x
+loadrt ffpv_cl count=1
 
 # Logic components
 loadrt mux8 count=2
@@ -22,7 +22,7 @@ addf arisc.pwm.read           servo-thread
 addf arisc.gpio.read          servo-thread
 addf motion-command-handler   servo-thread
 addf motion-controller        servo-thread
-addf pid.x.do-pid-calcs       servo-thread
+addf ffpv-cl.update           servo-thread
 addf arisc.pwm.write          servo-thread
 addf arisc.gpio.write         servo-thread
 

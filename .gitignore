@@ -5,3 +5,4 @@ config.var.bak
 position.txt
 *.pyc
 .vscode
+additional_files/ffpv_cl.so

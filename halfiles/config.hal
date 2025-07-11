@@ -6,7 +6,7 @@ loadrt encoder num_chan=3
 loadrt lowpass names=lowpass.spindle-rpm
 loadrt scale names=scale.s-rpm,scale.servo
 loadrt near names=spindle-at-speed
-loadrt ffpv_cl count=1
+loadrt ffpv_cl names=x,z
 
 # Logic components
 loadrt mux8 count=2

@@ -6,6 +6,12 @@
  * To compile this component:
  * halcompile --install ffpv_cl.c
  *
+ * To load it in your HAL file:
+ * loadrt ffpv_cl names=x,z
+ *
+ * Or by count:
+ * loadrt ffpv_cl count=2
+ *
  */
 
 #include "rtapi.h"
@@ -16,6 +22,8 @@
 MODULE_AUTHOR("Yevhen Zakharchuk");
 MODULE_DESCRIPTION("Feedforward Proportional Velocity Controller with Deadband Positioning");
 MODULE_LICENSE("GPL");
+
+#define MAX_INSTANCES 16
 
 // --- Component Data Structure ---
 typedef struct {
@@ -40,13 +48,16 @@ typedef struct {
 
 static int comp_id;
 static ffpv_cl_data *data;
-static int num_instances = 0;
+static int num_instances;
 
 
 static void update(void *arg, long period);
 
-static int count = 1;
-RTAPI_MP_INT(count, "Number of ffpv_cl instances");
+static int count = 0;
+RTAPI_MP_INT(count, "Number of ffpv_cl instances (used if names is not specified)");
+static char *names[MAX_INSTANCES] = {0,};
+RTAPI_MP_ARRAY_STRING(names, MAX_INSTANCES, "Names for ffpv_cl instances, comma-separated");
+
 
 /**
  * @param arg Pointer to the instance data
@@ -103,13 +114,34 @@ static void update(void *arg, long period) {
 
 int rtapi_app_main(void) {
     int i, retval;
-    char name[HAL_NAME_LEN + 1];
+    char name_buf[HAL_NAME_LEN + 1];
 
-    if (count < 1) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "ffpv_cl: ERROR: count must be > 0\n");
+    if (count && names[0]) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "ffpv_cl: ERROR: 'count=' and 'names=' are mutually exclusive.\n");
         return -1;
     }
-    num_instances = count;
+
+    if (names[0]) {
+        num_instances = 0;
+        for (i = 0; i < MAX_INSTANCES; i++) {
+            if (names[i] == NULL || *names[i] == 0) {
+                break;
+            }
+            num_instances = i + 1;
+        }
+    } else {
+        num_instances = count;
+    }
+
+    if (num_instances <= 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "ffpv_cl: ERROR: No instances to create. Use 'count=' or 'names='.\n");
+        return -1;
+    }
+
+    if (num_instances > MAX_INSTANCES) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "ffpv_cl: ERROR: num_instances exceeds MAX_INSTANCES (%d)\n", MAX_INSTANCES);
+        return -1;
+    }
 
     comp_id = hal_init("ffpv_cl");
     if (comp_id < 0) {
@@ -119,38 +151,46 @@ int rtapi_app_main(void) {
 
     data = hal_malloc(num_instances * sizeof(ffpv_cl_data));
     if (data == 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR, "ffpv_cl: ERROR: hal_malloc() failed\n");
+        rtapi_print_msg(RTAPI_MSG_ERR, "ffpv_cl: ERROR: hal_malloc() failed for data\n");
         hal_exit(comp_id);
         return -1;
     }
 
     for (i = 0; i < num_instances; i++) {
+        char *instance_name;
+        if (names[0]) {
+            instance_name = names[i];
+        } else {
+            rtapi_snprintf(name_buf, sizeof(name_buf), "%d", i);
+            instance_name = name_buf;
+        }
+
         // --- Create INPUT pins ---
-        retval = hal_pin_float_newf(HAL_IN, &(data[i].pos_cmd), comp_id, "ffpv-cl.%d.pos-cmd", i);
+        retval = hal_pin_float_newf(HAL_IN, &(data[i].pos_cmd), comp_id, "ffpv-cl.%s.pos-cmd", instance_name);
         if(retval < 0) goto error;
-        retval = hal_pin_float_newf(HAL_IN, &(data[i].pos_fb), comp_id, "ffpv-cl.%d.pos-fb", i);
+        retval = hal_pin_float_newf(HAL_IN, &(data[i].pos_fb), comp_id, "ffpv-cl.%s.pos-fb", instance_name);
         if(retval < 0) goto error;
-        retval = hal_pin_float_newf(HAL_IN, &(data[i].vel_cmd), comp_id, "ffpv-cl.%d.vel-cmd", i);
+        retval = hal_pin_float_newf(HAL_IN, &(data[i].vel_cmd), comp_id, "ffpv-cl.%s.vel-cmd", instance_name);
         if(retval < 0) goto error;
-        retval = hal_pin_bit_newf(HAL_IN, &(data[i].enable), comp_id, "ffpv-cl.%d.enable", i);
+        retval = hal_pin_bit_newf(HAL_IN, &(data[i].enable), comp_id, "ffpv-cl.%s.enable", instance_name);
         if(retval < 0) goto error;
 
         // --- Create OUTPUT pins ---
-        retval = hal_pin_float_newf(HAL_OUT, &(data[i].vel_out), comp_id, "ffpv-cl.%d.vel-out", i);
+        retval = hal_pin_float_newf(HAL_OUT, &(data[i].vel_out), comp_id, "ffpv-cl.%s.vel-out", instance_name);
         if(retval < 0) goto error;
-        retval = hal_pin_float_newf(HAL_OUT, &(data[i].vel_correction), comp_id, "ffpv-cl.%d.vel-correction", i);
+        retval = hal_pin_float_newf(HAL_OUT, &(data[i].vel_correction), comp_id, "ffpv-cl.%s.vel-correction", instance_name);
         if(retval < 0) goto error;
 
         // --- Create PARAMETERS ---
-        retval = hal_param_float_newf(HAL_RW, &(data[i].Kp), comp_id, "ffpv-cl.%d.Kp", i);
+        retval = hal_param_float_newf(HAL_RW, &(data[i].Kp), comp_id, "ffpv-cl.%s.Kp", instance_name);
         if(retval < 0) goto error;
-        retval = hal_param_float_newf(HAL_RW, &(data[i].Kv), comp_id, "ffpv-cl.%d.Kv", i);
+        retval = hal_param_float_newf(HAL_RW, &(data[i].Kv), comp_id, "ffpv-cl.%s.Kv", instance_name);
         if(retval < 0) goto error;
-        retval = hal_param_float_newf(HAL_RW, &(data[i].deadband), comp_id, "ffpv-cl.%d.deadband", i);
+        retval = hal_param_float_newf(HAL_RW, &(data[i].deadband), comp_id, "ffpv-cl.%s.deadband", instance_name);
         if(retval < 0) goto error;
-        retval = hal_param_float_newf(HAL_RW, &(data[i].max_correction), comp_id, "ffpv-cl.%d.max-correction", i);
+        retval = hal_param_float_newf(HAL_RW, &(data[i].max_correction), comp_id, "ffpv-cl.%s.max-correction", instance_name);
         if(retval < 0) goto error;
-        retval = hal_param_float_newf(HAL_RW, &(data[i].dither_amp), comp_id, "ffpv-cl.%d.dither-amp", i);
+        retval = hal_param_float_newf(HAL_RW, &(data[i].dither_amp), comp_id, "ffpv-cl.%s.dither-amp", instance_name);
         if(retval < 0) goto error;
 
 
@@ -162,16 +202,15 @@ int rtapi_app_main(void) {
         data[i].dither_amp = 0.0;
         *(data[i].enable) = 1;
     }
-
-    rtapi_snprintf(name, sizeof(name), "ffpv-cl.update");
-    retval = hal_export_funct(name, update, data, 1, 0, comp_id);
+    
+    rtapi_snprintf(name_buf, sizeof(name_buf), "ffpv-cl.update");
+    retval = hal_export_funct(name_buf, update, data, 1, 0, comp_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "ffpv-cl: ERROR: hal_export_funct() failed\n");
-        hal_exit(comp_id);
-        return -1;
+        goto error;
     }
 
-    rtapi_print_msg(RTAPI_MSG_INFO, "ffpv_cl: INFO: Loaded %d instances\n", num_instances);
+    rtapi_print_msg(RTAPI_MSG_INFO, "ffpv-cl: INFO: Loaded %d instances\n", num_instances);
     hal_ready(comp_id);
     return 0;
 

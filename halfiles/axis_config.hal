@@ -11,17 +11,17 @@ setp arisc.pwm.0.pwm-pin    6
 setp arisc.pwm.0.dir-port   0 # PA
 setp arisc.pwm.0.dir-pin    11
 
-setp ffpv-cl.0.Kp          14
-setp ffpv-cl.0.Kv          0.013
-setp ffpv-cl.0.deadband    0.0005
-setp ffpv-cl.0.max-correction  2
-setp ffpv-cl.0.dither-amp  0.03
+setp ffpv-cl.x.Kp          14
+setp ffpv-cl.x.Kv          0.013
+setp ffpv-cl.x.deadband    0.0005
+setp ffpv-cl.x.max-correction  2
+setp ffpv-cl.x.dither-amp  0.03
 
-net x-pos-cmd     joint.0.motor-pos-cmd => ffpv-cl.0.pos-cmd
-net x-vel-cmd     joint.0.vel-cmd       => ffpv-cl.0.vel-cmd
-net x-pos-fb      arisc.encoder.0.pos   => joint.0.motor-pos-fb => ffpv-cl.0.pos-fb
-net x-vel-out =>  ffpv-cl.0.vel-out     => arisc.pwm.0.vel-cmd
-net machine-on => arisc.pwm.0.enable    => arisc.gpio.PA12-out  => ffpv-cl.0.enable
+net x-pos-cmd     joint.0.motor-pos-cmd => ffpv-cl.x.pos-cmd
+net x-vel-cmd     joint.0.vel-cmd       => ffpv-cl.x.vel-cmd
+net x-pos-fb      arisc.encoder.0.pos   => joint.0.motor-pos-fb => ffpv-cl.x.pos-fb
+net x-vel-out =>  ffpv-cl.x.vel-out     => arisc.pwm.0.vel-cmd
+net machine-on => arisc.pwm.0.enable    => arisc.gpio.PA12-out  => ffpv-cl.x.enable
 
 
 
@@ -45,7 +45,11 @@ net z-pos-fb      arisc.pwm.1.pos-fb     => joint.1.motor-pos-fb
 net machine-on => arisc.pwm.1.enable
 
 
-
+setp ffpv-cl.z.Kp          0
+setp ffpv-cl.z.Kv          0.013
+setp ffpv-cl.z.deadband    0.0005
+setp ffpv-cl.z.max-correction  2
+setp ffpv-cl.z.dither-amp  0.03
 
 
 

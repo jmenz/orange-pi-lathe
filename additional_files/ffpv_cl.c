@@ -1,7 +1,7 @@
 /**
  * This component implements a hybrid control law:
  * During Motion: Output = (1 + Kv) * vel_cmd + Kp * pos_error
- * Stationary:    If error > deadband, Output = final_min_speed
+ * Stationary:    If error > deadband, Output = pos_error + dither
  *
  * To compile this component:
  * halcompile --install ffpv_cl.c
@@ -31,9 +31,9 @@ typedef struct {
     // HAL Parameter Values
     hal_float_t Kp;                 // PARAMETER: Proportional gain on position error
     hal_float_t Kv;                 // PARAMETER: Gain for the velocity feedforward term
-    hal_float_t deadband;     // PARAMETER: Acceptable stationary position error
-    hal_float_t min_speed;    // PARAMETER: Minimum speed to overcome stepgen deadband
-    hal_float_t dither_amp;   // PARAMETER: Amplitude of dither for stationary hold
+    hal_float_t deadband;           // PARAMETER: Acceptable stationary position error
+    hal_float_t max_correction;     // PARAMETER: Maximum correction that can be applied to velocity
+    hal_float_t dither_amp;         // PARAMETER: Amplitude of dither for stationary hold
 
 } ffpv_cl_data;
 
@@ -57,7 +57,7 @@ static void update(void *arg, long period) {
 
     for (i = 0; i < num_instances; i++) {
         ffpv_cl_data *inst = &data[i];
-        double pos_error, correction_by_pos, correction_by_vel;
+        double pos_error, correction_by_pos, correction_by_vel, final_correction;
 
         // If disabled, output zero
         if (!*(inst->enable)) {
@@ -66,49 +66,37 @@ static void update(void *arg, long period) {
             continue;
         }
 
-        // 1. Calculate the position error
         pos_error = *(inst->pos_cmd) - *(inst->pos_fb);
+        
+        correction_by_pos = inst->Kp * pos_error;
 
-        // 2. Handle Stationary vs. Motion logic
         if (*(inst->vel_cmd) == 0.0) {
-            // --- STATIONARY HOLD (Deadband logic) ---
 
-            // Check if the absolute error is outside the acceptable deadband
             if (fabs(pos_error) > inst->deadband) {
 
                 long long now = rtapi_get_time();
-                // Create a pseudo-random float between -1.0 and 1.0
                 double dither_component = ((now % 201) - 100) / 100.0;
-                // Scale by the dither amplitude parameter
                 dither_component *= inst->dither_amp;
-
-                // Add the dither to the minimum speed
-                double dithered_speed = inst->min_speed + dither_component;
-                
-                // Ensure dithered speed is not negative
+                double dithered_speed = fabs(correction_by_pos) + dither_component;
                 if (dithered_speed < 0) dithered_speed = 0;
-
-                // Command the move with the dithered speed
                 *(inst->vel_out) = (pos_error > 0) ? dithered_speed : -dithered_speed;
 
             } else {
-                // Error is within the deadband, command a stop.
                 *(inst->vel_out) = 0.0;
             }
         } else {
-            // --- IN MOTION (FF+P active) ---
 
-            // Calculate the correction velocity based on the position error and Kp
-            correction_by_pos = inst->Kp * pos_error;
-
-            // Calculate the correction velocity based on the Kv gain
             correction_by_vel = inst->Kv * *(inst->vel_cmd);
 
-            // Sum all terms to get the final output
-            *(inst->vel_out) = *(inst->vel_cmd) + correction_by_vel + correction_by_pos;
+            final_correction = correction_by_vel + correction_by_pos;
+            if (inst->max_correction > 0 && fabs(final_correction) > inst->max_correction) {
+                final_correction = inst->max_correction;
+            }
+
+            *(inst->vel_out) = *(inst->vel_cmd) + final_correction;
         }
 
-        // 3. Update the correction output pin for debugging
+        // Update the correction output pin for debugging
         *(inst->vel_correction) = *(inst->vel_out) - *(inst->vel_cmd);
     }
 }
@@ -160,7 +148,7 @@ int rtapi_app_main(void) {
         if(retval < 0) goto error;
         retval = hal_param_float_newf(HAL_RW, &(data[i].deadband), comp_id, "ffpv-cl.%d.deadband", i);
         if(retval < 0) goto error;
-        retval = hal_param_float_newf(HAL_RW, &(data[i].min_speed), comp_id, "ffpv-cl.%d.min-speed", i);
+        retval = hal_param_float_newf(HAL_RW, &(data[i].max_correction), comp_id, "ffpv-cl.%d.max-correction", i);
         if(retval < 0) goto error;
         retval = hal_param_float_newf(HAL_RW, &(data[i].dither_amp), comp_id, "ffpv-cl.%d.dither-amp", i);
         if(retval < 0) goto error;
@@ -169,8 +157,8 @@ int rtapi_app_main(void) {
         // --- Set default parameter values ---
         data[i].Kp = 1.0;
         data[i].Kv = 0.0;
-        data[i].deadband = 0.001; // Default to 1 micron, user should tune
-        data[i].min_speed = 0.01; // Default to a slow speed, user must tune
+        data[i].deadband = 0.001; // Default to 1 micron, should be tuned
+        data[i].max_correction = 0.0;
         data[i].dither_amp = 0.0;
         *(data[i].enable) = 1;
     }

@@ -33,6 +33,7 @@ typedef struct {
     hal_float_t Kv;                 // PARAMETER: Gain for the velocity feedforward term
     hal_float_t deadband;     // PARAMETER: Acceptable stationary position error
     hal_float_t min_speed;    // PARAMETER: Minimum speed to overcome stepgen deadband
+    hal_float_t dither_amp;   // PARAMETER: Amplitude of dither for stationary hold
 
 } ffpv_cl_data;
 
@@ -74,9 +75,22 @@ static void update(void *arg, long period) {
 
             // Check if the absolute error is outside the acceptable deadband
             if (fabs(pos_error) > inst->deadband) {
-                // Error is too large, command a move at min_speed.
-                // The sign of the error determines the direction.
-                *(inst->vel_out) = (pos_error > 0) ? inst->min_speed : -inst->min_speed;
+
+                long long now = rtapi_get_time();
+                // Create a pseudo-random float between -1.0 and 1.0
+                double dither_component = ((now % 201) - 100) / 100.0;
+                // Scale by the dither amplitude parameter
+                dither_component *= inst->dither_amp;
+
+                // Add the dither to the minimum speed
+                double dithered_speed = inst->min_speed + dither_component;
+                
+                // Ensure dithered speed is not negative
+                if (dithered_speed < 0) dithered_speed = 0;
+
+                // Command the move with the dithered speed
+                *(inst->vel_out) = (pos_error > 0) ? dithered_speed : -dithered_speed;
+
             } else {
                 // Error is within the deadband, command a stop.
                 *(inst->vel_out) = 0.0;
@@ -148,6 +162,8 @@ int rtapi_app_main(void) {
         if(retval < 0) goto error;
         retval = hal_param_float_newf(HAL_RW, &(data[i].min_speed), comp_id, "ffpv-cl.%d.min-speed", i);
         if(retval < 0) goto error;
+        retval = hal_param_float_newf(HAL_RW, &(data[i].dither_amp), comp_id, "ffpv-cl.%d.dither-amp", i);
+        if(retval < 0) goto error;
 
 
         // --- Set default parameter values ---
@@ -155,6 +171,7 @@ int rtapi_app_main(void) {
         data[i].Kv = 0.0;
         data[i].deadband = 0.001; // Default to 1 micron, user should tune
         data[i].min_speed = 0.01; // Default to a slow speed, user must tune
+        data[i].dither_amp = 0.0;
         *(data[i].enable) = 1;
     }
 

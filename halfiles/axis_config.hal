@@ -13,7 +13,8 @@ setp arisc.pwm.0.dir-pin    11
 
 setp ffpv-cl.0.Kp          2.5
 setp ffpv-cl.0.Kv          0.025
-setp ffpv-cl.0.min-speed   0.3
+setp ffpv-cl.0.min-speed   0.05
+setp ffpv-cl.0.dither-amp  0.1
 
 net x-pos-cmd     joint.0.motor-pos-cmd => ffpv-cl.0.pos-cmd
 net x-vel-cmd     joint.0.vel-cmd       => ffpv-cl.0.vel-cmd

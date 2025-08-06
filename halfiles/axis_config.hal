@@ -1,4 +1,17 @@
 # axis 0 setup
+
+#X Axis:
+setp arisc.encoder.0.pos-scale  999.6
+setp arisc.encoder.0.A-port     0   # 0=PA
+setp arisc.encoder.0.A-pin      2   # 
+setp arisc.encoder.0.B-port     2   # 2=PC
+setp arisc.encoder.0.B-pin      3   # 
+setp arisc.encoder.0.Z-port     0   # 0=PA
+setp arisc.encoder.0.Z-pin      21
+setp arisc.encoder.0.x4-mode    0   # The config is inversed 1 means disabled
+setp arisc.encoder.0.enable     1
+
+
 # PA12:EN, PA11:DIR, PA6:STEP
 setp arisc.pwm.0.pos-scale  [JOINT_0]SCALE
 setp arisc.pwm.0.vel-scale  [JOINT_0]SCALE
@@ -45,11 +58,6 @@ net z-pos-fb      arisc.pwm.1.pos-fb     => joint.1.motor-pos-fb
 net machine-on => arisc.pwm.1.enable
 
 
-setp ffpv-cl.z.Kp          0
-setp ffpv-cl.z.Kv          0.013
-setp ffpv-cl.z.deadband    0.0005
-setp ffpv-cl.z.max-correction  2
-setp ffpv-cl.z.dither-amp  0.03
 
 
 

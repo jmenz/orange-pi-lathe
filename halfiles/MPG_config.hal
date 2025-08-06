@@ -24,10 +24,10 @@ setp arisc.gpio.PE0-pull 1
 setp arisc.gpio.PE1-pull 1
 setp arisc.gpio.PE2-pull 1
 
-setp mux8.0.in0 1
-setp mux8.0.in1 0.1
-setp mux8.0.in2 0.01
-setp mux8.0.in4 0.001
+setp mux8.0.in0 0.001
+setp mux8.0.in1 0.01
+setp mux8.0.in2 0.1
+setp mux8.0.in4 1
 
 net jog-wheel-x-scale1 mux8.0.sel0 <= arisc.gpio.PE0-in-not
 net jog-wheel-x-scale2 mux8.0.sel1 <= arisc.gpio.PE1-in-not

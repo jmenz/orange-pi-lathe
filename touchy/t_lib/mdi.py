@@ -285,7 +285,7 @@ class mdi_control:
         self.set_text("G10", 0)
         self.next(0)
         if g10l11:
-            self.set_text("L11", 1)
+            self.set_text("L10", 1)
         else:
             self.set_text("L1", 1)
         self.next(0)
